@@ -7,6 +7,7 @@ import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
+import {catchError} from "../../helpers/catchError";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -35,7 +36,7 @@ class Game extends React.Component {
   }
 
   logout() {
-    localStorage.removeItem("token");
+    localStorage.clear();
     this.props.history.push("/login");
   }
 
@@ -52,9 +53,7 @@ class Game extends React.Component {
       .then( users => {
         this.setState({ users });
       })
-      .catch(err => {
-        alert("Something went wrong fetching the users: " + err);
-      });
+      .catch(catchError);
   }
 
   render() {
@@ -75,7 +74,7 @@ class Game extends React.Component {
                         this.props.history.push("/users/" + user.id)
                       }}
                   >
-                    <Player user={user}/>
+                    <Player user={user} />
                   </PlayerContainer>
                 );
               })}

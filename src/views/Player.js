@@ -4,8 +4,12 @@ import { withRouter } from "react-router-dom";
 
 
 const Container = styled.div`
+  &:hover {
+    transform: scaleX(1.05);
+    background-color: #1b7ab8;
+  }
   margin: 6px 0;
-  width: 280px;
+  width: 330px;
   padding: 10px;
   border-radius: 6px;
   display: flex;

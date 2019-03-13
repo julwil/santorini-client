@@ -9,6 +9,7 @@ import {catchError} from "../../helpers/catchError";
 import {CustomDatePicker} from "../../views/design/DatePicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+
 const FormContainer = styled.div`
   margin-top: 2em;
   display: flex;
@@ -80,22 +81,23 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id : null,
-      username : null,
-      name : null,
-      password : null,
+      id: null,
+      username: null,
+      name: null,
+      password: null,
       password_confirm: null,
-      createdOn : null,
-      status : null,
-      birthday : null
+      createdOn: null,
+      status: null,
+      birthday: null
     };
   }
+
   /**
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   update() {
-
+    this.state.isUpdated = true;
     fetch(`${getDomain()}/users/${this.state.id}`, {
       method: "PUT",
       headers: new Headers({
@@ -108,8 +110,10 @@ class Profile extends React.Component {
         password: this.state.password,
         birthday: this.state.birthday
       })
-    }) .catch(catchError);
+    }).then(handleError)
+        .catch(catchError)
   }
+
   /**
    *  Every time the user enters something in the input field, the state gets updated.
    * @param key (the key of the state for identifying the field that needs to be updated)
@@ -118,7 +122,7 @@ class Profile extends React.Component {
   handleInputChange(key, value) {
     // Example: if the key is password, this statement is the equivalent to the following one:
     // this.setState({'password': value});
-    this.setState({ [key]: value });
+    this.setState({[key]: value});
   }
 
   isLoggedInUser() {
@@ -149,7 +153,6 @@ class Profile extends React.Component {
         .then(response => response.json())
         .then(returnedUser => {
 
-          // Check if
           // set all key, value paris in state
           for (var key in returnedUser) {
             this.handleInputChange(key, returnedUser[key]);
@@ -160,111 +163,106 @@ class Profile extends React.Component {
 
 
   render() {
-    return (
-      <BaseContainer>
-        <FormContainer>
-          {}
-          <Form>
-            <Label>ID</Label>
-            <InputField
-                id="id"
-                disabled
-                value={this.state.id}
-            />
-            <Label>Name *</Label>
-            <InputField
-                id="name"
-                disabled={!this.isLoggedInUser()}
-                value={this.state.name}
-                onChange={e => {
-                this.handleInputChange("name", e.target.value);
-              }}
-            />
-            <Label>Username *</Label>
-            <InputField
-                id="username"
-                disabled={!this.isLoggedInUser()}
-                value={this.state.username}
-                onChange={e => {
-                  this.handleInputChange("username", e.target.value);
-                }}
-            />
-            <Label>Date of Birth</Label>
-            <CustomDatePicker
-                id="birthday"
-                disabled={!this.isLoggedInUser()}
-                selected={this.state.birthday}
-                dateFormat="dd.MM.yyyy"
-                onChange={e => {
-                  this.handleInputChange("birthday", e)
-                }}
-            />
-            <Label>Created</Label>
-            <CustomDatePicker
-                id="createdOn"
-                selected={this.state.createdOn}
-                dateFormat="d. MMMM yyyy  hh:mm"
-                disabled
-            />
-            <Label>Status</Label>
-            <InputField
-                id="status"
-                value={this.state.status}
-                disabled
-            />
 
-              {this.isLoggedInUser() ? (
-               <div>
-                    <Label>New Password</Label><br/>
-                    <InputField
-                        id="password"
-                        value={this.state.password}
-                        onChange={e => {
+      return <BaseContainer>
+          <FormContainer>
+              {}
+              <Form>
+                  <Label>ID</Label>
+                  <InputField
+                      id="id"
+                      disabled
+                      value={this.state.id}
+                  />
+                  <Label>Name *</Label>
+                  <InputField
+                      id="name"
+                      disabled={!this.isLoggedInUser()}
+                      value={this.state.name}
+                      onChange={e => {
+                          this.handleInputChange("name", e.target.value);
+                      }}
+                  />
+                  <Label>Username *</Label>
+                  <InputField
+                      id="username"
+                      disabled={!this.isLoggedInUser()}
+                      value={this.state.username}
+                      onChange={e => {
+                          this.handleInputChange("username", e.target.value);
+                      }}
+                  />
+                  <Label>Date of Birth</Label>
+                  <CustomDatePicker
+                      id="birthday"
+                      disabled={!this.isLoggedInUser()}
+                      selected={this.state.birthday}
+                      dateFormat="dd.MM.yyyy"
+                      onChange={e => {
+                          this.handleInputChange("birthday", e)
+                      }}
+                  />
+                  <Label>Created</Label>
+                  <CustomDatePicker
+                      id="createdOn"
+                      selected={this.state.createdOn}
+                      dateFormat="dd.MM.yyyy"
+                      disabled
+                  />
+                  <Label>Status</Label>
+                  <InputField
+                      id="status"
+                      value={this.state.status}
+                      disabled
+                  />
+                  <Label style={{display: this.isLoggedInUser() ? 'block' : 'none'}}
+                  >New Password</Label>
+                  <InputField
+                      id="password"
+                      type="password"
+                      style={{display: this.isLoggedInUser() ? 'block' : 'none'}}
+                      value={this.state.password}
+                      onChange={e => {
                           this.handleInputChange("password", e.target.value);
-                        }}
-                    /><br/>
-
-                 <Label>Confirm new Password</Label><br/>
-
-                 <InputField
-                        id="password_confirm"
-                        value={this.state.password_confirm}
-                        onChange={e => {
+                      }}
+                  />
+                  <Label style={{display: this.isLoggedInUser() ? 'block' : 'none'}}>
+                      Confirm new Password</Label>
+                  <InputField
+                      id="password_confirm"
+                      type="password"
+                      style={{display: this.isLoggedInUser() ? 'block' : 'none'}}
+                      value={this.state.password_confirm}
+                      onChange={e => {
                           this.handleInputChange("password_confirm", e.target.value);
-                        }}
-                    /><br/>
-                 <ButtonContainer>
-                   <Button
-                       disabled={!this.state.username || !this.state.name || !(this.state.password === this.state.password_confirm)}
-                       width="50%"
-                       onClick={() => {
-                         this.update();
-                       }}
-                   >
-                     Save
-                   </Button>
-                 </ButtonContainer>
-               </div>
+                      }}
+                  />
+                  <ButtonContainer>
+                      <Button
+                          disabled={!this.state.username || !this.state.name || !(this.state.password === this.state.password_confirm)}
+                          width="50%"
+                          style={{display: this.isLoggedInUser() ? 'block' : 'none'}}
+                          onClick={() => {
+                              this.update();
+                          }}
+                      >
+                          Save Changes
+                      </Button>
+                  </ButtonContainer>
+                  <ButtonContainer>
+                      <ButtonSecondary
+                          width="50%"
+                          onClick={() => {
+                              this.props.history.push("/game");
 
-              ) : (
-                  <div></div>
-              )}
-
-            <ButtonContainer>
-              <ButtonSecondary
-                  width="50%"
-                  onClick={() => {
-                    this.props.history.push("/game");
-
-                  }}
-              >
-                Back
-              </ButtonSecondary>
-            </ButtonContainer>
-          </Form>
-        </FormContainer>
+                          }}
+                      >
+                          Back to Overview
+                      </ButtonSecondary>
+                  </ButtonContainer>
+              </Form>
+          </FormContainer>
       </BaseContainer>
-    );
   }
 }
 
