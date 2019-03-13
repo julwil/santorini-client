@@ -105,9 +105,10 @@ class Login extends React.Component {
          localStorage.setItem("token", response.token);
 
          // decode the returned token parse it to json and save user_id into localStorage
-         var decodedToken = JSON.parse(atob(response.token));
+          console.log(response.token);
+          var decodedToken = JSON.parse(atob(response.token));
          localStorage.setItem("user_id", decodedToken.user_id);
-          this.props.history.push("/game");
+         this.props.history.push("/game");
         })
         .catch(catchError);
   }
