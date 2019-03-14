@@ -108,7 +108,7 @@ class Login extends React.Component {
           console.log(response.token);
           var decodedToken = JSON.parse(atob(response.token));
          localStorage.setItem("user_id", decodedToken.user_id);
-         this.props.history.push("/game");
+         this.props.history.push("/users");
         })
         .catch(catchError);
   }
