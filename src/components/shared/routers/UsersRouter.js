@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Redirect, Route } from "react-router-dom";
 import Game from "../../game/Game";
+import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 
 const Container = styled.div`
   display: flex;
@@ -18,7 +19,10 @@ class UsersRouter extends React.Component {
         <Route
           exact
           path={`${this.props.base}/users`}
-          render={() => <Game />}
+          render={() =>
+              <ProfileGuard>
+                <Game />
+              </ProfileGuard>}
         />
       </Container>
     );
