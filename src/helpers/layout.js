@@ -19,7 +19,7 @@ export const BaseContainer = styled.div`
   max-width: ${DESKTOP_WIDTH}px;
 `;
 
-export const FormContainer = styled.div`
+export const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,7 +27,7 @@ export const FormContainer = styled.div`
   justify-content: center;
 `;
 
-export const Form = styled.div`
+export const Main = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -39,6 +39,7 @@ export const Form = styled.div`
   border-radius: 5px;
   background: ${COLOR_4};
   transition: opacity 0.5s ease, transform 0.5s ease;
+  color: ${COLOR_5};
 `;
 
 export const InputField = styled.input`

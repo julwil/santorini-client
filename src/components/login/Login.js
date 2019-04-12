@@ -1,23 +1,17 @@
 import React from "react";
-import styled from "styled-components";
 import {
     BaseContainer,
-    FormContainer,
-    Form,
     InputField,
     Label,
     ButtonContainer,
     Heading1,
-    Errors
+    Errors, Main, MainContainer
 } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
 import { ButtonSecondary } from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
-import {catchError} from "../../helpers/catchError";
-
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
  * You should have a class (instead of a functional component) when:
@@ -98,8 +92,8 @@ class Login extends React.Component {
   render() {
     return (
       <BaseContainer>
-        <FormContainer>
-          <Form>
+        <MainContainer>
+          <Main>
               <Heading1>Login</Heading1>
             <Label>Username</Label>
             <InputField id="username"
@@ -139,8 +133,8 @@ class Login extends React.Component {
               </ButtonSecondary>
             </ButtonContainer>
               <Errors>{this.state.error}</Errors>
-          </Form>
-        </FormContainer>
+          </Main>
+        </MainContainer>
       </BaseContainer>
     );
   }

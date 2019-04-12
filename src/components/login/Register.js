@@ -1,20 +1,16 @@
 import React from "react";
-import styled from "styled-components";
 import {
-  BaseContainer,
-  FormContainer,
-  Form,
-  InputField,
-  Label,
-  ButtonContainer,
-  Heading1,
-  Errors
+    BaseContainer,
+    InputField,
+    Label,
+    ButtonContainer,
+    Heading1,
+    Errors, Main, MainContainer
 } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
 import {Button, ButtonSecondary} from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
-import {catchError} from "../../helpers/catchError";
 
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
@@ -90,8 +86,8 @@ class Register extends React.Component {
   render() {
     return (
       <BaseContainer>
-        <FormContainer>
-          <Form>
+        <MainContainer>
+          <Main>
             <Heading1>Register</Heading1>
             <Label>Name *</Label>
             <InputField
@@ -141,8 +137,8 @@ class Register extends React.Component {
               </ButtonSecondary>
             </ButtonContainer>
             <Errors>{this.state.error}</Errors>
-          </Form>
-        </FormContainer>
+          </Main>
+        </MainContainer>
       </BaseContainer>
     );
   }
