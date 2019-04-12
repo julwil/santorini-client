@@ -97,7 +97,7 @@ class Profile extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   update() {
-    this.state.isUpdated = true;
+    this.setState({isUpdated: true});
     fetch(`${getDomain()}/users/${this.state.id}`, {
       method: "PUT",
       headers: new Headers({
