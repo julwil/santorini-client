@@ -8,6 +8,7 @@ const Wrapper = styled.div`
   background-image: url(${require("./assets/images/santorini_background.jpg")});
   background-size: 120% auto;
   background-position: 50% 20%;
+  overflow: hidden;
 `;
 /**
  * Happy coding!
