@@ -1,6 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import { BaseContainer, FormContainer, Form, InputField, Label, ButtonContainer, Heading1 } from "../../helpers/layout";
+import {
+  BaseContainer,
+  FormContainer,
+  Form,
+  InputField,
+  Label,
+  ButtonContainer,
+  Heading1,
+  Errors
+} from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
 import {Button, ButtonSecondary} from "../../views/design/Button";
@@ -28,7 +37,8 @@ class Register extends React.Component {
     this.state = {
       name: null,
       username: null,
-      password: null
+      password: null,
+      error: null,
     };
   }
   /**
@@ -36,7 +46,7 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
-
+    this.setState({error: null});
     fetch(`${getDomain()}/users`, {
       method: "POST",
       headers: {
@@ -49,11 +59,13 @@ class Register extends React.Component {
       })
     })
         .then(handleError)
-        .then(response => response.json())
         .then(response =>{
             this.props.history.push("/login");
         })
-        .catch(catchError);
+        .catch(err => {
+          console.log(err);
+          this.setState({error : err.message});
+        });
   }
   /**
    *  Every time the user enters something in the input field, the state gets updated.
@@ -128,6 +140,7 @@ class Register extends React.Component {
                 Back to Login
               </ButtonSecondary>
             </ButtonContainer>
+            <Errors>{this.state.error}</Errors>
           </Form>
         </FormContainer>
       </BaseContainer>

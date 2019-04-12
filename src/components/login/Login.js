@@ -1,6 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import { BaseContainer, FormContainer, Form, InputField, Label, ButtonContainer, Heading1 } from "../../helpers/layout";
+import {
+    BaseContainer,
+    FormContainer,
+    Form,
+    InputField,
+    Label,
+    ButtonContainer,
+    Heading1,
+    Errors
+} from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
@@ -29,7 +38,8 @@ class Login extends React.Component {
     super();
     this.state = {
       username: null,
-      password: null
+      password: null,
+      error: null
     };
   }
   /**
@@ -37,6 +47,7 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
+    this.setState({error: null});
     fetch(`${getDomain()}/login`, {
       method: "POST",
       headers: {
@@ -44,23 +55,24 @@ class Login extends React.Component {
       },
       body: JSON.stringify({
         password: this.state.password,
-        username: this.state.username
+        username: this.state.username,
       })
     })
-        .then(handleError)
-        .then(response => response.json())
-        .then(response => {
+    .then(handleError)
+    .then(response => {
 
-         // store the token in the localStorage of the browser. Token is used for authentication in every subsequent request.
-         localStorage.setItem("token", response.token);
+     // store the token in the localStorage of the browser. Token is used for authentication in every subsequent request.
+     localStorage.setItem("token", response.token);
 
-         // decode the returned token parse it to json and save user_id into localStorage
-          console.log(response.token);
-          var decodedToken = JSON.parse(atob(response.token));
-         localStorage.setItem("user_id", decodedToken.user_id);
-         this.props.history.push("/users");
-        })
-        .catch(catchError);
+     // decode the returned token parse it to json and save user_id into localStorage
+      console.log(response.token);
+      var decodedToken = JSON.parse(atob(response.token));
+     localStorage.setItem("user_id", decodedToken.user_id);
+     this.props.history.push("/users");
+    })
+    .catch(err => {
+        this.setState({error : err.message});
+    });
   }
 
   /**
@@ -126,6 +138,7 @@ class Login extends React.Component {
               Register new user
               </ButtonSecondary>
             </ButtonContainer>
+              <Errors>{this.state.error}</Errors>
           </Form>
         </FormContainer>
       </BaseContainer>
