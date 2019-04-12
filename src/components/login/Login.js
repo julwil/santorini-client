@@ -1,64 +1,17 @@
 import React from "react";
-import styled from "styled-components";
-import { BaseContainer } from "../../helpers/layout";
+import {
+    BaseContainer,
+    InputField,
+    Label,
+    ButtonContainer,
+    Heading1,
+    Errors, Main, MainContainer
+} from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
 import { ButtonSecondary } from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
-import {catchError} from "../../helpers/catchError";
-
-const FormContainer = styled.div`
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 300px;
-  justify-content: center;
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 60%;
-  height: 375px;
-  font-size: 16px;
-  font-weight: 300;
-  padding-left: 37px;
-  padding-right: 37px;
-  border-radius: 5px;
-  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
-  transition: opacity 0.5s ease, transform 0.5s ease;
-`;
-
-const InputField = styled.input`
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
-  height: 35px;
-  padding-left: 15px;
-  margin-left: -4px;
-  border: none;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-`;
-
-const Label = styled.label`
-  color: white;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
  * You should have a class (instead of a functional component) when:
@@ -79,7 +32,8 @@ class Login extends React.Component {
     super();
     this.state = {
       username: null,
-      password: null
+      password: null,
+      error: null
     };
   }
   /**
@@ -87,6 +41,7 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
+    this.setState({error: null});
     fetch(`${getDomain()}/login`, {
       method: "POST",
       headers: {
@@ -94,23 +49,24 @@ class Login extends React.Component {
       },
       body: JSON.stringify({
         password: this.state.password,
-        username: this.state.username
+        username: this.state.username,
       })
     })
-        .then(handleError)
-        .then(response => response.json())
-        .then(response => {
+    .then(handleError)
+    .then(response => {
 
-         // store the token in the localStorage of the browser. Token is used for authentication in every subsequent request.
-         localStorage.setItem("token", response.token);
+     // store the token in the localStorage of the browser. Token is used for authentication in every subsequent request.
+     localStorage.setItem("token", response.token);
 
-         // decode the returned token parse it to json and save user_id into localStorage
-          console.log(response.token);
-          var decodedToken = JSON.parse(atob(response.token));
-         localStorage.setItem("user_id", decodedToken.user_id);
-         this.props.history.push("/users");
-        })
-        .catch(catchError);
+     // decode the returned token parse it to json and save user_id into localStorage
+      console.log(response.token);
+      var decodedToken = JSON.parse(atob(response.token));
+     localStorage.setItem("user_id", decodedToken.user_id);
+     this.props.history.push("/users");
+    })
+    .catch(err => {
+        this.setState({error : err.message});
+    });
   }
 
   /**
@@ -136,8 +92,9 @@ class Login extends React.Component {
   render() {
     return (
       <BaseContainer>
-        <FormContainer>
-          <Form>
+        <MainContainer>
+          <Main>
+              <Heading1>Login</Heading1>
             <Label>Username</Label>
             <InputField id="username"
               placeholder="Enter here.."
@@ -175,8 +132,9 @@ class Login extends React.Component {
               Register new user
               </ButtonSecondary>
             </ButtonContainer>
-          </Form>
-        </FormContainer>
+              <Errors>{this.state.error}</Errors>
+          </Main>
+        </MainContainer>
       </BaseContainer>
     );
   }

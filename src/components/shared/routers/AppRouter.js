@@ -22,44 +22,40 @@ class AppRouter extends React.Component {
     return (
       <BrowserRouter>
         <Switch>
-          <div>
-              <Route
-                  path="/users"
-                  render={() => (
-                      <GameGuard>
-                          <UsersRouter base={""} />
-                      </GameGuard>
-                  )}
-              />
-              <Route
-                  path="/login"
-                  exact
-                  render={() => (
-                    <LoginGuard>
-                      <Login />
-                    </LoginGuard>
-                  )}
-              />
-              <Route
-                  path="/register"
-                  exact
-                  render={() => (
-                      <Register />
-                                )}
-              />
-              <Route
-                  path="/users/:userId"
-                  exact
-                  component={Profile}
-                  render={() => (
-                      <ProfileGuard>
-                          <Profile />
-                      </ProfileGuard>
-                  )}
-              />
-            <Route path="/" exact render={() => <Redirect to={"/users"} />} />
-
-          </div>
+          <Route
+              path="/users"
+              render={() => (
+                  <GameGuard>
+                      <UsersRouter base={""} />
+                  </GameGuard>
+              )}
+          />
+          <Route
+              path="/login"
+              exact
+              render={() => (
+                <LoginGuard>
+                  <Login />
+                </LoginGuard>
+              )}
+          />
+          <Route
+              path="/register"
+              exact
+              render={() => (
+                  <Register />
+                            )}
+          />
+          <Route
+              path="/users/:userId"
+              exact
+              render={() => (
+                  <ProfileGuard>
+                      <Profile />
+                  </ProfileGuard>
+              )}
+          />
+        <Route path="/" exact render={() => <Redirect to={"/users"} />} />
         </Switch>
       </BrowserRouter>
     );

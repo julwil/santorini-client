@@ -1,13 +1,9 @@
 import React from "react";
-import styled from "styled-components";
-import { Redirect, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import Game from "../../game/Game";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
+import {BaseContainer} from "../../../helpers/layout";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 
 class UsersRouter extends React.Component {
   render() {
@@ -15,7 +11,7 @@ class UsersRouter extends React.Component {
      * "this.props.base" is "/app" because as been passed as a prop in the parent of UsersRouter, i.e., App.js
      */
     return (
-      <Container>
+      <BaseContainer>
         <Route
           exact
           path={`${this.props.base}/users`}
@@ -24,7 +20,7 @@ class UsersRouter extends React.Component {
                 <Game />
               </ProfileGuard>}
         />
-      </Container>
+      </BaseContainer>
     );
   }
 }
