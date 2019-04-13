@@ -73,8 +73,3 @@ export const Heading1 = styled.h1`
   margin: 0 0 20px;
   text-align: center;
 `;
-
-export const Errors = styled.div`
-  margin-top: 30px;
-  color: ${COLOR_1};
-`;
