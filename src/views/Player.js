@@ -1,9 +1,37 @@
 import React from "react";
 import styled from "styled-components";
 import { withRouter } from "react-router-dom";
+import {COLOR_6} from "../helpers/layout";
 
+const Online = styled.div`
+  &:hover {
+    transform: scaleX(1.05);
+    background-color: #1b7ab8;
+  }
+  margin: 6px 0;
+  width: 330px;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #5CFF1F;
+`;
 
-const Container = styled.div`
+const Blocked = styled.div`
+  &:hover {
+    transform: scaleX(1.05);
+    background-color: #1b7ab8;
+  }
+  margin: 6px 0;
+  width: 330px;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #FF795E;
+`;
+
+const Offline = styled.div`
   &:hover {
     transform: scaleX(1.05);
     background-color: #1b7ab8;
@@ -17,14 +45,14 @@ const Container = styled.div`
   border: 1px solid #ffffff26;
 `;
 
-const UserName = styled.div`
-  font-weight: lighter;
-  margin-left: 5px;
+const Username = styled.div`
+  font-weight: bold;
+  color: ${COLOR_6};
 `;
 
-const Name = styled.div`
-  font-weight: bold;
-  color: #06c4ff;
+const UserState = styled.div`
+  font-weight: lighter;
+  margin-left: 5px;
 `;
 
 const Id = styled.div`
@@ -42,13 +70,40 @@ const Id = styled.div`
  * @FunctionalComponent
  */
 const Player = ({ user }) => {
-  return (
-    <Container>
-      <Name>{user.name}</Name>
-      <UserName>{user.username}</UserName>
-      <Id>Id: {user.id}</Id>
-    </Container>
-  );
+    switch (user.status) {
+        case 'ONLINE':
+            return (
+                <Online>
+                    <Username>{user.username}</Username>
+                    <UserState>{user.status}</UserState>
+                    <Id>Id: {user.id}</Id>
+                </Online>
+            );
+        case 'CHALLENGED':
+            return (
+                <Blocked>
+                    <Username>{user.username}</Username>
+                    <UserState>{user.status}</UserState>
+                    <Id>Id: {user.id}</Id>
+                </Blocked>
+            );
+        case 'PLAYING':
+            return (
+                <Blocked>
+                    <Username>{user.username}</Username>
+                    <UserState>{user.status}</UserState>
+                    <Id>Id: {user.id}</Id>
+                </Blocked>
+            );
+        default:
+            return (
+                <Offline>
+                    <Username>{user.username}</Username>
+                    <UserState>{user.status}</UserState>
+                    <Id>Id: {user.id}</Id>
+                </Offline>
+            );
+    }
 };
 
 export default Player;
