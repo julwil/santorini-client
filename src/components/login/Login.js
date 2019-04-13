@@ -4,14 +4,15 @@ import {
     InputField,
     Label,
     ButtonContainer,
-    Heading1,
-    Errors, Main, MainContainer
+    Heading1, Main, MainContainer
 } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
 import { ButtonSecondary } from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
+import Error from "../../helpers/Error";
+import {catchError} from "../../helpers/catchError";
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
  * You should have a class (instead of a functional component) when:
@@ -59,13 +60,12 @@ class Login extends React.Component {
      localStorage.setItem("token", response.token);
 
      // decode the returned token parse it to json and save user_id into localStorage
-      console.log(response.token);
       var decodedToken = JSON.parse(atob(response.token));
      localStorage.setItem("user_id", decodedToken.user_id);
      this.props.history.push("/users");
     })
     .catch(err => {
-        this.setState({error : err.message});
+        catchError(err,this);
     });
   }
 
@@ -132,7 +132,7 @@ class Login extends React.Component {
               Register new user
               </ButtonSecondary>
             </ButtonContainer>
-              <Errors>{this.state.error}</Errors>
+            <Error errorMessage={this.state.error}/>
           </Main>
         </MainContainer>
       </BaseContainer>
