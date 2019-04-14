@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { withRouter } from "react-router-dom";
 import {COLOR_6} from "../helpers/layout";
+import {Button} from "../views/design/Button";
 
-const Online = styled.div`
+const Container = styled.div`
   &:hover {
     transform: scaleX(1.05);
     background-color: #1b7ab8;
@@ -14,35 +14,13 @@ const Online = styled.div`
   border-radius: 6px;
   display: flex;
   align-items: center;
-  border: 1px solid #5CFF1F;
-`;
-
-const Blocked = styled.div`
-  &:hover {
-    transform: scaleX(1.05);
-    background-color: #1b7ab8;
-  }
-  margin: 6px 0;
-  width: 330px;
-  padding: 10px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  border: 1px solid #FF795E;
-`;
-
-const Offline = styled.div`
-  &:hover {
-    transform: scaleX(1.05);
-    background-color: #1b7ab8;
-  }
-  margin: 6px 0;
-  width: 330px;
-  padding: 10px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  border: 1px solid #ffffff26;
+  border: ${props => {switch(props.status){ 
+    case 'ONLINE': return "1px solid #5CFF1F";
+    case 'CHALLENGED': return "1px solid #FF795E";
+    case 'PLAYING': return "1px solid #FF795E";
+    case 'OFFLINE': return "1px solid #ffffff26";
+    }}
+    }  
 `;
 
 const Username = styled.div`
@@ -55,12 +33,6 @@ const UserState = styled.div`
   margin-left: 5px;
 `;
 
-const Id = styled.div`
-  margin-left: auto;
-  margin-right: 10px;
-  font-weight: bold;
-`;
-
 /**
  * This is an example of a Functional and stateless component (View) in React. Functional components are not classes and thus don't handle internal state changes.
  * Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen.
@@ -70,40 +42,14 @@ const Id = styled.div`
  * @FunctionalComponent
  */
 const Player = ({ user }) => {
-    switch (user.status) {
-        case 'ONLINE':
-            return (
-                <Online>
-                    <Username>{user.username}</Username>
-                    <UserState>{user.status}</UserState>
-                    <Id>Id: {user.id}</Id>
-                </Online>
-            );
-        case 'CHALLENGED':
-            return (
-                <Blocked>
-                    <Username>{user.username}</Username>
-                    <UserState>{user.status}</UserState>
-                    <Id>Id: {user.id}</Id>
-                </Blocked>
-            );
-        case 'PLAYING':
-            return (
-                <Blocked>
-                    <Username>{user.username}</Username>
-                    <UserState>{user.status}</UserState>
-                    <Id>Id: {user.id}</Id>
-                </Blocked>
-            );
-        default:
-            return (
-                <Offline>
-                    <Username>{user.username}</Username>
-                    <UserState>{user.status}</UserState>
-                    <Id>Id: {user.id}</Id>
-                </Offline>
-            );
-    }
+    return(
+        <Container status={user.status}>
+            <Username>{user.username}</Username>
+            <UserState>{user.status}</UserState>
+            <Button>Invite</Button>
+            <Button>Profile</Button>
+        </Container>
+    );
 };
 
 export default Player;
