@@ -8,6 +8,7 @@ import { handleError } from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import {CustomDatePicker} from "../../views/design/DatePicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Error from "../../helpers/Error";
 
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
@@ -29,13 +30,13 @@ class Profile extends React.Component {
     super(props);
     this.state = {
       id: null,
-      username: null,
-      name: null,
-      password: null,
-      password_confirm: null,
-      createdOn: null,
-      status: null,
-      birthday: null
+      username: '',
+      name: '',
+      password: '',
+      password_confirm: '',
+      createdOn: new Date(),
+      status: '',
+      birthday: new Date()
     };
   }
 
@@ -115,12 +116,6 @@ class Profile extends React.Component {
           <MainContainer>
               {}
               <Main>
-                  <Label>ID</Label>
-                  <InputField
-                      id="id"
-                      disabled
-                      value={this.state.id}
-                  />
                   <Label>Name *</Label>
                   <InputField
                       id="name"
@@ -207,6 +202,7 @@ class Profile extends React.Component {
                           Back to Overview
                       </ButtonSecondary>
                   </ButtonContainer>
+                  <Error errorMessage={this.state.error}/>
               </Main>
           </MainContainer>
       </BaseContainer>
