@@ -27,7 +27,7 @@ class AppRouter extends React.Component {
               path="/users"
               render={() => (
                   <GameGuard>
-                      <UsersRouter base={""} />
+                      <UsersRouter base={"/users"} />
                   </GameGuard>
               )}
           />

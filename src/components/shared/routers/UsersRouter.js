@@ -1,8 +1,9 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import Game from "../../game/Game";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import {BaseContainer} from "../../../helpers/layout";
+import Profile from "../../user/Profile";
 
 
 class UsersRouter extends React.Component {
@@ -14,12 +15,21 @@ class UsersRouter extends React.Component {
       <BaseContainer>
         <Route
           exact
-          path={`${this.props.base}/users`}
+          path={`${this.props.base}/`}
           render={() =>
               <ProfileGuard>
                 <Game />
               </ProfileGuard>}
         />
+          <Route
+              path={`${this.props.base}/:userId`}
+              exact
+              render={() => (
+                  <ProfileGuard>
+                      <Profile />
+                  </ProfileGuard>
+              )}
+          />
       </BaseContainer>
     );
   }
