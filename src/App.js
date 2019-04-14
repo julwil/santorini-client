@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   height: inherit;
-  background-image: url(${require("./assets/images/santorini_background.jpg")});
+  background-image: url(${process.env.PUBLIC_URL+"/assets/images/santorini_background.jpg"});
   background-size: 120% auto;
   background-position: 50% 20%;
   overflow-y: scroll;
