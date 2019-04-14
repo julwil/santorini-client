@@ -12,7 +12,6 @@ import {catchError} from "../../helpers/catchError";
 const Users = styled.ul`
   list-style: none;
   padding-left: 0;
-
 `;
 
 const PlayerContainer = styled.li`
@@ -26,7 +25,7 @@ const CenteredDiv = styled.div`
   text-align: center;
 `;
 
-class Game extends React.Component {
+class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -54,6 +53,14 @@ class Game extends React.Component {
       .catch(catchError);
   }
 
+  sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
+    const data = [].concat(this.state.users);
+    data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
+    data.sort((user_a, user_b) => (user_a.status === 'ONLINE') ? 1 : -1);
+    data.sort((user_a, user_b) => (user_a.status === 'PLAYING' || user_a.status === 'CHALLENGED') ? -1 : (user_b.status === 'OFFLINE') ? -1 : 1);
+    return data;
+  }
+
   render() {
     return (
       <MainContainer>
@@ -64,7 +71,7 @@ class Game extends React.Component {
           ) : (
             <CenteredDiv>
               <Users>
-                {this.state.users.map(user => {
+                {this.sort_users().map(user => {
                   return (
                     <PlayerContainer
                         key={user.id}
@@ -93,4 +100,4 @@ class Game extends React.Component {
   }
 }
 
-export default withRouter(Game);
+export default withRouter(Lobby);

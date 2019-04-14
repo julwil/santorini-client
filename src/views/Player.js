@@ -28,9 +28,14 @@ const Username = styled.div`
   color: ${COLOR_6};
 `;
 
-const UserState = styled.div`
-  font-weight: lighter;
+const ButtonContainer = styled.div`
+  align-items: end;
+  width: 330px;
+`;
+
+const PlayerButton = styled(Button)`
   margin-left: 5px;
+  width: 70px;
 `;
 
 /**
@@ -41,13 +46,25 @@ const UserState = styled.div`
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
  */
-const Player = ({ user }) => {
+const Player = ({ user, props }) => {
     return(
         <Container status={user.status}>
             <Username>{user.username}</Username>
-            <UserState>{user.status}</UserState>
-            <Button>Invite</Button>
-            <Button>Profile</Button>
+            <ButtonContainer>
+                <PlayerButton
+                    invited_user={user.id}
+                    onClick={() =>{
+                        this.props(user.id);
+                        props.history.push("/games");
+                    }}
+                >Invite</PlayerButton>
+                <PlayerButton
+                    key={user.id}
+                    onClick={() => {
+                        props.history.push("users/" + user.id)
+                    }}
+                >Profile</PlayerButton>
+            </ButtonContainer>
         </Container>
     );
 };
