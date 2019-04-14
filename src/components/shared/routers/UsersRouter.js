@@ -3,7 +3,7 @@ import {Route, Switch} from "react-router-dom";
 import Game from "../../game/Game";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import {BaseContainer} from "../../../helpers/layout";
-import Profile from "./AppRouter";
+import Profile from "../../user/Profile";
 
 
 class UsersRouter extends React.Component {
