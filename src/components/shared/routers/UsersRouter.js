@@ -15,14 +15,14 @@ class UsersRouter extends React.Component {
       <BaseContainer>
         <Route
           exact
-          path={`${this.props.base}/users`}
+          path={`${this.props.base}/`}
           render={() =>
               <ProfileGuard>
                 <Game />
               </ProfileGuard>}
         />
           <Route
-              path={`${this.props.base}/users/:userId`}
+              path={`${this.props.base}/:userId`}
               exact
               render={() => (
                   <ProfileGuard>
