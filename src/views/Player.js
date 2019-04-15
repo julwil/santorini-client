@@ -1,12 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_6} from "../helpers/layout";
+import {COLOR_3, COLOR_5} from "../helpers/layout";
 import {Button} from "../views/design/Button";
 
 const Container = styled.div`
   &:hover {
-    transform: scaleX(1.05);
-    background-color: #1b7ab8;
+    background-color: ${COLOR_5};
   }
   margin: 6px 0;
   width: 330px;
@@ -25,16 +24,17 @@ const Container = styled.div`
 
 const Username = styled.div`
   font-weight: bold;
-  color: ${COLOR_6};
+  color: ${COLOR_3};
 `;
 
 const ButtonContainer = styled.div`
-  align-items: end;
-  width: 330px;
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
 `;
 
 const PlayerButton = styled(Button)`
-  margin-left: 5px;
+  margin-left: 10px;
   width: 70px;
 `;
 

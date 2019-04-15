@@ -34,8 +34,19 @@ class Lobby extends React.Component {
   }
 
   logout() {
-    localStorage.clear();
-    this.props.history.push("/login");
+    fetch(`${getDomain()}/logout`, {
+      method: "GET",
+      headers: new Headers({
+        'Authorization': localStorage.getItem("token"),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+        .then(handleError)
+        .then(() => (localStorage.clear()))
+        .then(
+            this.props.history.push("/login")
+        )
+        .catch(catchError)
   }
 
   componentDidMount() {
