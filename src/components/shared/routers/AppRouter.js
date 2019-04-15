@@ -7,6 +7,7 @@ import Login from "../../login/Login";
 import Register from "../../login/Register";
 import Profile from "../../user/Profile";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
+import GameInvite from "../../game/GameInvite";
 
 /**
  * Main router of your application.
@@ -26,7 +27,7 @@ class AppRouter extends React.Component {
               path="/users"
               render={() => (
                   <GameGuard>
-                      <UsersRouter base={""} />
+                      <UsersRouter base={"/users"} />
                   </GameGuard>
               )}
           />
@@ -53,6 +54,15 @@ class AppRouter extends React.Component {
                   <ProfileGuard>
                       <Profile />
                   </ProfileGuard>
+              )}
+          />
+          <Route
+              path="/games"
+              exact
+              render={() =>(
+                  <GameGuard>
+                      <GameInvite />
+                  </GameGuard>
               )}
           />
         <Route path="/" exact render={() => <Redirect to={"/users"} />} />

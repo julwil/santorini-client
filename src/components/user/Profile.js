@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { BaseContainer } from "../../helpers/layout";
+import { BaseContainer, MainContainer, Main, Label, ButtonContainer, InputField } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
 import {Button, ButtonSecondary} from "../../views/design/Button";
@@ -8,59 +8,7 @@ import { handleError } from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import {CustomDatePicker} from "../../views/design/DatePicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-
-const FormContainer = styled.div`
-  margin-top: 2em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: fit-content;
-  justify-content: center;
-`;
-
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 60%;
-  height: fit-content;
-  font-size: 16px;
-  font-weight: 300;
-  padding-left: 37px;
-  padding-right: 37px;
-  padding-top: 37px;
-  padding-bottom: 37px;
-  border-radius: 5px;
-  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
-  transition: opacity 0.5s ease, transform 0.5s ease;
-`;
-
-const InputField = styled.input`
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
-  height: 35px;
-  padding-left: 15px;
-  margin-left: -4px;
-  border: none;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-`;
-
-const Label = styled.label`
-  color: white;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
+import Error from "../../helpers/Error";
 
 /**
  * Classes in React allow you to have an internal state within the class and to have the React life-cycle for your component.
@@ -82,13 +30,13 @@ class Profile extends React.Component {
     super(props);
     this.state = {
       id: null,
-      username: null,
-      name: null,
-      password: null,
-      password_confirm: null,
-      createdOn: null,
-      status: null,
-      birthday: null
+      username: '',
+      name: '',
+      password: '',
+      password_confirm: '',
+      createdOn: new Date(),
+      status: '',
+      birthday: new Date()
     };
   }
 
@@ -108,10 +56,11 @@ class Profile extends React.Component {
         name: this.state.name,
         username: this.state.username,
         password: this.state.password,
-        birthday: this.state.birthday
+        birthday: this.state.birthday,
+        error: null,
       })
     }).then(handleError)
-        .catch(catchError)
+        .catch(err => {catchError(err,this)})
   }
 
   /**
@@ -150,7 +99,6 @@ class Profile extends React.Component {
       }),
     })
         .then(handleError)
-        .then(response => response.json())
         .then(returnedUser => {
 
           // set all key, value paris in state
@@ -158,22 +106,16 @@ class Profile extends React.Component {
             this.handleInputChange(key, returnedUser[key]);
           }
         })
-        .catch(catchError);
+        .catch(err => {catchError(err,this)});
   }
 
 
   render() {
 
       return <BaseContainer>
-          <FormContainer>
+          <MainContainer>
               {}
-              <Form>
-                  <Label>ID</Label>
-                  <InputField
-                      id="id"
-                      disabled
-                      value={this.state.id}
-                  />
+              <Main>
                   <Label>Name *</Label>
                   <InputField
                       id="name"
@@ -260,8 +202,9 @@ class Profile extends React.Component {
                           Back to Overview
                       </ButtonSecondary>
                   </ButtonContainer>
-              </Form>
-          </FormContainer>
+                  <Error errorMessage={this.state.error}/>
+              </Main>
+          </MainContainer>
       </BaseContainer>
   }
 }

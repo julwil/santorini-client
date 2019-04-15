@@ -1,16 +1,17 @@
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
+import {COLOR_3, COLOR_4, COLOR_5} from "../../helpers/layout";
 export const CustomDatePicker = styled(DatePicker)`
   &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
+    color: ${COLOR_4};
   }
   height: 35px;
-  width: 610px;
+  width: 583px;
   padding-left: 15px;
   margin-left: -4px;
   border: none;
   border-radius: 20px;
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: ${COLOR_5};
+  color: ${COLOR_3};
 `;

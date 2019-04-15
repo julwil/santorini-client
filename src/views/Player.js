@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { withRouter } from "react-router-dom";
-
+import {COLOR_6} from "../helpers/layout";
+import {Button} from "../views/design/Button";
 
 const Container = styled.div`
   &:hover {
@@ -14,23 +14,28 @@ const Container = styled.div`
   border-radius: 6px;
   display: flex;
   align-items: center;
-  border: 1px solid #ffffff26;
+  border: ${props => {switch(props.status){ 
+    case 'ONLINE': return "1px solid #5CFF1F";
+    case 'CHALLENGED': return "1px solid #FF795E";
+    case 'PLAYING': return "1px solid #FF795E";
+    case 'OFFLINE': return "1px solid #ffffff26";
+    }}
+    }  
 `;
 
-const UserName = styled.div`
-  font-weight: lighter;
+const Username = styled.div`
+  font-weight: bold;
+  color: ${COLOR_6};
+`;
+
+const ButtonContainer = styled.div`
+  align-items: end;
+  width: 330px;
+`;
+
+const PlayerButton = styled(Button)`
   margin-left: 5px;
-`;
-
-const Name = styled.div`
-  font-weight: bold;
-  color: #06c4ff;
-`;
-
-const Id = styled.div`
-  margin-left: auto;
-  margin-right: 10px;
-  font-weight: bold;
+  width: 70px;
 `;
 
 /**
@@ -41,14 +46,27 @@ const Id = styled.div`
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
  */
-const Player = ({ user }) => {
-  return (
-    <Container>
-      <Name>{user.name}</Name>
-      <UserName>{user.username}</UserName>
-      <Id>Id: {user.id}</Id>
-    </Container>
-  );
+const Player = ({ user, props }) => {
+    return(
+        <Container status={user.status}>
+            <Username>{user.username}</Username>
+            <ButtonContainer>
+                <PlayerButton
+                    invited_user={user.id}
+                    onClick={() =>{
+                        this.props(user.id);
+                        props.history.push("/games");
+                    }}
+                >Invite</PlayerButton>
+                <PlayerButton
+                    key={user.id}
+                    onClick={() => {
+                        props.history.push("users/" + user.id)
+                    }}
+                >Profile</PlayerButton>
+            </ButtonContainer>
+        </Container>
+    );
 };
 
 export default Player;
