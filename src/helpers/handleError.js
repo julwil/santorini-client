@@ -1,4 +1,5 @@
 export const handleError = (response) => {
+    if(response.status === 204) return {};
     return response.json()
         .then(json => {
             if (response.ok) {

@@ -4,7 +4,7 @@ import { Heading1, Main, MainContainer} from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
-import { Button } from "../../views/design/Button";
+import {Button, ButtonSecondary} from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
@@ -36,6 +36,7 @@ class Lobby extends React.Component {
       showGameInvite: false,
       GameInviteUserId: null,
     };
+    this.intervalId = 0;
   }
 
   logout() {
@@ -47,17 +48,19 @@ class Lobby extends React.Component {
       }),
     })
         .then(handleError)
-        .then(() => (localStorage.clear()))
-        .then(
+        .then(() => {
+            alert('asdf');
+            clearInterval(this.intervalId);
+            localStorage.clear();
             this.props.history.push("/login")
-        )
+        })
         .catch(err => {
           catchError(err, this);
         });
   }
 
   componentDidMount() {
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       fetch(`${getDomain()}/users`, {
         method: "GET",
         headers: new Headers({
@@ -108,16 +111,15 @@ class Lobby extends React.Component {
                     </PlayerContainer>
                   );
                 })}
-              </Users>
               <GameInvite show={this.state.showGameInvite} userId={this.state.GameInviteUserId} />
-              <Button
+              <ButtonSecondary
                 width="50%"
                 onClick={() => {
                   this.logout();
                 }}
               >
                 Logout
-              </Button>
+              </ButtonSecondary>
             </CenteredDiv>
           )}
           <Error errorMessage={this.state.error}/>

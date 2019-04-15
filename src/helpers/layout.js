@@ -10,6 +10,7 @@ export const COLOR_2 = '#183F8C';
 export const COLOR_3 = '#1F82BF';
 export const COLOR_4 = '#759CBF';
 export const COLOR_5 = '#F2F1F0';
+export const COLOR_6 = '#E2E1E0';
 
 export const BaseContainer = styled.div`
   margin-left: auto;
