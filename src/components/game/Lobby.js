@@ -8,6 +8,7 @@ import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
+import Error from "../../helpers/Error";
 
 const Users = styled.ul`
   list-style: none;
@@ -29,7 +30,8 @@ class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
-      users: null
+      users: null,
+      error: null,
     };
   }
 
@@ -46,22 +48,28 @@ class Lobby extends React.Component {
         .then(
             this.props.history.push("/login")
         )
-        .catch(catchError)
+        .catch(err => {
+          catchError(err, this);
+        });
   }
 
   componentDidMount() {
-    fetch(`${getDomain()}/users`, {
-      method: "GET",
-      headers: new Headers({
-        'Authorization': localStorage.getItem("token"),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }),
-    })
-      .then(handleError)
-      .then( users => {
-        this.setState({ users });
+    setInterval(() => {
+      fetch(`${getDomain()}/users`, {
+        method: "GET",
+        headers: new Headers({
+          'Authorization': localStorage.getItem("token"),
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }),
       })
-      .catch(catchError);
+        .then(handleError)
+        .then( users => {
+          this.setState({ users });
+        })
+        .catch(err => {
+          catchError(err,this);
+        });
+    }, 2000)
   }
 
   sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
@@ -113,6 +121,7 @@ class Lobby extends React.Component {
               </Button>
             </CenteredDiv>
           )}
+          <Error errorMessage={this.state.error}/>
         </Main>
       </MainContainer>
     );
