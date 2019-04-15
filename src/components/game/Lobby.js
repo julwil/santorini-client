@@ -22,14 +22,38 @@ const PlayerContainer = styled.li`
   justify-content: center;
 `;
 
+const HeaderContainer = styled.div`
+  display: flex;
+  position: relative;
+`;
+
+const LobbyHeading = styled(Heading1)`
+  padding-left: 40px;
+  padding-right: 40px;
+  width: 100%;
+`;
+
+const UserProfileButton = styled(Button)`
+  display: flex;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
 const CenteredDiv = styled.div`
   text-align: center;
+`;
+
+const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 class Lobby extends React.Component {
   constructor() {
     super();
     this.state = {
+      current_user: Number(localStorage.getItem("user_id")),
       users: null,
       error: null,
     };
@@ -77,7 +101,7 @@ class Lobby extends React.Component {
 
   sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
     const data = [].concat(this.state.users);
-    data.splice(data.map((user) => {return user.id}).indexOf(Number(localStorage.getItem("user_id"))),1);
+    data.splice(data.map((user) => {return user.id}).indexOf(this.state.current_user),1);
     data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
     data.sort((user_a, user_b) => (user_a.status === 'ONLINE') ? 1 : -1);
     data.sort((user_a, user_b) => (user_a.status === 'PLAYING' || user_a.status === 'CHALLENGED') ? -1 : (user_b.status === 'OFFLINE') ? -1 : 1);
@@ -88,9 +112,24 @@ class Lobby extends React.Component {
     return (
       <MainContainer>
         <Main>
-          <Heading1>User Lobby</Heading1>
+          <HeaderContainer>
+            <LobbyHeading>User Lobby</LobbyHeading>
+            {this.state.users ? (
+                <UserProfileButton
+                    onClick={() => {
+                      this.props.history.push("/users/" + this.state.current_user)
+                    }}
+                >{this.state.users.map((user) => {
+                  return user.username
+                })[(this.state.users.map((user) => {
+                  return user.id
+                }).indexOf(this.state.current_user))]}</UserProfileButton>
+            ) : ("")}
+          </HeaderContainer>
           {!this.state.users ? (
-            <Spinner />
+              <SpinnerContainer>
+                <Spinner/>
+              </SpinnerContainer>
           ) : (
             <CenteredDiv>
               <Users>
