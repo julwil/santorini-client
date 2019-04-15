@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_3, COLOR_5} from "../helpers/layout";
+import {COLOR_3, COLOR_5, COLOR_6} from "../helpers/layout";
 import {Button} from "../views/design/Button";
 
 const Container = styled.div`
   &:hover {
-    background-color: ${COLOR_5};
+    background-color: ${COLOR_6};
   }
   margin: 6px 0;
   width: 100%;
@@ -13,18 +13,26 @@ const Container = styled.div`
   border-radius: 6px;
   display: flex;
   align-items: center;
-  border: ${props => {switch(props.status){ 
-    case 'ONLINE': return "1px solid #5CFF1F";
-    case 'CHALLENGED': return "1px solid #FF795E";
-    case 'PLAYING': return "1px solid #FF795E";
-    case 'OFFLINE': return "1px solid #ffffff26";
-    }}
-    }  
+  background-color: ${COLOR_5};
+ 
 `;
 
 const Username = styled.div`
   font-weight: bold;
   color: ${COLOR_3};
+`;
+
+const StatusIndicator = styled.div`
+  height: 10px;
+  width: 10px;
+  margin: 10px 5px;
+  border-radius: 10px;
+  background-color: ${props => {switch(props.status){
+    case 'ONLINE': return "#5CFF1F";
+    case 'CHALLENGED': return "#FF795E";
+    case 'PLAYING': return "#FF795E";
+    case 'OFFLINE': return "#666";
+    }}} 
 `;
 
 const ButtonContainer = styled.div`
@@ -50,6 +58,7 @@ const Player = ({ user, props }) => {
     return(
         <Container status={user.status}>
             <Username>{user.username}</Username>
+            <StatusIndicator status={user.status}/>
             <ButtonContainer>
                 <PlayerButton
                     invited_user={user.id}
