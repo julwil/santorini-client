@@ -1,66 +1,69 @@
 import React from "react";
 import styled from "styled-components";
-import { Heading1, Main, MainContainer} from "../../helpers/layout";
-import { getDomain } from "../../helpers/getDomain";
-import Player from "../../views/Player";
-import { Spinner } from "../../views/design/Spinner";
-import { Button } from "../../views/design/Button";
-import { withRouter } from "react-router-dom";
-import {handleError} from "../../helpers/handleError";
-import {catchError} from "../../helpers/catchError";
+import {COLOR_3, COLOR_5} from "../../helpers/layout";
 
-const Users = styled.ul`
-  list-style: none;
-  padding-left: 0;
-
+const Popup = styled.div`
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(50% 50%);
+  min-height: 40px;
+  width: 200px;
+  color: ${COLOR_3};
+  border-radius: 4px;
+  background-color: ${COLOR_5};
+  z-index: 2;
+  padding: 10px;
+  box-shadow: 0 0 5px 0 rgba(143,143,143,1);
+  opacity: ${props => props.show?1:0};
+  visibility: ${props => props.show?1:0};
+  transition: all 200ms ease-in-out;
+  &:after{
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: block;
+    content: '';
+    opacity: ${props => props.show?1:0};
+    visibility: ${props => props.show?1:0};
+    transition: all 200ms ease-in-out;
+    background-color: rgba(50,50,50,0.5);
+    position: fixed;
+  }
 `;
 
-const PlayerContainer = styled.li`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
+class GameInvite extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {show:false};
+        this._isMounted = false;
 
-const CenteredDiv = styled.div`
-  text-align: center;
-`;
-
-class GameInvite extends React.Component {
-    constructor(){
-        super();
-            this.state = {
-                invited_user: this.props,
-                challenging_user: localStorage.getItem("user_id"),
-            }
     }
 
     componentDidMount() {
-        fetch(`${getDomain()}/users`, {
-            method: "GET",
-            headers: new Headers({
-                'Authorization': localStorage.getItem("token"),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-        })
-            .then(handleError)
-            .then( users => {
-                this.setState({ users });
-            })
-            .catch(catchError);
+        this._isMounted = true;
     }
 
-    render() {
-        return (
-            <MainContainer>
-                <Main>
-                    <div>Game Invite</div>
-                    <div>Challenging user: {this.state.challenging_user}</div>
-                    <div>Invited user: {this.state.invited_user}</div>
-                </Main>
-            </MainContainer>
-        );
+    componentWillReceiveProps(nextProps) {
+        if(this._isMounted){
+            this.setState({show: nextProps.show});
+            if(nextProps.show){
+                setTimeout(()=>{this.setState({show:false})},4000);
+            }
+        }
+    }
+
+    render = () => {
+        return(
+            <Popup show={this.state.show}>
+                <div>Popup-Content</div>
+            </Popup>
+        )
+    };
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 }
 
-export default withRouter(GameInvite);
+export default GameInvite;

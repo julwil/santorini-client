@@ -47,24 +47,6 @@ class AppRouter extends React.Component {
                   <Register />
                             )}
           />
-          <Route
-              path="/users/:userId"
-              exact
-              render={() => (
-                  <ProfileGuard>
-                      <Profile />
-                  </ProfileGuard>
-              )}
-          />
-          <Route
-              path="/games"
-              exact
-              render={() =>(
-                  <GameGuard>
-                      <GameInvite />
-                  </GameGuard>
-              )}
-          />
         <Route path="/" exact render={() => <Redirect to={"/users"} />} />
         </Switch>
       </BrowserRouter>

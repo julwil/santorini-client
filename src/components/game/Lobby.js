@@ -9,6 +9,7 @@ import { withRouter } from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
+import GameInvite from "./GameInvite";
 
 const Users = styled.ul`
   list-style: none;
@@ -32,6 +33,8 @@ class Lobby extends React.Component {
     this.state = {
       users: null,
       error: null,
+      showGameInvite: false,
+      GameInviteUserId: null,
     };
     this.intervalId = 0;
   }
@@ -84,6 +87,13 @@ class Lobby extends React.Component {
     return data;
   }
 
+  invite(userId){
+    this.setState({
+      GameInviteUserId: userId,
+      showGameInvite: true,
+    })
+  }
+
   render() {
     return (
       <MainContainer>
@@ -97,11 +107,11 @@ class Lobby extends React.Component {
                 {this.sort_users().map(user => {
                   return (
                     <PlayerContainer>
-                      <Player user={user} props={this.props}/>
+                      <Player user={user} invite={this.invite}/>
                     </PlayerContainer>
                   );
                 })}
-              </Users>
+              <GameInvite show={this.state.showGameInvite} userId={this.state.GameInviteUserId} />
               <ButtonSecondary
                 width="50%"
                 onClick={() => {
