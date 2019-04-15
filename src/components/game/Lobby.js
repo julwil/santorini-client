@@ -33,6 +33,7 @@ class Lobby extends React.Component {
       users: null,
       error: null,
     };
+    this.intervalId = 0;
   }
 
   logout() {
@@ -44,17 +45,19 @@ class Lobby extends React.Component {
       }),
     })
         .then(handleError)
-        .then(() => (localStorage.clear()))
-        .then(
+        .then(() => {
+            alert('asdf');
+            clearInterval(this.intervalId);
+            localStorage.clear();
             this.props.history.push("/login")
-        )
+        })
         .catch(err => {
           catchError(err, this);
         });
   }
 
   componentDidMount() {
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       fetch(`${getDomain()}/users`, {
         method: "GET",
         headers: new Headers({
