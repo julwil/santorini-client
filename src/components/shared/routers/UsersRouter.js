@@ -1,6 +1,6 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import Game from "../../game/Game";
+import Lobby from "../../game/Lobby";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import {BaseContainer} from "../../../helpers/layout";
 import Profile from "../../user/Profile";
@@ -18,7 +18,7 @@ class UsersRouter extends React.Component {
           path={`${this.props.base}/`}
           render={() =>
               <ProfileGuard>
-                <Game />
+                <Lobby />
               </ProfileGuard>}
         />
           <Route
