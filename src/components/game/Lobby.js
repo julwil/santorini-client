@@ -100,13 +100,8 @@ class Lobby extends React.Component {
               <Users>
                 {this.sort_users().map(user => {
                   return (
-                    <PlayerContainer
-                        key={user.id}
-                        onClick={()=> {
-                          this.props.history.push("/users/" + user.id)
-                        }}
-                    >
-                      <Player user={user} />
+                    <PlayerContainer>
+                      <Player user={user} props={this.props}/>
                     </PlayerContainer>
                   );
                 })}
