@@ -77,14 +77,7 @@ class Lobby extends React.Component {
 
   sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
     const data = [].concat(this.state.users);
-    console.log(data);
-    //console.log("User_id " +localStorage.getItem("user_id"));
-    const current_user_id = localStorage.getItem("user_id");
-    console.log(typeof Number(current_user_id)); //type of mapped id values
-    console.log(typeof data.map((user) => {return user.id})[0]);
-    console.log("Index of user_id " + data.map((user) => {return user.id}).indexOf(Number(current_user_id)));
-
-    data.splice(data.map((user) => {return user.id}).indexOf(Number(current_user_id)),1);
+    data.splice(data.map((user) => {return user.id}).indexOf(Number(localStorage.getItem("user_id"))),1);
     data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
     data.sort((user_a, user_b) => (user_a.status === 'ONLINE') ? 1 : -1);
     data.sort((user_a, user_b) => (user_a.status === 'PLAYING' || user_a.status === 'CHALLENGED') ? -1 : (user_b.status === 'OFFLINE') ? -1 : 1);
