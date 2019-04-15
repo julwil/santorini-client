@@ -42,7 +42,7 @@ class Lobby extends React.Component {
       }),
     })
         .then(handleError)
-        .then(localStorage.clear())
+        .then(() => (localStorage.clear()))
         .then(
             this.props.history.push("/login")
         )
