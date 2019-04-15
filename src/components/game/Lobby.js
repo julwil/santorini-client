@@ -4,7 +4,7 @@ import { Heading1, Main, MainContainer} from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
-import { Button } from "../../views/design/Button";
+import {Button, ButtonSecondary} from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
@@ -109,14 +109,14 @@ class Lobby extends React.Component {
                   );
                 })}
               </Users>
-              <Button
+              <ButtonSecondary
                 width="50%"
                 onClick={() => {
                   this.logout();
                 }}
               >
                 Logout
-              </Button>
+              </ButtonSecondary>
             </CenteredDiv>
           )}
           <Error errorMessage={this.state.error}/>
