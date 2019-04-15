@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import {COLOR_3, COLOR_5} from "../helpers/layout";
 import {Button} from "../views/design/Button";
+import GameInvite from "../components/game/GameInvite";
 
 const Container = styled.div`
   &:hover {
@@ -46,7 +47,7 @@ const PlayerButton = styled(Button)`
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
  */
-const Player = ({ user, props }) => {
+const Player = ({ user, invite }) => {
     return(
         <Container status={user.status}>
             <Username>{user.username}</Username>
@@ -55,13 +56,13 @@ const Player = ({ user, props }) => {
                     invited_user={user.id}
                     onClick={() =>{
                         this.props(user.id);
-                        props.history.push("/games");
+                        window.location("/games");
                     }}
                 >Invite</PlayerButton>
                 <PlayerButton
                     key={user.id}
                     onClick={() => {
-                        props.history.push("users/" + user.id)
+                        invite(user.id);
                     }}
                 >Profile</PlayerButton>
             </ButtonContainer>
