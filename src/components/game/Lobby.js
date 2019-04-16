@@ -33,10 +33,10 @@ class Lobby extends React.Component {
     this.state = {
       users: null,
       error: null,
-      showGameInvite: false,
       GameInviteUserId: null,
     };
     this.intervalId = 0;
+    this.updateInterval = 2000;
   }
 
   logout() {
@@ -49,7 +49,6 @@ class Lobby extends React.Component {
     })
         .then(handleError)
         .then(() => {
-            alert('asdf');
             clearInterval(this.intervalId);
             localStorage.clear();
             this.props.history.push("/login")
@@ -60,23 +59,25 @@ class Lobby extends React.Component {
   }
 
   componentDidMount() {
-    this.intervalId = setInterval(() => {
-      fetch(`${getDomain()}/users`, {
-        method: "GET",
-        headers: new Headers({
-          'Authorization': localStorage.getItem("token"),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }),
-      })
+    this.intervalId = setInterval(this.fetchUsers, this.updateInterval)
+  }
+
+  fetchUsers = () => {
+    fetch(`${getDomain()}/users`, {
+      method: "GET",
+      headers: new Headers({
+        'Authorization': localStorage.getItem("token"),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
         .then(handleError)
         .then( users => {
-          this.setState({ users });
+          this.setState({ users: users });
         })
         .catch(err => {
           catchError(err,this);
         });
-    }, 2000)
-  }
+  };
 
   sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
     const data = [].concat(this.state.users);
@@ -87,12 +88,19 @@ class Lobby extends React.Component {
     return data;
   }
 
-  invite(userId){
+  invite = (userId) =>{
+    clearInterval(this.intervalId);
     this.setState({
       GameInviteUserId: userId,
-      showGameInvite: true,
     })
-  }
+  };
+
+  closeInvite = () => {
+    this.setState({
+      GameInviteUserId: null,
+    });
+    this.intervalId = setInterval(this.fetchUsers,this.updateInterval);
+  };
 
   render() {
     return (
@@ -106,12 +114,13 @@ class Lobby extends React.Component {
               <Users>
                 {this.sort_users().map(user => {
                   return (
-                    <PlayerContainer>
+                    <PlayerContainer key={user.id}>
                       <Player user={user} invite={this.invite}/>
                     </PlayerContainer>
                   );
                 })}
-              <GameInvite show={this.state.showGameInvite} userId={this.state.GameInviteUserId} />
+              </Users>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
               <ButtonSecondary
                 width="50%"
                 onClick={() => {

@@ -6,7 +6,7 @@ import GameInvite from "../components/game/GameInvite";
 
 const Container = styled.div`
   &:hover {
-    background-color: ${COLOR_6};
+    background-color: ${COLOR_5};
   }
   margin: 6px 0;
   width: 100%;
@@ -14,7 +14,7 @@ const Container = styled.div`
   border-radius: 6px;
   display: flex;
   align-items: center;
-  background-color: ${COLOR_5};
+  background-color: ${COLOR_6};
  
 `;
 
@@ -62,16 +62,14 @@ const Player = ({ user, invite }) => {
             <StatusIndicator status={user.status}/>
             <ButtonContainer>
                 <PlayerButton
-                    invited_user={user.id}
                     onClick={() =>{
-                        this.props(user.id);
-                        window.location("/games");
+                        invite(user.id);
                     }}
                 >Invite</PlayerButton>
                 <PlayerButton
                     key={user.id}
                     onClick={() => {
-                        invite(user.id);
+                        window.location("/users/"+user.id);
                     }}
                 >Profile</PlayerButton>
             </ButtonContainer>

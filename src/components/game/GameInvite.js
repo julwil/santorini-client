@@ -1,35 +1,32 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_3, COLOR_5} from "../../helpers/layout";
+import {COLOR_1, COLOR_3, COLOR_5} from "../../helpers/layout";
+import {Button} from "../../views/design/Button";
+
+const PopupContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: ${props => props.show?'block':'none'};
+  background-color: rgba(50,50,50,0.5);
+`;
 
 const Popup = styled.div`
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(50% 50%);
+  transform: translate(-50%, -50%);
   min-height: 40px;
   width: 200px;
-  color: ${COLOR_3};
+  color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
   z-index: 2;
   padding: 10px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
-  opacity: ${props => props.show?1:0};
-  visibility: ${props => props.show?1:0};
-  transition: all 200ms ease-in-out;
-  &:after{
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    display: block;
-    content: '';
-    opacity: ${props => props.show?1:0};
-    visibility: ${props => props.show?1:0};
-    transition: all 200ms ease-in-out;
-    background-color: rgba(50,50,50,0.5);
-    position: fixed;
-  }
 `;
 
 class GameInvite extends React.Component{
@@ -46,18 +43,22 @@ class GameInvite extends React.Component{
 
     componentWillReceiveProps(nextProps) {
         if(this._isMounted){
-            this.setState({show: nextProps.show});
-            if(nextProps.show){
-                setTimeout(()=>{this.setState({show:false})},4000);
+            if(nextProps.userId !== null && (nextProps.userId !== this.props.userId)){
+                this.setState({show:true});
+            }else{
+                this.setState({show:false});
             }
         }
     }
 
     render = () => {
         return(
-            <Popup show={this.state.show}>
-                <div>Popup-Content</div>
-            </Popup>
+            <PopupContainer show={this.state.show}>
+                <Popup>
+                    Challenged{this.props.userId}
+                    <Button onClick={()=>{this.props.closePopup()}}>Button</Button>
+                </Popup>
+            </PopupContainer>
         )
     };
 
