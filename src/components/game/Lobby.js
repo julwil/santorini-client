@@ -64,7 +64,7 @@ class Lobby extends React.Component {
   }
 
   logout() {
-    fetch(`${getDomain()}/logout`, {
+    fetch(`${getDomain()}/users/logout`, {
       method: "GET",
       headers: new Headers({
         'Authorization': localStorage.getItem("token"),
@@ -75,7 +75,7 @@ class Lobby extends React.Component {
         .then(() => {
             clearInterval(this.intervalId);
             localStorage.clear();
-            this.props.history.push("/login")
+            this.props.history.push("/users/login")
         })
         .catch(err => {
           catchError(err, this);
