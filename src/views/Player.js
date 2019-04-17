@@ -69,7 +69,7 @@ const Player = ({ user, invite }) => {
                 <PlayerButton
                     key={user.id}
                     onClick={() => {
-                        window.location("/users/"+user.id);
+                        window.location = ("users/"+user.id);
                     }}
                 >Profile</PlayerButton>
             </ButtonContainer>
