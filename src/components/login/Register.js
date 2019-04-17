@@ -57,7 +57,7 @@ class Register extends React.Component {
     })
         .then(handleError)
         .then(response =>{
-            this.props.history.push("/users/login");
+            this.props.history.push("/login");
         })
         .catch(err => {
             catchError(err,this);
@@ -129,7 +129,7 @@ class Register extends React.Component {
               <ButtonSecondary
                   width="50%"
                   onClick={() => {
-                    this.props.history.push("/users/login");
+                    this.props.history.push("/login");
 
                   }}
               >

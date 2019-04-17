@@ -75,7 +75,7 @@ class Lobby extends React.Component {
         .then(() => {
             clearInterval(this.intervalId);
             localStorage.clear();
-            this.props.history.push("/users/login")
+            this.props.history.push("/login")
         })
         .catch(err => {
           catchError(err, this);

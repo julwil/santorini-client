@@ -4,6 +4,8 @@ import Lobby from "../../game/Lobby";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import {BaseContainer} from "../../../helpers/layout";
 import Profile from "../../user/Profile";
+import {LoginGuard} from "../routeProtectors/LoginGuard";
+import Login from "./AppRouter";
 
 
 class UsersRouter extends React.Component {
