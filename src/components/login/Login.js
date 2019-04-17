@@ -43,7 +43,7 @@ class Login extends React.Component {
    */
   login() {
     this.setState({error: null});
-    fetch(`${getDomain()}/login`, {
+    fetch(`${getDomain()}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

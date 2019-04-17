@@ -64,7 +64,7 @@ class Lobby extends React.Component {
   }
 
   logout() {
-    fetch(`${getDomain()}/logout`, {
+    fetch(`${getDomain()}/users/logout`, {
       method: "GET",
       headers: new Headers({
         'Authorization': localStorage.getItem("token"),
