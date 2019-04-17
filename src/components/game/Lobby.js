@@ -60,6 +60,7 @@ class Lobby extends React.Component {
       error: null,
       GameInviteUserId: null,
       games: null,
+      openInvitationNotification: false,
     };
     this.intervalId = 0;
     this.updateInterval = 2000;
@@ -126,12 +127,18 @@ class Lobby extends React.Component {
     this.setState({
       GameInviteUserId: null,
     });
-    this.intervalId = setInterval(this.fetchUsers,this.updateInterval);
+    this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+    this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
-  open_invitation_notification //open-up notification of invitation
+  invitationAccepted = () => {
+      //send accepting request to backend
 
-  close_invitation_notificaiton //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
+  };
+
+  invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
+      // send denial request to backend
+  };
 
 
   render() {
@@ -168,7 +175,11 @@ class Lobby extends React.Component {
                 })}
               </Users>
               <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
-              <InvitationNote games={this.state.games} denyinvitation={this.invitationDenied}/>
+              <InvitationNote
+                  open={this.state.openInvitationNotification}
+                  games={this.state.games}
+                  acceptingInvitation={this.invitationAccepted()}
+                  denyingInvitation={this.invitationDenied()}/>
               <ButtonSecondary
                 width="50%"
                 onClick={() => {

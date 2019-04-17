@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_1, COLOR_3, COLOR_5} from "../../helpers/layout";
+import {BaseContainer, ButtonContainer, COLOR_1, COLOR_3, COLOR_5, DESKTOP_WIDTH} from "../../helpers/layout";
 import {Button} from "../../views/design/Button";
 
-const PopupContainer = styled.div`
+const PopupContainer = styled(BaseContainer)`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: ${DESKTOP_WIDTH}px;
   height: 100%;
   z-index: 1;
   display: ${props => props.show?'block':'none'};
@@ -16,8 +16,8 @@ const PopupContainer = styled.div`
 
 const Popup = styled.div`
   position: absolute;
-  left: 50%;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
   width: 200px;
@@ -33,8 +33,8 @@ const Popup = styled.div`
 //if accepted redirect user to "/games/{id}"
 //if denied update server and delete game
 class InvitationNote extends React.Component{
-    constructor(props){
-        super(props);
+    constructor(){
+        super();
         this.state = {
             show: false,
         };
@@ -42,26 +42,35 @@ class InvitationNote extends React.Component{
 
     }
 
+    //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
     componentDidMount() {
         this._isMounted = true;
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if(this._isMounted){
-            if(nextProps.userId !== null && (nextProps.userId !== this.props.userId)){
-                this.setState({show:true});
-            }else{
-                this.setState({show:false});
-            }
+        if(this.props.open && this.props.games !== null && (Number(this.props.games.user2) === Number(localStorage.getItem("user_id")))){
+            this.setState({show: true});
+        }else{ //throw error?
+            this.setState({show: false});
         }
     }
 
-    render = () => {
+
+    componentWillReceiveProps() {
+        if(this._isMounted && this.props.open){
+        }
+    }
+
+    render = () => { //indicate data about game in here as well as provide accept and deny button in here
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    Challenged{this.props.userId}
-                    <Button onClick={()=>{this.props.closePopup()}}>Button</Button>
+                    You have been invited to a game!
+                    <ButtonContainer>
+                        <Button onClick={() => {
+                            this.props.acceptingInvitation()
+                        }}>Accept</Button>
+                        <Button onClick={() => {
+                            this.props.denyingInvitation()
+                        }}>Deny</Button>
+                    </ButtonContainer>
                 </Popup>
             </PopupContainer>
         )
