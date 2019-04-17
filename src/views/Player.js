@@ -1,36 +1,50 @@
 import React from "react";
 import styled from "styled-components";
-import { withRouter } from "react-router-dom";
-
+import {COLOR_3, COLOR_5, COLOR_6} from "../helpers/layout";
+import {Button} from "../views/design/Button";
+import GameInvite from "../components/game/GameInvite";
 
 const Container = styled.div`
   &:hover {
-    transform: scaleX(1.05);
-    background-color: #1b7ab8;
+    background-color: ${COLOR_5};
   }
   margin: 6px 0;
-  width: 330px;
+  width: 100%;
   padding: 10px;
   border-radius: 6px;
   display: flex;
   align-items: center;
-  border: 1px solid #ffffff26;
+  background-color: ${COLOR_6};
+ 
 `;
 
-const UserName = styled.div`
-  font-weight: lighter;
-  margin-left: 5px;
-`;
-
-const Name = styled.div`
+const Username = styled.div`
   font-weight: bold;
-  color: #06c4ff;
+  color: ${COLOR_3};
 `;
 
-const Id = styled.div`
-  margin-left: auto;
-  margin-right: 10px;
-  font-weight: bold;
+const StatusIndicator = styled.div`
+  height: 10px;
+  width: 10px;
+  margin: 10px 5px;
+  border-radius: 10px;
+  background-color: ${props => {switch(props.status){
+    case 'ONLINE': return "#5CFF1F";
+    case 'CHALLENGED': return "#FF795E";
+    case 'PLAYING': return "#FF795E";
+    case 'OFFLINE': return "#666";
+    }}} 
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+`;
+
+const PlayerButton = styled(Button)`
+  margin-left: 10px;
+  width: 70px;
 `;
 
 /**
@@ -40,15 +54,29 @@ const Id = styled.div`
  * Functional components have to return always something. However, they don't need a "render()" method.
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
+ * display: 'block' shows button, 'none' hides the button
  */
-const Player = ({ user }) => {
-  return (
-    <Container>
-      <Name>{user.name}</Name>
-      <UserName>{user.username}</UserName>
-      <Id>Id: {user.id}</Id>
-    </Container>
-  );
+const Player = ({ user, invite }) => {
+    return(
+        <Container status={user.status}>
+            <Username>{user.username}</Username>
+            <StatusIndicator status={user.status}/>
+            <ButtonContainer>
+                <PlayerButton
+                    style={{display: (user.status === 'CHALLENGED' ? 'none' : (user.status === 'PLAYING' ? 'none' : (user.status === 'OFFLINE' ? 'none' : 'block')))}}
+                    onClick={() =>{
+                        invite(user.id);
+                    }}
+                >Invite</PlayerButton>
+                <PlayerButton
+                    key={user.id}
+                    onClick={() => {
+                        window.location = ("users/"+user.id);
+                    }}
+                >Profile</PlayerButton>
+            </ButtonContainer>
+        </Container>
+    );
 };
 
 export default Player;

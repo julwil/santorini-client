@@ -12,7 +12,7 @@ const Container = styled.div`
 const Header = props => {
   return (
     <Container height={props.height}>
-      <img src={require("../assets/images/santorini_banner_logo.png")} alt="Logo"/>
+      <img src={process.env.PUBLIC_URL+"/assets/images/santorini_banner_logo.png"} alt="Logo"/>
     </Container>
   );
 };
