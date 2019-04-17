@@ -10,6 +10,7 @@ import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
 import GameInvite from "./GameInvite";
+import InvitationNote from "./InvitationNote";
 
 const Users = styled.ul`
   list-style: none;
@@ -58,6 +59,7 @@ class Lobby extends React.Component {
       users: null,
       error: null,
       GameInviteUserId: null,
+      games: null,
     };
     this.intervalId = 0;
     this.updateInterval = 2000;
@@ -127,6 +129,11 @@ class Lobby extends React.Component {
     this.intervalId = setInterval(this.fetchUsers,this.updateInterval);
   };
 
+  open_invitation_notification //open-up notification of invitation
+
+  close_invitation_notificaiton //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
+
+
   render() {
     return (
       <MainContainer>
@@ -161,6 +168,7 @@ class Lobby extends React.Component {
                 })}
               </Users>
               <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
+              <InvitationNote games={this.state.games} denyinvitation={this.invitationDenied}/>
               <ButtonSecondary
                 width="50%"
                 onClick={() => {
