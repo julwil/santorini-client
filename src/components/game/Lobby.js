@@ -107,8 +107,9 @@ class Lobby extends React.Component {
     const data = [].concat(this.state.users);
     data.splice(data.map((user) => {return user.id}).indexOf(this.state.current_user),1);
     data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
-    data.sort((user_a, user_b) => (user_a.status === 'ONLINE') ? 1 : -1);
-    data.sort((user_a, user_b) => (user_a.status === 'PLAYING' || user_a.status === 'CHALLENGED') ? -1 : (user_b.status === 'OFFLINE') ? -1 : 1);
+    data.sort((user_a, user_b) => (user_b.status === 'PLAYING' || user_b.status === 'CHALLENGED') ? 1 : -1);
+    data.sort((user_a, user_b) => ((user_b.status === 'OFFLINE') ? -1 : 1));
+    data.sort((user_a, user_b) => (user_a.status === 'ONLINE' ? -1 : 1));
     return data;
   }
 

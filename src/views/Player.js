@@ -54,6 +54,7 @@ const PlayerButton = styled(Button)`
  * Functional components have to return always something. However, they don't need a "render()" method.
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
+ * display: 'block' shows button, 'none' hides the button
  */
 const Player = ({ user, invite }) => {
     return(
@@ -62,6 +63,7 @@ const Player = ({ user, invite }) => {
             <StatusIndicator status={user.status}/>
             <ButtonContainer>
                 <PlayerButton
+                    style={{display: (user.status === 'CHALLENGED' ? 'none' : (user.status === 'PLAYING' ? 'none' : (user.status === 'OFFLINE' ? 'none' : 'block')))}}
                     onClick={() =>{
                         invite(user.id);
                     }}
