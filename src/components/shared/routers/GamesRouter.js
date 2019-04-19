@@ -6,6 +6,8 @@ import {BaseContainer} from "../../../helpers/layout";
 import Profile from "../../user/Profile";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "./AppRouter";
+import Games from "../../game/Games";
+
 
 
 class GamesRouter extends React.Component {
@@ -20,7 +22,7 @@ class GamesRouter extends React.Component {
           path={`${this.props.base}/:gamesId`}
           render={() =>
               <ProfileGuard> /**missing guard**/
-                <Game />
+                <Games />
               </ProfileGuard>}
         />
           /**<Route
