@@ -56,13 +56,13 @@ class InvitationNote extends React.Component{
         this._isMounted = true;
         if(this.props.open){
             if(this.props.games !== null && (Number(this.props.games.user2) === Number(localStorage.getItem("user_id")))) {
-                console.log(this.props.users);
+                console.log(this.props.users); //remove
                 this.setState({inviting_user: this.props.users.map((user) => {return user.username})
                         [(this.props.users.map((user) => {return user.id}).indexOf(this.props.games.user1))]});
                 this.setState({show: true});
             }
         }else{
-            console.log("Setting show to false");
+            console.log("Setting show to false"); //remove
             this.setState({show: false});
         }
     }

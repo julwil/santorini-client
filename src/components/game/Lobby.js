@@ -11,6 +11,8 @@ import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
 import GameInvite from "./GameInvite";
 import InvitationNote from "./InvitationNote";
+import Games from "./Games";
+import {handleError_Notification} from "../../helpers/handleError_Notification";
 
 const Users = styled.ul`
   list-style: none;
@@ -56,6 +58,7 @@ class Lobby extends React.Component {
     super();
     this.state = {
       current_user: Number(localStorage.getItem("user_id")),
+      current_user_token: localStorage.getItem("token"),
       users: null,
       error: null,
       GameInviteUserId: null,
@@ -70,7 +73,7 @@ class Lobby extends React.Component {
     fetch(`${getDomain()}/users/logout`, {
       method: "GET",
       headers: new Headers({
-        'Authorization': localStorage.getItem("token"),
+        'Authorization': this.state.current_user_token,
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
     })
@@ -93,7 +96,7 @@ class Lobby extends React.Component {
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: new Headers({
-        'Authorization': localStorage.getItem("token"),
+        'Authorization': this.state.current_user_token,
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
     })
@@ -131,17 +134,35 @@ class Lobby extends React.Component {
     this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
-  invitationAccepted = () => {
-    //send accepting request to backend
+  invitationAccepted = () => {//send accepting request to backend
     this.setState({openInvitationNotification: false});
+    clearInterval(this.intervalUsers);
+    clearInterval(this.intervalNotficaton);
     console.log("Invite accepted");
-    fetch()
-
+      fetch(`${getDomain()}/games/`+this.state.games.id+`/accept`, {
+          method: "POST",
+          headers: new Headers({
+              'Authorization': this.state.current_user_token,
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }),
+      })
+          .then(handleError)
+          .then( game => {
+            this.props.history.push({
+              pathname: '/games/' + this.state.games.id,
+              state: game,
+            })
+          })
+          .catch(err => {
+              catchError(err, this);
+          });
   };
 
   invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
       // send denial request to backend
     this.setState({openInvitationNotification: false});
+    clearInterval(this.intervalUsers);
+    clearInterval(this.intervalNotficaton);
     console.log("Invite denied")
 
   };
