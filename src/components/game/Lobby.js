@@ -132,12 +132,18 @@ class Lobby extends React.Component {
   };
 
   invitationAccepted = () => {
-      //send accepting request to backend
+    //send accepting request to backend
+    this.setState({openInvitationNotification: false});
+    console.log("Invite accepted");
+    fetch()
 
   };
 
   invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
       // send denial request to backend
+    this.setState({openInvitationNotification: false});
+    console.log("Invite denied")
+
   };
 
 
@@ -178,8 +184,9 @@ class Lobby extends React.Component {
               <InvitationNote
                   open={this.state.openInvitationNotification}
                   games={this.state.games}
-                  acceptingInvitation={this.invitationAccepted()}
-                  denyingInvitation={this.invitationDenied()}/>
+                  users={this.state.users}
+                  acceptingInvitation={this.invitationAccepted}
+                  denyingInvitation={this.invitationDenied}/>
               <ButtonSecondary
                 width="50%"
                 onClick={() => {
