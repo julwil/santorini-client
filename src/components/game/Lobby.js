@@ -135,7 +135,6 @@ class Lobby extends React.Component {
   };
 
   invitationAccepted = () => {//send accepting request to backend
-    this.setState({openInvitationNotification: false});
     clearInterval(this.intervalUsers);
     clearInterval(this.intervalNotficaton);
     console.log("Invite accepted");
@@ -148,6 +147,7 @@ class Lobby extends React.Component {
       })
           .then(handleError)
           .then( game => {
+            this.setState({openInvitationNotification: false});
             this.props.history.push({
               pathname: '/games/' + this.state.games.id,
               state: game,
@@ -160,11 +160,21 @@ class Lobby extends React.Component {
 
   invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
       // send denial request to backend
-    this.setState({openInvitationNotification: false});
-    clearInterval(this.intervalUsers);
-    clearInterval(this.intervalNotficaton);
-    console.log("Invite denied")
-
+    console.log("Invite denied");
+    fetch(`${getDomain()}/games/`+this.state.games.id+`/reject`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': this.state.current_user_token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+        .then(handleError)
+        .then( () => //fetch intervals should not be cleared
+            {this.setState({openInvitationNotification: false})}
+        )
+        .catch(err => {
+          catchError(err, this);
+        });
   };
 
 
