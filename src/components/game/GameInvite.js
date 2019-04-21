@@ -109,12 +109,16 @@ class GameInvite extends React.Component{
                 })
                 .catch(err => {catchError(err,this)})
         }
+        this.setState({
+           invitationStatus: 'OPEN',
+           showSpinner: false
+        });
         this.props.closePopup();
     };
 
     checkInvitation(){
         fetch(`${getDomain()}/`+localStorage.getItem('gamePath'), {
-            method: "POST",
+            method: "GET",
             headers: new Headers({
                 'Authorization': localStorage.getItem('token'),
                 'Content-Type': 'application/json'
