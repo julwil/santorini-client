@@ -1,7 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_1, COLOR_3, COLOR_5, InputField} from "../../helpers/layout";
+import {ButtonContainer, COLOR_1, COLOR_2, COLOR_3, COLOR_5, InputField} from "../../helpers/layout";
 import {Button} from "../../views/design/Button";
+import {getDomain} from "../../helpers/getDomain";
+import {handleError} from "../../helpers/handleError";
+import {catchError} from "../../helpers/catchError";
+import {Spinner} from "../../views/design/Spinner";
+import Error from "../../helpers/Error";
 
 const PopupContainer = styled.div`
   position: fixed;
@@ -29,8 +34,8 @@ const Popup = styled.div`
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
 `;
 
-const Select = styled.select`
-  
+const Button_MargRight = styled(Button)`
+  margin-right: 10px;
 `;
 
 class GameInvite extends React.Component{
@@ -39,8 +44,12 @@ class GameInvite extends React.Component{
         this.state = {
             show:false,
             isGodPower:false,
+            showSpinner: false,
+            invitationStatus: 'OPEN',
+            error: null,
         };
         this._isMounted = false;
+        this.checkInvitationInterval = null;
 
     }
 
@@ -58,18 +67,97 @@ class GameInvite extends React.Component{
         }
     }
 
+    sendInvitation = () => {//send accepting request to backend
+        fetch(`${getDomain()}/games/`, {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                user1: localStorage.getItem('user_id'),
+                user2: this.props.userId,
+                isGodPower: this.state.isGodPower,
+            })
+        })
+            .then(handleError)
+            .then( game => {
+                this.setState({
+                    invitationStatus: 'SENT',
+                    showSpinner:true,
+                });
+                localStorage.setItem('gamePath',game.path);
+                this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+    };
+
+    closePopup = () => {
+        if(this.state.invitationStatus === 'SENT'){
+            fetch(`${getDomain()}/`+localStorage.getItem('gamePath')+'/reject', {
+                method: "POST",
+                headers: new Headers({
+                    'Authorization': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                })
+            })
+                .then(handleError)
+                .then(()=>{
+                    clearInterval(this.checkInvitationInterval);
+                })
+                .catch(err => {catchError(err,this)})
+        }
+        this.props.closePopup();
+    };
+
+    checkInvitation(){
+        fetch(`${getDomain()}/`+localStorage.getItem('gamePath'), {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            })
+        })
+                .then(handleError)
+                .then(game => {
+                    if(game.status === 'STARTED'){
+                        this.props.history.push(`/${localStorage.getItem('gamePath')}`)
+                    }
+                    if(game.status === 'CANCLED'){
+                        this.closePopup();
+                    }
+                })
+                .catch(catchError)
+        }
+
     render = () => {
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    <h2>Challenge user</h2>
-                    <Select onChange={e => {this.setState({"isGodPower": e.target.value});}}>
-                        <option value={false}>Without Godcards</option>
-                        <option value={true}>With Godcards</option>
-                    </Select>
-                    <Button color={"#00ff00"} onClick={()=>{this.props.saveInvite(this.state.isGodPower)}}>Challenge</Button>
-                    <Button onClick={()=>{this.props.closePopup()}}>Close</Button>
+                    {this.state.showSpinner ?(
+                        <div>
+                            <h2>Waiting for player to accept invitation</h2>
+                            <Spinner color={COLOR_2}/>
+                        </div>
+                    ):(
+                        <div>
+                            <h2>Challenge user</h2>
+                            <select onChange={e => {this.setState({"isGodPower": e.target.value});}}>
+                            <option value={false}>Without Godcards</option>
+                            <option value={true}>With Godcards</option>
+                            </select>
+                        </div>
+                    )}
+                    <ButtonContainer>
+                    {this.state.showSpinner? (""):(
+                        <Button_MargRight color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
+                    )}
+                    <Button onClick={()=>{this.closePopup()}}>Close</Button>
+                    </ButtonContainer>
                 </Popup>
+                <Error  errorMessage={this.state.error}/>
             </PopupContainer>
         )
     };
