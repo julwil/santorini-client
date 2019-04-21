@@ -12,7 +12,7 @@ import Error from "../../helpers/Error";
 import GameInvite from "./GameInvite";
 import InvitationNote from "./InvitationNote";
 import Games from "./Games";
-import {handleError_Notification} from "../../helpers/handleError_Notification";
+//import {handleError_Notification} from "../../helpers/handleError_Notification";
 
 const Users = styled.ul`
   list-style: none;

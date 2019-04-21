@@ -20,13 +20,17 @@ const Popup = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
-  width: 200px;
+  width: 400px;
   color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
   z-index: 2;
-  padding: 10px;
+  padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
+`;
+
+const Select = styled.select`
+  
 `;
 
 class GameInvite extends React.Component{
@@ -55,8 +59,13 @@ class GameInvite extends React.Component{
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    Challenged{this.props.userId}
-                    <Button onClick={()=>{this.props.closePopup()}}>Button</Button>
+                    <h2>Challenge user</h2>
+                    <Select>
+                        <option value={false}>Without Godcards</option>
+                        <option value={true}>With Godcards</option>
+                    </Select>
+                    <Button color={"#00ff00"} onClick={()=>{this.props.closePopup()}}>Challenge</Button>
+                    <Button onClick={()=>{this.props.closePopup()}}>Close</Button>
                 </Popup>
             </PopupContainer>
         )
