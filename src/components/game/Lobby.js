@@ -134,6 +134,32 @@ class Lobby extends React.Component {
     this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
+  saveInvite = (isGodPower) => {//send accepting request to backend
+    fetch(`${getDomain()}/games/`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': this.state.current_user_token,
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        user1: this.state.current_user,
+        user2: this.state.GameInviteUserId,
+        isGodPower: isGodPower,
+      })
+    })
+        .then(handleError)
+        .then( game => {
+          this.setState({
+            GameInviteUserId: null,
+          });
+          this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+          this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
+        })
+        .catch(err => {
+          catchError(err, this);
+        });
+  };
+
   invitationAccepted = () => {//send accepting request to backend
     clearInterval(this.intervalUsers);
     clearInterval(this.intervalNotficaton);
@@ -211,7 +237,7 @@ class Lobby extends React.Component {
                   );
                 })}
               </Users>
-              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite}/>
               <InvitationNote
                   open={this.state.openInvitationNotification}
                   games={this.state.games}
