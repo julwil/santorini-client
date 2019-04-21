@@ -111,8 +111,11 @@ class GameInvite extends React.Component{
                 .catch(err => {catchError(err,this)})
         }
         this.setState({
-           invitationStatus: 'OPEN',
-           showSpinner: false
+            isGodPower:false,
+            showSpinner: false,
+            invitationStatus: 'OPEN',
+            error: null,
+            waitingInfo: 'Waiting for player to accept invitation',
         });
         this.props.closePopup();
     };
@@ -168,7 +171,7 @@ class GameInvite extends React.Component{
                     {this.state.showSpinner? (""):(
                         <Button_MargRight color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
                     )}
-                    <Button disabled={this.state.invitationStatus !== 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
+                    <Button disabled={this.state.invitationStatus === 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
                     </ButtonContainer>
                 </Popup>
                 <Error  errorMessage={this.state.error}/>
