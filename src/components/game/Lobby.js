@@ -103,6 +103,10 @@ class Lobby extends React.Component {
         .then(handleError)
         .then( users => {
           this.setState({ users: users });
+          let activeUserID = this.state.current_user;
+          let activeUser = users.filter(function(user){return user.id === activeUserID})[0];
+          localStorage.setItem('userStatus',activeUser.status);
+
         })
         .catch(err => {
           catchError(err,this);
@@ -203,6 +207,12 @@ class Lobby extends React.Component {
         });
   };
 
+  invitationBlocked = (otherUserId) => {
+      if(localStorage.getItem('userStatus') !== 'ONLINE') return true;
+      return this.state.users.filter(function(user){return user.id === otherUserId})[0].status !== 'ONLINE';
+
+  };
+
 
   render() {
     return (
@@ -232,7 +242,7 @@ class Lobby extends React.Component {
                 {this.sort_users().map(user => {
                   return (
                     <PlayerContainer key={user.id}>
-                      <Player user={user} invite={this.invite}/>
+                      <Player user={user} invite={this.invite} invitationBlocked={this.invitationBlocked}/>
                     </PlayerContainer>
                   );
                 })}

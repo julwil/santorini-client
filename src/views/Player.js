@@ -56,14 +56,14 @@ const PlayerButton = styled(Button)`
  * @FunctionalComponent
  * display: 'block' shows button, 'none' hides the button
  */
-const Player = ({ user, invite }) => {
+const Player = ({ user, invite, invitationBlocked }) => {
     return(
         <Container status={user.status}>
             <Username>{user.username}</Username>
             <StatusIndicator status={user.status}/>
             <ButtonContainer>
                 <PlayerButton
-                    style={{display: (user.status === 'CHALLENGED' ? 'none' : (user.status === 'PLAYING' ? 'none' : (user.status === 'OFFLINE' ? 'none' : 'block')))}}
+                    style={{display: invitationBlocked(user.id)?'none':'block'}}
                     onClick={() =>{
                         invite(user.id);
                     }}
