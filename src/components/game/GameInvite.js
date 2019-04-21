@@ -47,6 +47,7 @@ class GameInvite extends React.Component{
             showSpinner: false,
             invitationStatus: 'OPEN',
             error: null,
+            waitingInfo: 'Waiting for player to accept invitation',
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
@@ -127,10 +128,19 @@ class GameInvite extends React.Component{
                 .then(handleError)
                 .then(game => {
                     if(game.status === 'STARTED'){
-                        this.props.history.push(`/${localStorage.getItem('gamePath')}`)
+                        this.setState({
+                            waitingInfo:'The User accepted your Invitation. Enjoy Santorini!',
+                            invitationStatus: 'ACCEPTED'
+                        });
+                        setTimeout(()=>{ this.props.history.push(`/${localStorage.getItem('gamePath')}`)},4000);
                     }
                     if(game.status === 'CANCLED'){
-                        this.closePopup();
+                        this.setState({
+                            waitingInfo:'The User declined your Invitation. Sorry!',
+                            invitationStatus: 'OPEN'
+
+                        });
+                        setTimeout(()=>{this.closePopup();},4000);
                     }
                 })
                 .catch(catchError)
@@ -142,7 +152,7 @@ class GameInvite extends React.Component{
                 <Popup>
                     {this.state.showSpinner ?(
                         <div>
-                            <h2>Waiting for player to accept invitation</h2>
+                            <h2>{this.state.waitingInfo}</h2>
                             <Spinner color={COLOR_2}/>
                         </div>
                     ):(
@@ -158,7 +168,7 @@ class GameInvite extends React.Component{
                     {this.state.showSpinner? (""):(
                         <Button_MargRight color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
                     )}
-                    <Button onClick={()=>{this.closePopup()}}>Close</Button>
+                    <Button disabled={this.state.invitationStatus !== 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
                     </ButtonContainer>
                 </Popup>
                 <Error  errorMessage={this.state.error}/>
