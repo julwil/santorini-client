@@ -10,6 +10,9 @@ import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
 import GameInvite from "./GameInvite";
+import InvitationNote from "./InvitationNote";
+import Games from "./Games";
+//import {handleError_Notification} from "../../helpers/handleError_Notification";
 
 const Users = styled.ul`
   list-style: none;
@@ -55,9 +58,12 @@ class Lobby extends React.Component {
     super();
     this.state = {
       current_user: Number(localStorage.getItem("user_id")),
+      current_user_token: localStorage.getItem("token"),
       users: null,
       error: null,
       GameInviteUserId: null,
+      games: null,
+      openInvitationNotification: false,
     };
     this.intervalId = 0;
     this.updateInterval = 2000;
@@ -67,7 +73,7 @@ class Lobby extends React.Component {
     fetch(`${getDomain()}/users/logout`, {
       method: "GET",
       headers: new Headers({
-        'Authorization': localStorage.getItem("token"),
+        'Authorization': this.state.current_user_token,
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
     })
@@ -90,13 +96,17 @@ class Lobby extends React.Component {
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: new Headers({
-        'Authorization': localStorage.getItem("token"),
+        'Authorization': this.state.current_user_token,
         'Content-Type': 'application/x-www-form-urlencoded'
       }),
     })
         .then(handleError)
         .then( users => {
           this.setState({ users: users });
+          let activeUserID = this.state.current_user;
+          let activeUser = users.filter(function(user){return user.id === activeUserID})[0];
+          localStorage.setItem('userStatus',activeUser.status);
+
         })
         .catch(err => {
           catchError(err,this);
@@ -124,8 +134,85 @@ class Lobby extends React.Component {
     this.setState({
       GameInviteUserId: null,
     });
-    this.intervalId = setInterval(this.fetchUsers,this.updateInterval);
+    this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+    this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
+
+  saveInvite = (isGodPower) => {//send accepting request to backend
+    fetch(`${getDomain()}/games/`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': this.state.current_user_token,
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        user1: this.state.current_user,
+        user2: this.state.GameInviteUserId,
+        isGodPower: isGodPower,
+      })
+    })
+        .then(handleError)
+        .then( game => {
+          this.setState({
+            GameInviteUserId: null,
+          });
+          this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+          this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
+        })
+        .catch(err => {
+          catchError(err, this);
+        });
+  };
+
+  invitationAccepted = () => {//send accepting request to backend
+    clearInterval(this.intervalUsers);
+    clearInterval(this.intervalNotficaton);
+    console.log("Invite accepted");
+      fetch(`${getDomain()}/games/`+this.state.games.id+`/accept`, {
+          method: "POST",
+          headers: new Headers({
+              'Authorization': this.state.current_user_token,
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }),
+      })
+          .then(handleError)
+          .then( game => {
+            this.setState({openInvitationNotification: false});
+            this.props.history.push({
+              pathname: '/games/' + this.state.games.id,
+              state: game,
+            })
+          })
+          .catch(err => {
+              catchError(err, this);
+          });
+  };
+
+  invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
+      // send denial request to backend
+    console.log("Invite denied");
+    fetch(`${getDomain()}/games/`+this.state.games.id+`/reject`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': this.state.current_user_token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+        .then(handleError)
+        .then( () => //fetch intervals should not be cleared
+            {this.setState({openInvitationNotification: false})}
+        )
+        .catch(err => {
+          catchError(err, this);
+        });
+  };
+
+  invitationBlocked = (otherUserId) => {
+      if(localStorage.getItem('userStatus') !== 'ONLINE') return true;
+      return this.state.users.filter(function(user){return user.id === otherUserId})[0].status !== 'ONLINE';
+
+  };
+
 
   render() {
     return (
@@ -155,12 +242,18 @@ class Lobby extends React.Component {
                 {this.sort_users().map(user => {
                   return (
                     <PlayerContainer key={user.id}>
-                      <Player user={user} invite={this.invite}/>
+                      <Player user={user} invite={this.invite} invitationBlocked={this.invitationBlocked}/>
                     </PlayerContainer>
                   );
                 })}
               </Users>
-              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite}/>
+              <InvitationNote
+                  open={this.state.openInvitationNotification}
+                  games={this.state.games}
+                  users={this.state.users}
+                  acceptingInvitation={this.invitationAccepted}
+                  denyingInvitation={this.invitationDenied}/>
               <ButtonSecondary
                 width="50%"
                 onClick={() => {

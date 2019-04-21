@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {COLOR_1, COLOR_3, COLOR_5} from "../../helpers/layout";
+import {COLOR_1, COLOR_3, COLOR_5, InputField} from "../../helpers/layout";
 import {Button} from "../../views/design/Button";
 
 const PopupContainer = styled.div`
@@ -20,19 +20,26 @@ const Popup = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
-  width: 200px;
+  width: 400px;
   color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
   z-index: 2;
-  padding: 10px;
+  padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
+`;
+
+const Select = styled.select`
+  
 `;
 
 class GameInvite extends React.Component{
     constructor(props){
         super(props);
-        this.state = {show:false};
+        this.state = {
+            show:false,
+            isGodPower:false,
+        };
         this._isMounted = false;
 
     }
@@ -55,8 +62,13 @@ class GameInvite extends React.Component{
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    Challenged{this.props.userId}
-                    <Button onClick={()=>{this.props.closePopup()}}>Button</Button>
+                    <h2>Challenge user</h2>
+                    <Select onChange={e => {this.setState({"isGodPower": e.target.value});}}>
+                        <option value={false}>Without Godcards</option>
+                        <option value={true}>With Godcards</option>
+                    </Select>
+                    <Button color={"#00ff00"} onClick={()=>{this.props.saveInvite(this.state.isGodPower)}}>Challenge</Button>
+                    <Button onClick={()=>{this.props.closePopup()}}>Close</Button>
                 </Popup>
             </PopupContainer>
         )
