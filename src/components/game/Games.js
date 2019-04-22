@@ -1,18 +1,36 @@
 import React from "react";
-import {
-    BaseContainer,
-    InputField,
-    Label,
-    ButtonContainer,
-    Heading1, Main, MainContainer
-} from "../../helpers/layout";
+import styled from "styled-components";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
-import { Button } from "../../views/design/Button";
-import { ButtonSecondary } from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
 import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
+import GameHeader from "../../views/GameHeader";
+import {COLOR_5} from "../../helpers/layout";
+
+const GameWrapper = styled.div`
+  height: calc(100% - 20px);
+  overflow: hidden;
+`;
+const MainGame = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  height: calc(100% - 100px);
+`;
+const PlayerSidebar = styled.div`
+  width: 250px;
+  margin-right: 20px;
+  background-color: ${COLOR_5};
+`;
+const GameBoard = styled.div`
+  flex-grow: 1;
+  background-color: ${COLOR_5};
+`;
+const OpponentSidebar = styled.div`
+  width: 250px;
+  margin-left: 20px;
+  background-color: ${COLOR_5};
+`;
 
 class Games extends React.Component {
 
@@ -51,22 +69,15 @@ class Games extends React.Component {
 
     render() {
         return (
-            <BaseContainer>
-                <MainContainer>
-                    <Main>
-                        <Heading1>Game: {this.state.gameId}</Heading1>
-                        <ButtonSecondary
-                            width="50%"
-                            onClick={() => {
-                                this.logout();
-                            }}
-                        >
-                            Logout
-                        </ButtonSecondary>
-                        <Error error={this.state.error}/>
-                    </Main>
-                </MainContainer>
-            </BaseContainer>
+            <GameWrapper>
+                <GameHeader />
+                <MainGame>
+                    <PlayerSidebar />
+                    <GameBoard />
+                    <OpponentSidebar />
+                </MainGame>
+                <Error error={this.state.error}/>
+            </GameWrapper>
         );
     }
 }
