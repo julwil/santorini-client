@@ -34,7 +34,7 @@ class Login extends React.Component {
     this.state = {
       username: null,
       password: null,
-      error: null
+      error: []
     };
   }
   /**
@@ -42,7 +42,7 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
-    this.setState({error: null});
+    this.setState({error: []});
     fetch(`${getDomain()}/users/login`, {
       method: "POST",
       headers: {
@@ -146,7 +146,7 @@ class Login extends React.Component {
               Register new user
               </ButtonSecondary>
             </ButtonContainer>
-            <Error errorMessage={this.state.error}/>
+            <Error error={this.state.error}/>
           </Main>
         </MainContainer>
       </BaseContainer>

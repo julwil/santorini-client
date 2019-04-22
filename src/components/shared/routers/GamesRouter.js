@@ -12,28 +12,16 @@ import Games from "../../game/Games";
 
 class GamesRouter extends React.Component {
   render() {
-    /**
-     * "this.props.base" is "/app" because as been passed as a prop in the parent of UsersRouter, i.e., App.js
-     */
     return (
       <BaseContainer>
         <Route
           exact
           path={`${this.props.base}/:gamesId`}
           render={() =>
-              <ProfileGuard> /**missing guard**/
+              <ProfileGuard>
                 <Games />
               </ProfileGuard>}
         />
-          /**<Route
-              path={`${this.props.base}/:userId`}
-              exact
-              render={() => (
-                  <ProfileGuard> missing guard
-                      <Profile />
-                  </ProfileGuard>
-              )}
-          />**/
       </BaseContainer>
     );
   }
