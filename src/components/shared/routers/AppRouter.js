@@ -50,7 +50,6 @@ class AppRouter extends React.Component {
               />
               <Route
                   path="/games"
-                  exact
                   render={() => (
                       <GameGuard>
                           <GamesRouter base={"/games"}/>

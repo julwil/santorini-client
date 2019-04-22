@@ -57,7 +57,7 @@ class Profile extends React.Component {
         username: this.state.username,
         password: this.state.password,
         birthday: this.state.birthday,
-        error: null,
+        error: [],
       })
     }).then(handleError)
         .catch(err => {catchError(err,this)})
@@ -202,7 +202,7 @@ class Profile extends React.Component {
                           Back to Overview
                       </ButtonSecondary>
                   </ButtonContainer>
-                  <Error errorMessage={this.state.error}/>
+                  <Error error={this.state.error}/>
               </Main>
           </MainContainer>
       </BaseContainer>

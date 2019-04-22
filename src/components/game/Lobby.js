@@ -60,7 +60,7 @@ class Lobby extends React.Component {
       current_user: Number(localStorage.getItem("user_id")),
       current_user_token: localStorage.getItem("token"),
       users: null,
-      error: null,
+      error: [],
       GameInviteUserId: null,
       games: null,
       openInvitationNotification: false,
@@ -264,7 +264,7 @@ class Lobby extends React.Component {
               </ButtonSecondary>
             </CenteredDiv>
           )}
-          <Error errorMessage={this.state.error}/>
+          <Error error={this.state.error}/>
         </Main>
       </MainContainer>
     );

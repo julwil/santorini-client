@@ -20,8 +20,9 @@ const Popup = styled.div`
 class Error extends React.Component{
     constructor(props){
         super(props);
-        this.state = {show:false};
+        this.state = {show:false,errorCount:0};
         this._isMounted = false;
+        this.timeoutId = 0;
 
     }
 
@@ -31,18 +32,17 @@ class Error extends React.Component{
 
     componentWillReceiveProps(nextProps) {
         if(this._isMounted){
-            if(nextProps.errorMessage !== null && (nextProps.errorMessage !== this.props.errorMessage)){
-                this.setState({show:true});
-                setTimeout(()=>{this.setState({show:false})},4000);
-            }else{
-                this.setState({show:false});
+            if(nextProps.error !== null && (nextProps.error.length > this.state.errorCount)){
+                clearTimeout(this.timeoutId);
+                this.setState({show:true, errorCount: nextProps.error.length});
+                this.timeoutId = setTimeout(()=>{this.setState({show:false})},4000);
             }
         }
     }
 
     render = () => {
             return(
-                <Popup show={this.state.show}>{this.props.errorMessage}</Popup>
+                <Popup show={this.state.show}>{this.props.error? this.props.error[this.props.error.length - 1]: ''}</Popup>
             )
     };
 

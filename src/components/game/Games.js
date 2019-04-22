@@ -20,8 +20,8 @@ class Games extends React.Component {
         super();
         this.state = {
             gameId: null,
-            game: this.props.location.state.game,
-            error: null
+            //game: this.props.location.state.game,
+            error: []
         };
     }
 
@@ -63,7 +63,7 @@ class Games extends React.Component {
                         >
                             Logout
                         </ButtonSecondary>
-                        <Error errorMessage={this.state.error}/>
+                        <Error error={this.state.error}/>
                     </Main>
                 </MainContainer>
             </BaseContainer>

@@ -46,7 +46,7 @@ class GameInvite extends React.Component{
             isGodPower:false,
             showSpinner: false,
             invitationStatus: 'OPEN',
-            error: null,
+            error: [],
             waitingInfo: 'Waiting for player to accept invitation',
         };
         this._isMounted = false;
@@ -114,7 +114,7 @@ class GameInvite extends React.Component{
             isGodPower:false,
             showSpinner: false,
             invitationStatus: 'OPEN',
-            error: null,
+            error: [],
             waitingInfo: 'Waiting for player to accept invitation',
         });
         this.props.closePopup();
@@ -174,7 +174,7 @@ class GameInvite extends React.Component{
                     <Button disabled={this.state.invitationStatus === 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
                     </ButtonContainer>
                 </Popup>
-                <Error  errorMessage={this.state.error}/>
+                <Error  error={this.state.error}/>
             </PopupContainer>
         )
     };
