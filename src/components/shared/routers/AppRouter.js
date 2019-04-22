@@ -9,6 +9,8 @@ import Profile from "../../user/Profile";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import GameInvite from "../../game/GameInvite";
 import GamesRouter from "./GamesRouter";
+import Header from "../../../views/Header";
+
 
 /**
  * Main router of your application.
@@ -28,7 +30,10 @@ class AppRouter extends React.Component {
                   path="/users"
                   render={() => (
                       <GameGuard>
+                          <div>
+                          <Header height={"200"} />
                           <UsersRouter base={"/users"}/>
+                          </div>
                       </GameGuard>
                   )}
               />
@@ -37,7 +42,10 @@ class AppRouter extends React.Component {
                   exact
                   render={() => (
                       <LoginGuard>
+                          <div>
+                          <Header height={"200"} />
                           <Login/>
+                          </div>
                       </LoginGuard>
                   )}
               />
@@ -45,7 +53,10 @@ class AppRouter extends React.Component {
                   path="/register"
                   exact
                   render={() => (
+                      <div>
+                      <Header height={"200"} />
                       <Register/>
+                      </div>
                   )}
               />
               <Route
