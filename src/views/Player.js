@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {COLOR_3, COLOR_5, COLOR_6} from "../helpers/layout";
 import {Button} from "../views/design/Button";
 import GameInvite from "../components/game/GameInvite";
+import {Link} from "react-router-dom";
 
 const Container = styled.div`
   &:hover {
@@ -68,12 +69,9 @@ const Player = ({ user, invite, invitationBlocked }) => {
                         invite(user.id);
                     }}
                 >Invite</PlayerButton>
-                <PlayerButton
+                <Link to={"users/"+user.id}><PlayerButton
                     key={user.id}
-                    onClick={() => {
-                        window.location = ("users/"+user.id);
-                    }}
-                >Profile</PlayerButton>
+                >Profile</PlayerButton></Link>
             </ButtonContainer>
         </Container>
     );
