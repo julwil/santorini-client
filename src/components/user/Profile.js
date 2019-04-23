@@ -36,7 +36,8 @@ class Profile extends React.Component {
       password_confirm: '',
       createdOn: new Date(),
       status: '',
-      birthday: new Date()
+      birthday: new Date(),
+      error: [],
     };
   }
 
@@ -57,7 +58,6 @@ class Profile extends React.Component {
         username: this.state.username,
         password: this.state.password,
         birthday: this.state.birthday,
-        error: [],
       })
     }).then(handleError)
         .catch(err => {catchError(err,this)})
