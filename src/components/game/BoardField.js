@@ -34,7 +34,6 @@ const BoardPlayer = styled(BoardItem)`
 
 export const BoardField = (props) => {
     let player, building;
-    console.log(props.player);
     if(props.player != null) player = (<BoardPlayer id={props.player.id} user={props.player.user} active={props.player.active}/>);
     else player = '';
     if(props.building != null) building = (<BoardBuilding level={props.building}/>);

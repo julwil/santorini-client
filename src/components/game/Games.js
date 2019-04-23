@@ -96,7 +96,6 @@ class Games extends React.Component {
                         {this.state.board.map( (row,i) => {
                              return <BoardRow key={i}>
                                 { row.map((field,j) =>{
-                                    console.log(this.state.players);
                                     return <BoardField key={j} building={field.building} player={this.state.players[field.player]}/>
                                 })}
                              </BoardRow>
