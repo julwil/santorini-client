@@ -7,6 +7,7 @@ import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
 import GameHeader from "../../views/GameHeader";
 import {COLOR_5} from "../../helpers/layout";
+import {BoardField} from "./BoardField";
 
 const GameWrapper = styled.div`
   height: calc(100% - 20px);
@@ -26,6 +27,11 @@ const GameBoard = styled.div`
   flex-grow: 1;
   background-color: ${COLOR_5};
 `;
+
+const BoardRow = styled.div`
+  overflow: hidden;
+`;
+
 const OpponentSidebar = styled.div`
   width: 250px;
   margin-left: 20px;
@@ -38,6 +44,19 @@ class Games extends React.Component {
         super();
         this.state = {
             gameId: null,
+            players:{
+                1:{id:1,user:1,active:false},
+                2:{id:2,user:1,active:false},
+                3:{id:3,user:2,active:true},
+                4:{id:4,user:2,active:false},
+            },
+            board: [
+                [{player:null,building:null},{player:null,building:null},{player:null,building:1},{player:4,building:null},{player:null,building:null},],
+                [{player:null,building:null},{player:1,building:null},{player:null,building:null},{player:null,building:null},{player:null,building:null},],
+                [{player:null,building:null},{player:null,building:null},{player:null,building:null},{player:null,building:null},{player:3,building:null},],
+                [{player:null,building:2},{player:null,building:null},{player:null,building:null},{player:null,building:2},{player:null,building:null},],
+                [{player:null,building:null},{player:null,building:null},{player:2,building:1},{player:null,building:3},{player:null,building:3},],
+            ],
             //game: this.props.location.state.game,
             error: []
         };
@@ -73,7 +92,16 @@ class Games extends React.Component {
                 <GameHeader />
                 <MainGame>
                     <PlayerSidebar />
-                    <GameBoard />
+                    <GameBoard>
+                        {this.state.board.map( (row,i) => {
+                             return <BoardRow key={i}>
+                                { row.map((field,j) =>{
+                                    console.log(this.state.players);
+                                    return <BoardField key={j} building={field.building} player={this.state.players[field.player]}/>
+                                })}
+                             </BoardRow>
+                        })}
+                    </GameBoard>
                     <OpponentSidebar />
                 </MainGame>
                 <Error error={this.state.error}/>
