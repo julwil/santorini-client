@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {COLOR_3, COLOR_5, COLOR_6} from "../helpers/layout";
 import {Button} from "../views/design/Button";
 import GameInvite from "../components/game/GameInvite";
+import {Link} from "react-router-dom";
 
 const Container = styled.div`
   &:hover {
@@ -54,24 +55,23 @@ const PlayerButton = styled(Button)`
  * Functional components have to return always something. However, they don't need a "render()" method.
  * https://reactjs.org/docs/components-and-props.html
  * @FunctionalComponent
+ * display: 'block' shows button, 'none' hides the button
  */
-const Player = ({ user, invite }) => {
+const Player = ({ user, invite, invitationBlocked }) => {
     return(
         <Container status={user.status}>
             <Username>{user.username}</Username>
             <StatusIndicator status={user.status}/>
             <ButtonContainer>
                 <PlayerButton
+                    style={{display: invitationBlocked(user.id)?'none':'block'}}
                     onClick={() =>{
                         invite(user.id);
                     }}
                 >Invite</PlayerButton>
-                <PlayerButton
+                <Link to={"users/"+user.id}><PlayerButton
                     key={user.id}
-                    onClick={() => {
-                        window.location = ("users/"+user.id);
-                    }}
-                >Profile</PlayerButton>
+                >Profile</PlayerButton></Link>
             </ButtonContainer>
         </Container>
     );

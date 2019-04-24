@@ -5,7 +5,7 @@ import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
 import {Button, ButtonSecondary} from "../../views/design/Button";
-import { withRouter } from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
@@ -59,7 +59,7 @@ class Lobby extends React.Component {
       current_user: Number(localStorage.getItem("user_id")),
       current_user_token: localStorage.getItem("token"),
       users: null,
-      error: null,
+      error: [],
       GameInviteUserId: null,
       invited_games: null,
       openInvitationNotification: false
@@ -244,15 +244,12 @@ class Lobby extends React.Component {
           <HeaderContainer>
             <LobbyHeading>User Lobby</LobbyHeading>
             {this.state.users ? (
-                <UserProfileButton
-                    onClick={() => {
-                      this.props.history.push("/users/" + this.state.current_user)
-                    }}
+                <Link to={"/users/" + this.state.current_user}><UserProfileButton
                 >{this.state.users.map((user) => {
                   return user.username
                 })[(this.state.users.map((user) => {
                   return user.id
-                }).indexOf(this.state.current_user))]}</UserProfileButton>
+                }).indexOf(this.state.current_user))]}</UserProfileButton></Link>
             ) : ("")}
           </HeaderContainer>
           {!this.state.users ? (

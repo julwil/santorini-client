@@ -19,7 +19,6 @@ class App extends Component {
   render() {
     return (
       <Wrapper>
-        <Header height={"200"} />
         <AppRouter />
       </Wrapper>
     );
