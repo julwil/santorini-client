@@ -62,6 +62,7 @@ class Lobby extends React.Component {
       error: null,
       GameInviteUserId: null,
       invited_games: null,
+      openInvitationNotification: false
     };
     this.intervalId = 0;
     this.updateInterval = 2000;
@@ -132,49 +133,16 @@ class Lobby extends React.Component {
     this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
-  invitationAccepted = () => {//send accepting request to backend
-    clearInterval(this.intervalUsers);
-    clearInterval(this.intervalNotficaton);
-    console.log("Invite accepted");
-      fetch(`${getDomain()}/games/`+this.state.games.id+`/accept`, {
-          method: "POST",
-          headers: new Headers({
-              'Authorization': this.state.current_user_token,
-              'Content-Type': 'application/x-www-form-urlencoded'
-          }),
-      })
-          .then(handleError)
-          .then( game => {
-            this.setState({invited_games: null});
-            this.props.history.push({
-              pathname: '/games/' + this.state.games.id,
-              state: game,
-            })
-          })
-          .catch(err => {
-              catchError(err, this);
-          });
-  };
 
-  invitationDenied = () => {  //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications
-      // send denial request to backend
-    console.log("Invite denied");
-    fetch(`${getDomain()}/games/`+this.state.games.id+`/reject`, {
-      method: "POST",
-      headers: new Headers({
-        'Authorization': this.state.current_user_token,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }),
-    })
-        .then(handleError)
-        .then( () => //fetch intervals should not be cleared
-            {this.setState({invited_games: null})}
-        )
-        .catch(err => {
-          catchError(err, this);
-        });
-  };
-
+  sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
+      const data = [].concat(this.state.users);
+      data.splice(data.map((user) => {return user.id}).indexOf(this.state.current_user),1);
+      data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
+      data.sort((user_a, user_b) => (user_b.status === 'PLAYING' || user_b.status === 'CHALLENGED') ? 1 : -1);
+      data.sort((user_a, user_b) => ((user_b.status === 'OFFLINE') ? -1 : 1));
+      data.sort((user_a, user_b) => (user_a.status === 'ONLINE' ? -1 : 1));
+      return data;
+  }
 
   render() {
     return (
@@ -211,6 +179,7 @@ class Lobby extends React.Component {
               </Users>
               <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
               <InvitationNote
+                  open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
                   users={this.state.users}
                   acceptingInvitation={this.invitationAccepted}

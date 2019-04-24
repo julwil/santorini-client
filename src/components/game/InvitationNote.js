@@ -38,8 +38,7 @@ const Invite_Button = styled(Button)`
 `;
 
 //only show if games not empty, if not then show first game object of list once accepted update game status and delete remaining games if there still exist any
-//if accepted redirect user to "/games/{id}"
-//if denied update server and delete game
+//if accepted redirect user to "/games/{id}", if denied update server and delete game
 class InvitationNote extends React.Component{
     constructor(){
         super();
@@ -57,12 +56,15 @@ class InvitationNote extends React.Component{
     }
 
     componentWillReceiveProps(nextProps) {
-        if(this._isMounted) {
-            let invited_game = nextProps.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")));
-            if(nextProps.games.length > 0 && (Number(invited_game.user2) === Number(localStorage.getItem("user_id")))) {
-                this.setState({show: true});
-                this.setState({inviting_user: this.props.users.map((user) => {return user.username})
-                        [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))]});
+        if(this._isMounted && nextProps.open) { //length cannot be checked for if em
+            if(nextProps.games.length > 0) {
+                let invited_game = nextProps.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")));
+                if (Number(invited_game.user2) === Number(localStorage.getItem("user_id"))) {
+                    this.setState({show: true});
+                    this.setState({inviting_user: this.props.users.map((user) => {return user.username})
+                            [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))]
+                    });
+                }
             }
         }else{
             this.setState({show: false});
@@ -84,13 +86,13 @@ class InvitationNote extends React.Component{
                         <Invite_Button
                             onClick={() => {
                                 this.setState({show:false});
-                                this.props.acceptingInvitation()
+                                this.props.acceptingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")))) //return id of game to parent component so that Lobby can post correct API endpoint
                             }}
                         >Accept</Invite_Button>
                         <Invite_Button
                             onClick={() => {
                                 this.setState({show:false});
-                                this.props.denyingInvitation()
+                                this.props.denyingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id"))))
                         }}>Deny</Invite_Button>
                     </Invite_ButtonContainer>
                 </Popup>
