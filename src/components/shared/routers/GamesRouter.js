@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import {Route, Switch} from "react-router-dom";
 import Lobby from "../../game/Lobby";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
@@ -8,33 +9,26 @@ import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "./AppRouter";
 import Games from "../../game/Games";
 
-
+const GameContainer = styled(BaseContainer)`
+  padding: 0 20px;
+  height: 100%;
+  max-width: 95%;
+  margin-bottom: 0;
+`;
 
 class GamesRouter extends React.Component {
   render() {
-    /**
-     * "this.props.base" is "/app" because as been passed as a prop in the parent of UsersRouter, i.e., App.js
-     */
     return (
-      <BaseContainer>
+      <GameContainer>
         <Route
           exact
           path={`${this.props.base}/:gamesId`}
           render={() =>
-              <ProfileGuard> /**missing guard**/
+              <ProfileGuard>
                 <Games />
               </ProfileGuard>}
         />
-          /**<Route
-              path={`${this.props.base}/:userId`}
-              exact
-              render={() => (
-                  <ProfileGuard> missing guard
-                      <Profile />
-                  </ProfileGuard>
-              )}
-          />**/
-      </BaseContainer>
+      </GameContainer>
     );
   }
 }

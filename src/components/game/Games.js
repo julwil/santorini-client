@@ -1,18 +1,42 @@
 import React from "react";
-import {
-    BaseContainer,
-    InputField,
-    Label,
-    ButtonContainer,
-    Heading1, Main, MainContainer
-} from "../../helpers/layout";
+import styled from "styled-components";
 import { getDomain } from "../../helpers/getDomain";
 import { withRouter } from "react-router-dom";
-import { Button } from "../../views/design/Button";
-import { ButtonSecondary } from "../../views/design/Button";
 import { handleError } from "../../helpers/handleError";
 import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
+import GameHeader from "../../views/GameHeader";
+import {COLOR_5} from "../../helpers/layout";
+import {BoardField} from "./BoardField";
+
+const GameWrapper = styled.div`
+  height: calc(100% - 20px);
+  overflow: hidden;
+`;
+const MainGame = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  height: calc(100% - 100px);
+`;
+const PlayerSidebar = styled.div`
+  width: 250px;
+  margin-right: 20px;
+  background-color: ${COLOR_5};
+`;
+const GameBoard = styled.div`
+  flex-grow: 1;
+  background-color: ${COLOR_5};
+`;
+
+const BoardRow = styled.div`
+  overflow: hidden;
+`;
+
+const OpponentSidebar = styled.div`
+  width: 250px;
+  margin-left: 20px;
+  background-color: ${COLOR_5};
+`;
 
 class Games extends React.Component {
 
@@ -20,8 +44,21 @@ class Games extends React.Component {
         super();
         this.state = {
             gameId: null,
-            game: this.props.location.state.game,
-            error: null
+            players:{
+                1:{id:1,user:1,active:false},
+                2:{id:2,user:1,active:false},
+                3:{id:3,user:2,active:true},
+                4:{id:4,user:2,active:false},
+            },
+            board: [
+                [{player:null,building:null},{player:null,building:null},{player:null,building:1},{player:4,building:null},{player:null,building:null},],
+                [{player:null,building:null},{player:1,building:null},{player:null,building:null},{player:null,building:null},{player:null,building:null},],
+                [{player:null,building:null},{player:null,building:null},{player:null,building:null},{player:null,building:null},{player:3,building:null},],
+                [{player:null,building:2},{player:null,building:null},{player:null,building:null},{player:null,building:2},{player:null,building:null},],
+                [{player:null,building:null},{player:null,building:null},{player:2,building:1},{player:null,building:3},{player:null,building:3},],
+            ],
+            //game: this.props.location.state.game,
+            error: []
         };
     }
 
@@ -51,22 +88,23 @@ class Games extends React.Component {
 
     render() {
         return (
-            <BaseContainer>
-                <MainContainer>
-                    <Main>
-                        <Heading1>Game: {this.state.gameId}</Heading1>
-                        <ButtonSecondary
-                            width="50%"
-                            onClick={() => {
-                                this.logout();
-                            }}
-                        >
-                            Logout
-                        </ButtonSecondary>
-                        <Error errorMessage={this.state.error}/>
-                    </Main>
-                </MainContainer>
-            </BaseContainer>
+            <GameWrapper>
+                <GameHeader />
+                <MainGame>
+                    <PlayerSidebar />
+                    <GameBoard>
+                        {this.state.board.map( (row,i) => {
+                             return <BoardRow key={i}>
+                                { row.map((field,j) =>{
+                                    return <BoardField key={j} building={field.building} player={this.state.players[field.player]}/>
+                                })}
+                             </BoardRow>
+                        })}
+                    </GameBoard>
+                    <OpponentSidebar />
+                </MainGame>
+                <Error error={this.state.error}/>
+            </GameWrapper>
         );
     }
 }

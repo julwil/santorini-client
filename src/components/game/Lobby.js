@@ -5,7 +5,7 @@ import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
 import {Button, ButtonSecondary} from "../../views/design/Button";
-import { withRouter } from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
@@ -59,7 +59,7 @@ class Lobby extends React.Component {
       current_user: Number(localStorage.getItem("user_id")),
       current_user_token: localStorage.getItem("token"),
       users: null,
-      error: null,
+      error: [],
       GameInviteUserId: null,
       invited_games: null,
       openInvitationNotification: false
@@ -102,6 +102,10 @@ class Lobby extends React.Component {
         .then(handleError)
         .then( users => {
           this.setState({ users: users });
+          let activeUserID = this.state.current_user;
+          let activeUser = users.filter(function(user){return user.id === activeUserID})[0];
+          localStorage.setItem('userStatus',activeUser.status);
+
         })
         .catch(err => {
           catchError(err,this);
@@ -133,16 +137,37 @@ class Lobby extends React.Component {
     this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
+  saveInvite = (isGodPower) => {//send accepting request to backend
+    fetch(`${getDomain()}/games/`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': this.state.current_user_token,
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({
+        user1: this.state.current_user,
+        user2: this.state.GameInviteUserId,
+        isGodPower: isGodPower,
+      })
+    })
+        .then(handleError)
+        .then( game => {
+          this.setState({
+            GameInviteUserId: null,
+          });
+          this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+          this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
+        })
+        .catch(err => {
+          catchError(err, this);
+        });
+  };
 
-  sort_users(){ //sort all online users from A to Z, then all playing/challenged users from A to Z & then all offline users from A to Z; first status then name descending
-      const data = [].concat(this.state.users);
-      data.splice(data.map((user) => {return user.id}).indexOf(this.state.current_user),1);
-      data.sort((user_a, user_b) => (user_a.username > user_b.username) ? 1 : -1);
-      data.sort((user_a, user_b) => (user_b.status === 'PLAYING' || user_b.status === 'CHALLENGED') ? 1 : -1);
-      data.sort((user_a, user_b) => ((user_b.status === 'OFFLINE') ? -1 : 1));
-      data.sort((user_a, user_b) => (user_a.status === 'ONLINE' ? -1 : 1));
-      return data;
-  }
+  invitationBlocked = (otherUserId) => {
+      if(localStorage.getItem('userStatus') !== 'ONLINE') return true;
+      return this.state.users.filter(function(user){return user.id === otherUserId})[0].status !== 'ONLINE';
+
+  };
 
   render() {
     return (
@@ -151,15 +176,12 @@ class Lobby extends React.Component {
           <HeaderContainer>
             <LobbyHeading>User Lobby</LobbyHeading>
             {this.state.users ? (
-                <UserProfileButton
-                    onClick={() => {
-                      this.props.history.push("/users/" + this.state.current_user)
-                    }}
+                <Link to={"/users/" + this.state.current_user}><UserProfileButton
                 >{this.state.users.map((user) => {
                   return user.username
                 })[(this.state.users.map((user) => {
                   return user.id
-                }).indexOf(this.state.current_user))]}</UserProfileButton>
+                }).indexOf(this.state.current_user))]}</UserProfileButton></Link>
             ) : ("")}
           </HeaderContainer>
           {!this.state.users ? (
@@ -172,12 +194,12 @@ class Lobby extends React.Component {
                 {this.sort_users().map(user => {
                   return (
                     <PlayerContainer key={user.id}>
-                      <Player user={user} invite={this.invite}/>
+                      <Player user={user} invite={this.invite} invitationBlocked={this.invitationBlocked}/>
                     </PlayerContainer>
                   );
                 })}
               </Users>
-              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite}/>
               <InvitationNote
                   open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
@@ -194,7 +216,7 @@ class Lobby extends React.Component {
               </ButtonSecondary>
             </CenteredDiv>
           )}
-          <Error errorMessage={this.state.error}/>
+          <Error error={this.state.error}/>
         </Main>
       </MainContainer>
     );
