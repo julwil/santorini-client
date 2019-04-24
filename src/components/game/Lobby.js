@@ -244,12 +244,15 @@ class Lobby extends React.Component {
           <HeaderContainer>
             <LobbyHeading>User Lobby</LobbyHeading>
             {this.state.users ? (
-                <Link to={"/users/" + this.state.current_user}><UserProfileButton
+                <UserProfileButton
+                    onClick={() => {
+                        this.props.history.push("/users/" + this.state.current_user)
+                    }}
                 >{this.state.users.map((user) => {
                   return user.username
                 })[(this.state.users.map((user) => {
                   return user.id
-                }).indexOf(this.state.current_user))]}</UserProfileButton></Link>
+                }).indexOf(this.state.current_user))]}</UserProfileButton>
             ) : ("")}
           </HeaderContainer>
           {!this.state.users ? (
