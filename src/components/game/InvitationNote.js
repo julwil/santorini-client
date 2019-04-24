@@ -46,29 +46,26 @@ class InvitationNote extends React.Component{
         this.state = {
             show: false,
             inviting_user: null,
+            invited_game: null,
         };
         this._isMounted = false;
-
     }
 
     //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
     componentDidMount() {
         this._isMounted = true;
-        if(this.props.open){
-            if(this.props.games !== null && (Number(this.props.games.user2) === Number(localStorage.getItem("user_id")))) {
-                console.log(this.props.users); //remove
-                this.setState({inviting_user: this.props.users.map((user) => {return user.username})
-                        [(this.props.users.map((user) => {return user.id}).indexOf(this.props.games.user1))]});
-                this.setState({show: true});
-            }
-        }else{
-            console.log("Setting show to false"); //remove
-            this.setState({show: false});
-        }
     }
 
-    componentWillReceiveProps() {
-        if(this._isMounted && this.props.open){
+    componentWillReceiveProps(nextProps) {
+        if(this._isMounted) {
+            let invited_game = nextProps.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")));
+            if(nextProps.games.length > 0 && (Number(invited_game.user2) === Number(localStorage.getItem("user_id")))) {
+                this.setState({show: true});
+                this.setState({inviting_user: this.props.users.map((user) => {return user.username})
+                        [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))]});
+            }
+        }else{
+            this.setState({show: false});
         }
     }
 

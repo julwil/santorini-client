@@ -12,7 +12,6 @@ import Error from "../../helpers/Error";
 import GameInvite from "./GameInvite";
 import InvitationNote from "./InvitationNote";
 import Games from "./Games";
-import {handleError_Notification} from "../../helpers/handleError_Notification";
 
 const Users = styled.ul`
   list-style: none;
@@ -62,8 +61,7 @@ class Lobby extends React.Component {
       users: null,
       error: null,
       GameInviteUserId: null,
-      games: null,
-      openInvitationNotification: false,
+      invited_games: null,
     };
     this.intervalId = 0;
     this.updateInterval = 2000;
@@ -147,7 +145,7 @@ class Lobby extends React.Component {
       })
           .then(handleError)
           .then( game => {
-            this.setState({openInvitationNotification: false});
+            this.setState({invited_games: null});
             this.props.history.push({
               pathname: '/games/' + this.state.games.id,
               state: game,
@@ -170,7 +168,7 @@ class Lobby extends React.Component {
     })
         .then(handleError)
         .then( () => //fetch intervals should not be cleared
-            {this.setState({openInvitationNotification: false})}
+            {this.setState({invited_games: null})}
         )
         .catch(err => {
           catchError(err, this);
@@ -213,8 +211,7 @@ class Lobby extends React.Component {
               </Users>
               <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite}/>
               <InvitationNote
-                  open={this.state.openInvitationNotification}
-                  games={this.state.games}
+                  games={this.state.invited_games}
                   users={this.state.users}
                   acceptingInvitation={this.invitationAccepted}
                   denyingInvitation={this.invitationDenied}/>
