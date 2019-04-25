@@ -7,6 +7,7 @@ import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import {Spinner} from "../../views/design/Spinner";
 import Error from "../../helpers/Error";
+import {withRouter} from "react-router-dom";
 
 const PopupContainer = styled.div`
   position: fixed;
@@ -120,7 +121,7 @@ class GameInvite extends React.Component{
         this.props.closePopup();
     };
 
-    checkInvitation(){
+    checkInvitation = () => {
         fetch(`${getDomain()}/`+localStorage.getItem('gamePath'), {
             method: "GET",
             headers: new Headers({
@@ -130,12 +131,16 @@ class GameInvite extends React.Component{
         })
                 .then(handleError)
                 .then(game => {
+                    console.log(game);
                     if(game.status === 'STARTED'){
                         this.setState({
                             waitingInfo:'The User accepted your Invitation. Enjoy Santorini!',
                             invitationStatus: 'ACCEPTED'
                         });
-                        setTimeout(()=>{ this.props.history.push(`/${localStorage.getItem('gamePath')}`)},4000);
+                        setTimeout(()=>{
+                            clearInterval(this.checkInvitationInterval);
+                            this.props.history.push('/'+localStorage.getItem('gamePath'))
+                        },4000);
                     }
                     if(game.status === 'CANCLED'){
                         this.setState({
@@ -143,10 +148,13 @@ class GameInvite extends React.Component{
                             invitationStatus: 'OPEN'
 
                         });
-                        setTimeout(()=>{this.closePopup();},4000);
+                        setTimeout(()=>{
+                            clearInterval(this.checkInvitationInterval);
+                            this.closePopup();
+                            },4000);
                     }
                 })
-                .catch(catchError)
+                .catch((err) => {catchError(err,this)})
         }
 
     render = () => {
@@ -184,4 +192,4 @@ class GameInvite extends React.Component{
     }
 }
 
-export default GameInvite;
+export default withRouter(GameInvite);
