@@ -35,7 +35,7 @@ class Register extends React.Component {
       name: null,
       username: null,
       password: null,
-      error: null,
+      error: [],
     };
   }
   /**
@@ -43,7 +43,7 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
-    this.setState({error: null});
+    this.setState({error: []});
     fetch(`${getDomain()}/users`, {
       method: "POST",
       headers: {
@@ -136,7 +136,7 @@ class Register extends React.Component {
                 Back to Login
               </ButtonSecondary>
             </ButtonContainer>
-              <Error errorMessage={this.state.error}/>
+              <Error error={this.state.error}/>
           </Main>
         </MainContainer>
       </BaseContainer>

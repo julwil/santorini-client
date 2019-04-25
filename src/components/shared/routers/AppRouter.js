@@ -8,6 +8,9 @@ import Register from "../../login/Register";
 import Profile from "../../user/Profile";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import GameInvite from "../../game/GameInvite";
+import GamesRouter from "./GamesRouter";
+import Header from "../../../views/Header";
+
 
 /**
  * Main router of your application.
@@ -22,33 +25,50 @@ class AppRouter extends React.Component {
   render() {
     return (
       <BrowserRouter>
-        <Switch>
-          <Route
-              path="/users"
-              render={() => (
-                  <GameGuard>
-                      <UsersRouter base={"/users"} />
-                  </GameGuard>
-              )}
-          />
-          <Route
-              path="/login"
-              exact
-              render={() => (
-                <LoginGuard>
-                  <Login />
-                </LoginGuard>
-              )}
-          />
-          <Route
-              path="/register"
-              exact
-              render={() => (
-                  <Register />
-                            )}
-          />
-        <Route path="/" exact render={() => <Redirect to={"/users"} />} />
-        </Switch>
+          <Switch>
+              <Route
+                  path="/users"
+                  render={() => (
+                      <GameGuard>
+                          <div>
+                          <Header height={"200"} />
+                          <UsersRouter base={"/users"}/>
+                          </div>
+                      </GameGuard>
+                  )}
+              />
+              <Route
+                  path="/login"
+                  exact
+                  render={() => (
+                      <LoginGuard>
+                          <div>
+                          <Header height={"200"} />
+                          <Login/>
+                          </div>
+                      </LoginGuard>
+                  )}
+              />
+              <Route
+                  path="/register"
+                  exact
+                  render={() => (
+                      <div>
+                      <Header height={"200"} />
+                      <Register/>
+                      </div>
+                  )}
+              />
+              <Route
+                  path="/games"
+                  render={() => (
+                      <GameGuard>
+                          <GamesRouter base={"/games"}/>
+                      </GameGuard>
+                  )}
+              />
+              <Route path="/" exact render={() => <Redirect to={"/users"}/>}/>
+          </Switch>
       </BrowserRouter>
     );
   }

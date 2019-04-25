@@ -1,7 +1,7 @@
 .lds-ellipsis {
     display: inline-block;
     position: relative;
-    width: 35px;
+    width: 62px;
     height: 35px;
 }
 .lds-ellipsis div {
@@ -10,7 +10,6 @@
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: #fff;
     animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 .lds-ellipsis div:nth-child(1) {
