@@ -6,7 +6,8 @@ import {BoardBuilding} from "./BoardBuilding";
 const Field = styled.div`
   width: 130px;
   height: 130px;
-  border: 5px solid ${COLOR_5};
+  border: 5px solid;
+  border-color: ${props => props.targetForMove? 'yellow':COLOR_5};
   background-color: #37BD5A;
   box-sizing: border-box;
   position: relative;
@@ -36,10 +37,10 @@ export const BoardField = (props) => {
     let player, building;
     if(props.player != null) player = (<BoardPlayer id={props.player.id} user={props.player.user} active={props.player.active}/>);
     else player = '';
-    if(props.building != null) building = (<BoardBuilding level={props.building}/>);
+    if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
     return (
-        <Field>
+        <Field targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {player}
         </Field>
