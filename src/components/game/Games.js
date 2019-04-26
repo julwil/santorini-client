@@ -7,7 +7,9 @@ import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
 import GameHeader from "../../views/GameHeader";
 import {COLOR_5} from "../../helpers/layout";
-import {BoardField} from "./BoardField";
+import BoardField from "./BoardField";
+import HTML5Backend from 'react-dnd-html5-backend'
+import {DragDropContext, DragDropContextProvider} from 'react-dnd'
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -98,6 +100,7 @@ class Games extends React.Component {
         }
         return false;
     };
+
     updateFigure = (x,y,figure) => {
         //fetch() PUT TO BACKEND /games/id/figures/id
     };
@@ -110,6 +113,7 @@ class Games extends React.Component {
         }
         //fetch() POST TO BACKEND /games/id/building
     };
+
     createBoard = () => {
         let board = [];
 
@@ -159,11 +163,13 @@ class Games extends React.Component {
             <GameWrapper>
                 <GameHeader />
                 <MainGame>
-                    <PlayerSidebar />
-                    <GameBoard>
-                        {this.createBoard()}
-                    </GameBoard>
-                    <OpponentSidebar />
+                    <PlayerSidebar/>
+                    <DragDropContextProvider backend={HTML5Backend}>
+                        <GameBoard>
+                            {this.createBoard()}
+                        </GameBoard>
+                    </DragDropContextProvider>
+                    <OpponentSidebar/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
