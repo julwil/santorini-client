@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import {COLOR_1, COLOR_2, COLOR_4, COLOR_5} from "../../helpers/layout";
 import {BoardBuilding} from "./BoardBuilding";
+import Figure from "./Figure";
 import DragSource from "react-dnd/lib/cjs/DragSource";
 
 const Field = styled.div`
@@ -33,29 +34,9 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-const ItemSource = {
-    beginDrag(props) { //return figure as only building can be dragged & dropped
-        return props.figure;
-    }
-};
-
-function collect(connect, monitor){
-    return {
-        connectDragSource: connect.dragSource(),
-        isDragging: monitor.isDragging(),
-    }
-}
-
 function BoardField (props) {
-    const {isDragging, connectDragSource} = props;
     let figure, building;
-    if(props.figure != null) figure = (
-        <BoardFigure
-            ref={props.figure.active ? (instance => connectDragSource(instance)): {}}
-            id={props.figure.id}
-            user={props.figure.user}
-            active={props.figure.active}
-        />);
+    if(props.figure != null) figure = (<Figure figure={props.figure}/>);
     else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
@@ -68,6 +49,4 @@ function BoardField (props) {
     );
 }
 
-export default DragSource('figure', ItemSource, collect)(BoardField)
-
-
+export default BoardField
