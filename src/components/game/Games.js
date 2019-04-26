@@ -42,14 +42,14 @@ class Games extends React.Component {
         super();
         this.state = {
             gameId: null,
-            players:[
+            figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:3},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
             buildings:[
-                {x:0,y:0,level:1},
+                {x:0,y:0,level:0},
                 {x:2,y:1,level:3},
                 {x:2,y:0,level:3},
                 {x:1,y:1,level:3},
@@ -67,36 +67,48 @@ class Games extends React.Component {
         if(filteredBuildings.length > 0) return filteredBuildings[0];
         return null;
     };
-    getPlayer = (x,y) => {
-        let filteredPlayers =  this.state.players.filter((player) => {
-            return player.x === x && player.y === y;
+    getFigure = (x,y) => {
+        let filteredFigures =  this.state.figures.filter((figure) => {
+            return figure.x === x && figure.y === y;
         });
-        if(filteredPlayers.length > 0) return filteredPlayers[0];
+        if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
-    getActivePlayer = () => {
-        let filteredPlayers =  this.state.players.filter((player) => {
-            return player.active;
+    getActiveFigure = () => {
+        let filteredFigures =  this.state.figures.filter((figure) => {
+            return figure.active;
         });
-        if(filteredPlayers.length > 0) return filteredPlayers[0];
+        if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
     isTargetForMove = (x,y) => {
-        let player = this.getActivePlayer();
-        if(player != null && player.hasOwnProperty('possibleMoves')){
-            let filteredMoves = player.possibleMoves.filter((move) => {return move.x === x && move.y === y});
-            console.log(filteredMoves,player);
+        let figure = this.getActiveFigure();
+        if(figure != null && figure.hasOwnProperty('possibleMoves')){
+            let filteredMoves = figure.possibleMoves.filter((move) => {return move.x === x && move.y === y});
+            console.log(filteredMoves,figure);
             return filteredMoves.length > 0;
         }
         return false;
     };
     isTargetForBuild = (x,y) => {
-        let player = this.getActivePlayer();
-        if(player != null && player.hasOwnProperty('possibleBuilds')){
-            let filteredBuilds = player.possibleBuilds.filter((build) => {return build.x === x && build.y === y});
+        let figure = this.getActiveFigure();
+        if(figure != null && figure.hasOwnProperty('possibleBuilds')){
+            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y});
             return filteredBuilds.length > 0;
         }
         return false;
+    };
+    updateFigure = (x,y,figure) => {
+        //fetch() PUT TO BACKEND /games/id/figures/id
+    };
+
+    updateBuilding = (x,y,building) => {
+        if(this.getBuilding(x,y) != null){
+            //update existing Building
+        }else{
+            //create new building
+        }
+        //fetch() POST TO BACKEND /games/id/building
     };
     createBoard = () => {
         let board = [];
@@ -106,9 +118,11 @@ class Games extends React.Component {
             for (let x = 0; x < 5; x++) {
                 row.push(<BoardField key={x}
                                      building={this.getBuilding(x,y)}
-                                     player={this.getPlayer(x,y)}
+                                     figure={this.getFigure(x,y)}
                                      targetForMove={this.isTargetForMove(x,y)}
                                      targetForBuild={this.isTargetForBuild(x,y)}
+                                     updateFigure={this.updateFigure}
+                                     updateBuilding={this.updateBuilding}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
