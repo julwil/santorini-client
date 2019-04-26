@@ -4,6 +4,7 @@ import {COLOR_1, COLOR_2, COLOR_4, COLOR_5} from "../../helpers/layout";
 import {BoardBuilding} from "./BoardBuilding";
 import Figure from "./Figure";
 import DragSource from "react-dnd/lib/cjs/DragSource";
+import DropTarget from "react-dnd/lib/cjs/DropTarget";
 
 const Field = styled.div`
   width: 130px;
@@ -34,19 +35,35 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-function BoardField (props) {
+const FieldTarget = {
+    drop(props){
+        console.log("dropping");
+        //moveFigure(props.x, props.y)
+    }
+};
+
+function collect(connect, monitor){
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver(),
+    }
+}
+
+function BoardField (props) { //use "isOver" to highlight field when hovering over it
     let figure, building;
     if(props.figure != null) figure = (<Figure figure={props.figure}/>);
     else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
 
+    const {connectDropTarget, isOver} = props;
+
     return (
-        <Field targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
+        <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {figure}
         </Field>
     );
 }
 
-export default BoardField
+export default DropTarget('figure', FieldTarget, collect)(BoardField)

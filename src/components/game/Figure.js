@@ -20,8 +20,8 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-const ItemSource = {
-    beginDrag(props) { //return figure as only building can be dragged & dropped
+const FigureSource = {
+    beginDrag(props) { //returning only figure as to only item to be dropped
         return props.figure;
     }
 };
@@ -47,4 +47,4 @@ class Figure extends React.Component {
     }
 }
 
-export default DragSource('figure', ItemSource, collect)(Figure)
+export default DragSource('figure', FigureSource, collect)(Figure)
