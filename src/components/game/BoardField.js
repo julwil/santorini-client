@@ -22,7 +22,7 @@ const BoardItem = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const BoardPlayer = styled(BoardItem)`
+const BoardFigure = styled(BoardItem)`
   width: 30px;
   height: 30px;
   background-color: ${props => props.user === 1? COLOR_1 : COLOR_2};
@@ -34,15 +34,15 @@ const BoardPlayer = styled(BoardItem)`
 
 
 export const BoardField = (props) => {
-    let player, building;
-    if(props.player != null) player = (<BoardPlayer id={props.player.id} user={props.player.user} active={props.player.active}/>);
-    else player = '';
+    let figure, building;
+    if(props.figure != null) figure = (<BoardFigure id={props.figure.id} user={props.figure.user} active={props.figure.active}/>);
+    else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
     return (
         <Field targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
-            {player}
+            {figure}
         </Field>
     );
 };
