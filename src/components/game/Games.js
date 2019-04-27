@@ -101,11 +101,13 @@ class Games extends React.Component {
         return false;
     };
 
-    updateFigure = (x,y,figure) => {
+    updateFigure = (figure, x, y) => {
         //fetch() PUT TO BACKEND /games/id/figures/id
+        console.log("new dropping " + figure.id); //remove
+        console.log("X: "+x, "Y: "+y); //remove
     };
 
-    updateBuilding = (x,y,building) => {
+    updateBuilding = (x, y, buildingLevel) => {
         if(this.getBuilding(x,y) != null){
             //update existing Building
         }else{
@@ -121,6 +123,8 @@ class Games extends React.Component {
             let row = [];
             for (let x = 0; x < 5; x++) {
                 row.push(<BoardField key={x}
+                                     field_x_coordinate = {x}
+                                     field_y_coordinate = {y}
                                      building={this.getBuilding(x,y)}
                                      figure={this.getFigure(x,y)}
                                      targetForMove={this.isTargetForMove(x,y)}

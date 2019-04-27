@@ -36,9 +36,9 @@ const BoardFigure = styled(BoardItem)`
 `;
 
 const FieldTarget = {
-    drop(props){
-        console.log("dropping");
-        //moveFigure(props.x, props.y)
+    drop(props, monitor){
+        console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
+        props.updateFigure(monitor.getItem(), props.field_x_coordinate, props.field_y_coordinate)
     }
 };
 
@@ -46,6 +46,7 @@ function collect(connect, monitor){
     return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
+        item: monitor.getItem(),
     }
 }
 
@@ -55,9 +56,7 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
-
     const {connectDropTarget, isOver} = props;
-
     return (
         <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
