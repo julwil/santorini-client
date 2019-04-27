@@ -70,14 +70,12 @@ class Games extends React.Component {
         return null;
     };
     getFigure = (x,y) => {
-        let filteredFigures =  this.state.figures.filter((figure) => {
-            return figure.x === x && figure.y === y;
-        });
+        let filteredFigures = this.state.figures.filter((figure) => {return figure.x === x && figure.y === y});
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
     getActiveFigure = () => {
-        let filteredFigures =  this.state.figures.filter((figure) => {
+        let filteredFigures = this.state.figures.filter((figure) => {
             return figure.active;
         });
         if(filteredFigures.length > 0) return filteredFigures[0];
@@ -101,10 +99,39 @@ class Games extends React.Component {
         return false;
     };
 
-    updateFigure = (figure, x, y) => {
+    updateFigure = (figure, new_x, new_y) => { //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
+        //update figure position
+        let figure_idx = figure.id-1;
+        console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
+        let newFigure = {...this.state.figures};
+        newFigure[figure_idx].x = new_x; newFigure[figure_idx].y = new_y;
+        console.log("newFigure: "+newFigure[figure_idx].x +", "+newFigure[figure_idx].y);
+        console.log("figure after: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
+        for(let i=0; i<this.state.figures.length; i++){
+            console.log("figure ids: "+ this.state.figures[i].id);
+            console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
+        }
+        console.log("Setting new state");
+
+
+        //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
+        this.state.figures[figure_idx].x = new_x;
+        this.state.figures[figure_idx].y = new_y;
+        this.setState({figures: this.state.figures});
+
+
+
+        console.log(this.state.figures.length);
+        for(let i=0; i<this.state.figures.length; i++){
+            console.log("figure ids: "+ this.state.figures[i].id);
+            console.log("figure active: "+ this.state.figures[i].active);
+            console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
+        }
+        //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
+
         //fetch() PUT TO BACKEND /games/id/figures/id
-        console.log("new dropping " + figure.id); //remove
-        console.log("X: "+x, "Y: "+y); //remove
+        //console.log("new dropping " + figure.id); //remove
+        //console.log("X: "+x, "Y: "+y); //remove
     };
 
     updateBuilding = (x, y, buildingLevel) => {
@@ -168,11 +195,9 @@ class Games extends React.Component {
                 <GameHeader />
                 <MainGame>
                     <PlayerSidebar/>
-                    <DragDropContextProvider backend={HTML5Backend}>
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    </DragDropContextProvider>
                     <OpponentSidebar/>
                 </MainGame>
                 <Error error={this.state.error}/>
@@ -185,4 +210,5 @@ class Games extends React.Component {
  * You can get access to the history object's properties via the withRouter.
  * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
  */
-export default withRouter(Games);
+
+export default withRouter(DragDropContext(HTML5Backend)(Games));

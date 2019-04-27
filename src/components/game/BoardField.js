@@ -35,6 +35,18 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
+const Hover = styled.div`
+ position: absolute;
+ top: 0;
+ left: 0;
+ height: 100%;
+ width: 100%;
+ z-index: 1;
+ opacity: 0.5;
+ border: 20px solid;
+ border-color: ${props => props.targetForMove ? 'yellow' : 'red'}
+`;
+
 const FieldTarget = {
     drop(props, monitor){
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
@@ -61,6 +73,9 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
         <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {figure}
+            {isOver && (
+                <Hover targetForMove={props.targetForMove}/>
+            )}
         </Field>
     );
 }
