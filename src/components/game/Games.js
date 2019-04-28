@@ -50,7 +50,7 @@ class Games extends React.Component {
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:3},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
+                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3}, {x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
             figure_moved: false,

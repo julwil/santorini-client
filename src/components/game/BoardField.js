@@ -10,7 +10,7 @@ const Field = styled.div`
   width: 130px;
   height: 130px;
   border: 5px solid;
-  border-color: ${props => props.targetForMove? 'yellow':COLOR_5};
+  border-color: ${COLOR_5};
   background-color: #37BD5A;
   box-sizing: border-box;
   position: relative;
