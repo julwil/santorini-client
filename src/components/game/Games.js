@@ -59,6 +59,7 @@ class Games extends React.Component {
                 {x:2,y:1,level:3},
                 {x:2,y:0,level:3},
                 {x:1,y:1,level:3},
+                {x:1,y:2,level:0},
                 {x:4,y:3,level:2},
                 {x:4,y:2,level:0},
                 {x:3,y:2,level:0},
@@ -125,6 +126,7 @@ class Games extends React.Component {
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
 
+        //helpers:
         console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
         let newFigure = {...this.state.figures};
         newFigure[figure_idx].x = new_x; newFigure[figure_idx].y = new_y;
@@ -134,16 +136,16 @@ class Games extends React.Component {
             console.log("figure ids: "+ this.state.figures[i].id);
             console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
         }
-        console.log("Setting new state");
 
         //updating position of figure
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
         this.state.figures[figure_idx].x = new_x;
         this.state.figures[figure_idx].y = new_y;
-        this.state.figures[figure_idx].level = new_figure_level;  //level is difficult, must be received from field on which figure has been dropped on
+        this.state.figures[figure_idx].level = new_figure_level;
         this.state.figures[figure_idx].active = false;
         this.setState({figures: this.state.figures});
 
+        //helpers:
         console.log(this.state.figures.length);
         for(let i=0; i<this.state.figures.length; i++){
             console.log("figure ids: "+ this.state.figures[i].id);

@@ -54,7 +54,12 @@ const FieldTarget = {
 
     drop(props, monitor){
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
-        props.updateFigure(monitor.getItem(), props.field_x_coordinate, props.field_y_coordinate)
+        props.updateFigure(
+            monitor.getItem(),
+            props.field_x_coordinate,
+            props.field_y_coordinate,
+            (props.building === null ? 0 : props.building.level+1)
+        )
     }
 };
 
