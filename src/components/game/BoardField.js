@@ -48,6 +48,10 @@ const Hover = styled.div`
 `;
 
 const FieldTarget = {
+    canDrop(props){
+      return !!props.targetForMove;
+    },
+
     drop(props, monitor){
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
         props.updateFigure(monitor.getItem(), props.field_x_coordinate, props.field_y_coordinate)
