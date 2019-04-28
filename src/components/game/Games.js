@@ -47,6 +47,8 @@ class Games extends React.Component {
             gameId: null,
             current_user: Number(localStorage.getItem("user_id")),
             current_user_token: localStorage.getItem("token"),
+            new_figures: null,
+            new_buildings: null,
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
@@ -74,7 +76,7 @@ class Games extends React.Component {
 
     //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
     getGameState(){
-        fetch(`${getDomain()}/games/` + this.state.gameId, {
+        fetch(`${getDomain()}/games/${this.state.gameId}`, {
             method: "GET",
             headers: new Headers({
                 'Authorization': this.state.current_user_token,
@@ -82,8 +84,10 @@ class Games extends React.Component {
             }),
         })
             .then(handleError)
-            .then((game) => {
-                this.setState({game: game});
+            .then(game => {
+                if(game.length > 0){
+                    this.setState({game: game});
+                }
             })
             .catch(err => {
                 catchError(err, this);
@@ -92,11 +96,44 @@ class Games extends React.Component {
 
     //fetch all figures: at 2 s interval if not currently user's turn, otherwise fetch only once
     getFigures(){
-
+        fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
+            method: "GET",
+            headers: new Headers({
+                'Authorization': this.state.current_user_token,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+        })
+            .then(handleError)
+            //should any interval be reestablished to call get fetches to update game board
+            .then(figures => {
+                if(figures.length > 0){
+                    this.setState({new_figures: figures});
+                }
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     }
 
     //fetch all buildings: at 2 s interval if not currently user's turn, otherwise fetch only once
     getBuildings(){
+        fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
+            method: "GET",
+            headers: new Headers({
+                'Authorization': this.state.current_user_token,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+        })
+            .then(handleError)
+            //should any interval be reestablished to call get fetches to update game board
+            .then(buildings => {
+                if(buildings.length > 0){
+                    this.setState({new_buildings: buildings});
+                }
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
 
     }
 
@@ -224,19 +261,6 @@ class Games extends React.Component {
         return board;
     };
 
-    componentDidMount() {
-        this.setState({gameId: this.props.match.params.gamesId});
-
-        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
-        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
-        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
-        /**if(this.state.game.currentTurn === this.state.current_user){
-            clearInterval(this.intervalGameState);
-            clearInterval(this.intervalFigures);
-            clearInterval(this.intervalBuildings);
-        }**/
-    }
-
     logout() { //remove
         fetch(`${getDomain()}/users/logout`, {
             method: "GET",
@@ -255,6 +279,22 @@ class Games extends React.Component {
             .catch(err => {
                 catchError(err, this);
             });
+    }
+
+    componentDidMount() {
+        this.setState({gameId: this.props.match.params.gamesId});
+        console.log("GameId: "+this.state.gameId);
+
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        if(this.state.game !== null){
+            if(this.state.game.currentTurn === this.state.current_user){
+                clearInterval(this.intervalGameState);
+                clearInterval(this.intervalFigures);
+                clearInterval(this.intervalBuildings);
+            }
+        }
     }
 
     render() {
