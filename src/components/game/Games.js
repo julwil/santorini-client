@@ -7,7 +7,9 @@ import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
 import GameHeader from "../../views/GameHeader";
 import {COLOR_5} from "../../helpers/layout";
-import {BoardField} from "./BoardField";
+import BoardField from "./BoardField";
+import HTML5Backend from 'react-dnd-html5-backend'
+import {DragDropContext, DragDropContextProvider} from 'react-dnd'
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -41,25 +43,48 @@ class Games extends React.Component {
     constructor() {
         super();
         this.state = {
+            game: null,
             gameId: null,
+            current_user: Number(localStorage.getItem("user_id")),
+            current_user_token: localStorage.getItem("token"),
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:3},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
+            figure_moved: false,
             buildings:[
                 {x:0,y:0,level:0},
                 {x:2,y:1,level:3},
                 {x:2,y:0,level:3},
                 {x:1,y:1,level:3},
+                {x:1,y:2,level:0},
                 {x:4,y:3,level:2},
                 {x:4,y:2,level:0},
                 {x:3,y:2,level:0},
             ],
-            //game: this.props.location.state.game,
             error: []
         };
+        this.intervalGameState = 0;
+        this.intervalFigures = 0;
+        this.intervalBuildings = 0;
+        this.updateInterval = 2000;
+    }
+
+    //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getGameState(){
+
+    }
+
+    //fetch all figures: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getFigures(){
+
+    }
+
+    //fetch all buildings: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getBuildings(){
+
     }
 
     getBuilding = (x,y) => {
@@ -68,14 +93,12 @@ class Games extends React.Component {
         return null;
     };
     getFigure = (x,y) => {
-        let filteredFigures =  this.state.figures.filter((figure) => {
-            return figure.x === x && figure.y === y;
-        });
+        let filteredFigures = this.state.figures.filter((figure) => {return figure.x === x && figure.y === y});
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
     getActiveFigure = () => {
-        let filteredFigures =  this.state.figures.filter((figure) => {
+        let filteredFigures = this.state.figures.filter((figure) => {
             return figure.active;
         });
         if(filteredFigures.length > 0) return filteredFigures[0];
@@ -98,11 +121,66 @@ class Games extends React.Component {
         }
         return false;
     };
-    updateFigure = (x,y,figure) => {
-        //fetch() PUT TO BACKEND /games/id/figures/id
+
+    updateFigure = (figure, new_x, new_y, new_figure_level) => {
+        //update figure position
+        let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
+
+        //helpers:
+        console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
+        let newFigure = {...this.state.figures};
+        newFigure[figure_idx].x = new_x; newFigure[figure_idx].y = new_y;
+        console.log("newFigure: "+newFigure[figure_idx].x +", "+newFigure[figure_idx].y);
+        console.log("figure after: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
+        for(let i=0; i<this.state.figures.length; i++){
+            console.log("figure ids: "+ this.state.figures[i].id);
+            console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
+        }
+
+        //updating position of figure
+        //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
+        this.state.figures[figure_idx].x = new_x;
+        this.state.figures[figure_idx].y = new_y;
+        this.state.figures[figure_idx].level = new_figure_level;
+        this.state.figures[figure_idx].active = false;
+        this.setState({figures: this.state.figures});
+
+        //helpers:
+        console.log(this.state.figures.length);
+        for(let i=0; i<this.state.figures.length; i++){
+            console.log("figure ids: "+ this.state.figures[i].id);
+            console.log("figure active: "+ this.state.figures[i].active);
+            console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
+        }
+        //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
+
+        //fetch() PUT TO BACKEND /games/gameId/figures
+        fetch(`${getDomain()}/games/` + this.state.gameId + `/figures`, {
+            method: "PUT",
+            headers: new Headers({
+                'Authorization': this.state.current_user_token,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+            body: JSON.stringify(({
+                user: this.state.user,
+                figure: figure,
+            })),
+        })
+            .then(handleError)
+            //should any interval be reestablished to call get fetches to update game board
+            .then(() => {
+                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
+                this.setState({figure_moved: true,});
+
+                //update game board
+                this.getGameState(); this.getFigures(); this.getBuildings();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     };
 
-    updateBuilding = (x,y,building) => {
+    updateBuilding = (x, y, new_buildingLevel) => {
         if(this.getBuilding(x,y) != null){
             //update existing Building
         }else{
@@ -110,6 +188,7 @@ class Games extends React.Component {
         }
         //fetch() POST TO BACKEND /games/id/building
     };
+
     createBoard = () => {
         let board = [];
 
@@ -117,6 +196,8 @@ class Games extends React.Component {
             let row = [];
             for (let x = 0; x < 5; x++) {
                 row.push(<BoardField key={x}
+                                     field_x_coordinate = {x}
+                                     field_y_coordinate = {y}
                                      building={this.getBuilding(x,y)}
                                      figure={this.getFigure(x,y)}
                                      targetForMove={this.isTargetForMove(x,y)}
@@ -132,9 +213,18 @@ class Games extends React.Component {
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
+
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        /**if(this.state.game.currentTurn === this.state.current_user){
+            clearInterval(this.intervalGameState);
+            clearInterval(this.intervalFigures);
+            clearInterval(this.intervalBuildings);
+        }**/
     }
 
-    logout() {
+    logout() { //remove
         fetch(`${getDomain()}/users/logout`, {
             method: "GET",
             headers: new Headers({
@@ -159,11 +249,11 @@ class Games extends React.Component {
             <GameWrapper>
                 <GameHeader />
                 <MainGame>
-                    <PlayerSidebar />
-                    <GameBoard>
-                        {this.createBoard()}
-                    </GameBoard>
-                    <OpponentSidebar />
+                    <PlayerSidebar/>
+                        <GameBoard>
+                            {this.createBoard()}
+                        </GameBoard>
+                    <OpponentSidebar/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
@@ -175,4 +265,5 @@ class Games extends React.Component {
  * You can get access to the history object's properties via the withRouter.
  * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
  */
-export default withRouter(Games);
+
+export default withRouter(DragDropContext(HTML5Backend)(Games));
