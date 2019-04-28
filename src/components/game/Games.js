@@ -43,13 +43,17 @@ class Games extends React.Component {
     constructor() {
         super();
         this.state = {
+            game: null,
             gameId: null,
+            current_user: Number(localStorage.getItem("user_id")),
+            current_user_token: localStorage.getItem("token"),
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:3},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
+            figure_moved: false,
             buildings:[
                 {x:0,y:0,level:0},
                 {x:2,y:1,level:3},
@@ -59,9 +63,27 @@ class Games extends React.Component {
                 {x:4,y:2,level:0},
                 {x:3,y:2,level:0},
             ],
-            //game: this.props.location.state.game,
             error: []
         };
+        this.intervalGameState = 0;
+        this.intervalFigures = 0;
+        this.intervalBuildings = 0;
+        this.updateInterval = 2000;
+    }
+
+    //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getGameState(){
+
+    }
+
+    //fetch all figures: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getFigures(){
+
+    }
+
+    //fetch all buildings: at 2 s interval if not currently user's turn, otherwise fetch only once
+    getBuildings(){
+
     }
 
     getBuilding = (x,y) => {
@@ -99,9 +121,10 @@ class Games extends React.Component {
         return false;
     };
 
-    updateFigure = (figure, new_x, new_y) => { //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
+    updateFigure = (figure, new_x, new_y, new_figure_level) => {
         //update figure position
-        let figure_idx = figure.id-1;
+        let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
+
         console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
         let newFigure = {...this.state.figures};
         newFigure[figure_idx].x = new_x; newFigure[figure_idx].y = new_y;
@@ -113,13 +136,13 @@ class Games extends React.Component {
         }
         console.log("Setting new state");
 
-
+        //updating position of figure
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
         this.state.figures[figure_idx].x = new_x;
         this.state.figures[figure_idx].y = new_y;
+        this.state.figures[figure_idx].level = new_figure_level;  //level is difficult, must be received from field on which figure has been dropped on
+        this.state.figures[figure_idx].active = false;
         this.setState({figures: this.state.figures});
-
-
 
         console.log(this.state.figures.length);
         for(let i=0; i<this.state.figures.length; i++){
@@ -129,12 +152,33 @@ class Games extends React.Component {
         }
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
 
-        //fetch() PUT TO BACKEND /games/id/figures/id
-        //console.log("new dropping " + figure.id); //remove
-        //console.log("X: "+x, "Y: "+y); //remove
+        //fetch() PUT TO BACKEND /games/gameId/figures
+        fetch(`${getDomain()}/games/` + this.state.gameId + `/figures`, {
+            method: "PUT",
+            headers: new Headers({
+                'Authorization': this.state.current_user_token,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+            body: JSON.stringify(({
+                user: this.state.user,
+                figure: figure,
+            })),
+        })
+            .then(handleError)
+            //should any interval be reestablished to call get fetches to update game board
+            .then(() => {
+                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
+                this.setState({figure_moved: true,});
+
+                //update game board
+                this.getGameState(); this.getFigures(); this.getBuildings();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     };
 
-    updateBuilding = (x, y, buildingLevel) => {
+    updateBuilding = (x, y, new_buildingLevel) => {
         if(this.getBuilding(x,y) != null){
             //update existing Building
         }else{
@@ -167,9 +211,18 @@ class Games extends React.Component {
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
+
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        /**if(this.state.game.currentTurn === this.state.current_user){
+            clearInterval(this.intervalGameState);
+            clearInterval(this.intervalFigures);
+            clearInterval(this.intervalBuildings);
+        }**/
     }
 
-    logout() {
+    logout() { //remove
         fetch(`${getDomain()}/users/logout`, {
             method: "GET",
             headers: new Headers({
