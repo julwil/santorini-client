@@ -74,7 +74,20 @@ class Games extends React.Component {
 
     //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
     getGameState(){
-
+        fetch(`${getDomain()}/games/` + this.state.gameId, {
+            method: "GET",
+            headers: new Headers({
+                'Authorization': this.state.current_user_token,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+        })
+            .then(handleError)
+            .then((game) => {
+                this.setState({game: game});
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     }
 
     //fetch all figures: at 2 s interval if not currently user's turn, otherwise fetch only once
