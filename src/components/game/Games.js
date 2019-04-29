@@ -45,8 +45,9 @@ class Games extends React.Component {
         this.state = {
             game: null,
             gameId: null,
-            current_user: Number(localStorage.getItem("user_id")),
-            current_user_token: localStorage.getItem("token"),
+            currentUser: Number(localStorage.getItem("user_id")),
+            currentUserToken: localStorage.getItem("token"),
+            current_Turn: null,
             new_figures: null,
             new_buildings: null,
             figures:[
@@ -75,31 +76,36 @@ class Games extends React.Component {
     }
 
     //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
-    getGameState(){
+    getGameState = () => {
         fetch(`${getDomain()}/games/${this.state.gameId}`, {
             method: "GET",
             headers: new Headers({
-                'Authorization': this.state.current_user_token,
+                'Authorization': this.state.currentUserToken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }),
         })
             .then(handleError)
             .then(game => {
-                if(game.length > 0){
-                    this.setState({game: game});
+                if(game !== null){ //should actually be game.length > 0
+                    this.setState({game: game, currentTurn: game.currentTurn});
+                    console.log("Current turn: "+game.currentTurn);
+                    if (game.currentTurn === this.state.currentUser) {
+                        clearInterval(this.intervalGameState);
+                    }
                 }
+                console.log("GameId fetched: "+game.id);
             })
             .catch(err => {
                 catchError(err, this);
             });
-    }
+    };
 
     //fetch all figures: at 2 s interval if not currently user's turn, otherwise fetch only once
-    getFigures(){
+    getFigures = () => {
         fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
             method: "GET",
             headers: new Headers({
-                'Authorization': this.state.current_user_token,
+                'Authorization': this.state.currentUserToken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }),
         })
@@ -108,19 +114,23 @@ class Games extends React.Component {
             .then(figures => {
                 if(figures.length > 0){
                     this.setState({new_figures: figures});
+                    if(Number(this.state.currentTurn) === Number(this.state.currentUser)){
+                        console.log("Clearing interval");
+                        clearInterval(this.intervalFigures);
+                    }
                 }
             })
             .catch(err => {
                 catchError(err, this);
             });
-    }
+    };
 
     //fetch all buildings: at 2 s interval if not currently user's turn, otherwise fetch only once
-    getBuildings(){
+    getBuildings = () => {
         fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
             method: "GET",
             headers: new Headers({
-                'Authorization': this.state.current_user_token,
+                'Authorization': this.state.currentUserToken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }),
         })
@@ -129,13 +139,16 @@ class Games extends React.Component {
             .then(buildings => {
                 if(buildings.length > 0){
                     this.setState({new_buildings: buildings});
+                    if(this.state.currentTurn === this.state.currentUser){
+                        clearInterval(this.intervalBuildings);
+                    }
                 }
             })
             .catch(err => {
                 catchError(err, this);
             });
 
-    }
+    };
 
     getBuilding = (x,y) => {
         let filteredBuildings = this.state.buildings.filter((building)=>{return building.x === x && building.y === y});
@@ -204,11 +217,10 @@ class Games extends React.Component {
         }
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
 
-        //fetch() PUT TO BACKEND /games/gameId/figures
         fetch(`${getDomain()}/games/` + this.state.gameId + `/figures`, {
             method: "PUT",
             headers: new Headers({
-                'Authorization': this.state.current_user_token,
+                'Authorization': this.state.currentUserToken,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }),
             body: JSON.stringify(({
@@ -258,6 +270,7 @@ class Games extends React.Component {
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
         }
+        console.log("GameId: "+this.state.gameId);
         return board;
     };
 
@@ -283,18 +296,9 @@ class Games extends React.Component {
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
-        console.log("GameId: "+this.state.gameId);
-
         this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
-        if(this.state.game !== null){
-            if(this.state.game.currentTurn === this.state.current_user){
-                clearInterval(this.intervalGameState);
-                clearInterval(this.intervalFigures);
-                clearInterval(this.intervalBuildings);
-            }
-        }
     }
 
     render() {
