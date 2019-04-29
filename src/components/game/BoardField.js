@@ -58,7 +58,7 @@ const FieldTarget = {
             monitor.getItem(),
             props.field_x_coordinate,
             props.field_y_coordinate,
-            (props.building.length > 0 ? props.building.level+1 : 0)
+            (props.building !== null ? props.building.level+1 : 0)
         )
     }
 };
