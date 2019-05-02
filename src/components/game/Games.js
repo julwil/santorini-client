@@ -268,11 +268,21 @@ class Games extends React.Component {
         //clear possible builds
         //clear newBuilding variable
         console.log("Updating building at: "+new_x, new_y, new_buildingLevel);
-        if(this.getBuilding(new_x,new_y) != null){
-            //update existing Building
+        const newBuildings = this.state.buildings;
+        if(this.getBuilding(new_x, new_y) != null){//update existing Building
+
         }else{
             //create new building
+            newBuildings.push({x: new_x, y: new_y, level: new_buildingLevel});
         }
+        this.setState({buildings: newBuildings});
+        console.log("Buildings updated")
+
+        for(let i=0; i<this.state.buildings.length; i++){
+            console.log("Building: "+this.state.buildings[i].x, this.state.buildings[i].y, this.state.buildings[i].level)
+        }
+
+
         //fetch() POST TO BACKEND /games/id/building
     };
 
