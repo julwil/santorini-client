@@ -48,6 +48,7 @@ const Building_0_Component = styled(BoardItem)`
 
 const BuildingSource = {
     beginDrag(props){
+        props.building.level = 0;
         return props.building;
     }
 };
@@ -60,7 +61,7 @@ function collect(connect, monitor){
 }
 
 function Building_0 (props) {
-    props.building.level = 0;
+    //props.building.level = 0;
     const {isDragging, connectDragSource, building} = props;
     return (
         <Building_0_Component ref={instance => connectDragSource(instance)} />

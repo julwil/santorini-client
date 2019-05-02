@@ -34,7 +34,7 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-const Hover = styled.div`
+const HoverFigure = styled.div`
  position: absolute;
  top: 0;
  left: 0;
@@ -46,20 +46,41 @@ const Hover = styled.div`
  border-color: ${props => props.targetForMove ? 'yellow' : 'red'}
 `;
 
+const HoverBuilding = styled(HoverFigure)`
+ border-color: ${props => props.targetForBuild ? 'yellow' : 'red'}
+`;
+
 const FieldTarget = {
-    canDrop(props){
-      return !!props.targetForMove;
+    canDrop(props, monitor){
+        switch(monitor.getItemType()){
+            case 'figure':
+                return !!props.targetForMove;
+            case 'building':
+                return !!props.targetForBuild;
+        }
+
     },
 
     drop(props, monitor){
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
-        console.log("dragging object: "+monitor.getItem());
-        props.updateFigure(
-            monitor.getItem(),
-            props.field_x_coordinate,
-            props.field_y_coordinate,
-            (props.building !== null ? props.building.level+1 : 0)
-        )
+
+        switch(monitor.getItemType()){
+            case 'figure':
+                console.log("case figure");
+                props.updateFigure(
+                    monitor.getItem(),
+                    props.field_x_coordinate,
+                    props.field_y_coordinate,
+                    (props.building !== null ? props.building.level+1 : 0)
+                );
+                break;
+            case 'building':
+                console.log("case building");
+                console.log("Building level: "+monitor.getItem().level);
+                props.updateBuilding(props.field_x_coordinate, props.field_y_coordinate,monitor.getItem().level);
+                break;
+
+        }
     }
 };
 
@@ -68,6 +89,7 @@ function collect(connect, monitor){
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
         item: monitor.getItem(),
+        itemType: monitor.getItemType(),
     }
 }
 
@@ -77,14 +99,15 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
-    const {connectDropTarget, isOver} = props;
+    const {connectDropTarget, isOver, itemType} = props;
     return (
         <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {figure}
-            {isOver && (
-                <Hover targetForMove={props.targetForMove}/>
-            )}
+            {isOver && (itemType === 'figure' ?
+                <HoverFigure targetForMove={props.targetForMove}/> :
+                    <HoverBuilding targetForBuild={props.targetForBuild}/>
+                )}
         </Field>
     );
 }

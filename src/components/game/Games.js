@@ -56,7 +56,7 @@ class Games extends React.Component {
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3}, {x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
+                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2},{x:0,y:3},{x:0,y:4}]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
             figure_moved: false,
@@ -263,11 +263,12 @@ class Games extends React.Component {
             });
     };
 
-    updateBuilding = (x, y, new_buildingLevel) => {
+    updateBuilding = (new_x, new_y, new_buildingLevel) => {
         //once building build the active flag of the figure as well as figure_moved have to be set to false and currentTurn of game has to be changed to next user
         //clear possible builds
         //clear newBuilding variable
-        if(this.getBuilding(x,y) != null){
+        console.log("Updating building at: "+new_x, new_y, new_buildingLevel);
+        if(this.getBuilding(new_x,new_y) != null){
             //update existing Building
         }else{
             //create new building
