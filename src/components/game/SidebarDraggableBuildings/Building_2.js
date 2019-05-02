@@ -1,10 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import {OpponentSidebar} from "./Games";
 import { DragSource } from 'react-dnd'
 import {withRouter} from "react-router-dom";
-import {COLOR_3, COLOR_4, COLOR_5} from "../../helpers/layout";
-import Building_0 from "./SidebarDraggableBuildings/Building_0";
+import {COLOR_3, COLOR_4, COLOR_5} from "../../../helpers/layout";
 
 const Container = styled.div`
   flex-grow: 1;
@@ -41,15 +39,14 @@ const Building_1 = styled(BoardItem)`
   background-color: #eee;  
   z-index: 2;
 `;
-
-const Building_0_com = styled(BoardItem)`
+const Building_0_Component = styled(BoardItem)`
   width: 110px;
   height: 110px;
   background-color: #ddd;
   z-index: 1;
 `;
 
-/**const BuildingSource = {
+const BuildingSource = {
     beginDrag(props){
         return props.building;
 
@@ -61,25 +58,13 @@ function collect(connect, monitor){
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging(),
     }
-}**/
-
-class PlayerSidebar extends React.Component {
-
-    returnData(){ //use call back function to return data to the parent
-
-    }
-
-    render() {
-        return (
-            <Container>
-                <Building_0 building={this.props.building}/>
-                <Building_1 />
-                <Building_2 />
-                <Building_3 />
-            </Container>
-        )
-    }
 }
 
-//export default DragSource('building', BuildingSource, collect)(PlayerSidebar)
-export default withRouter(PlayerSidebar);
+function Building_0 (props) {
+    const {isDragging, connectDragSource, building} = props;
+    return (
+        <Building_0_Component ref={instance => connectDragSource(instance)} />
+    )
+}
+
+export default DragSource('building', BuildingSource, collect)(Building_0)

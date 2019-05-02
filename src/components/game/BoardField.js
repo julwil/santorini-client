@@ -3,7 +3,6 @@ import styled from "styled-components";
 import {COLOR_1, COLOR_2, COLOR_4, COLOR_5} from "../../helpers/layout";
 import {BoardBuilding} from "./BoardBuilding";
 import Figure from "./Figure";
-import DragSource from "react-dnd/lib/cjs/DragSource";
 import DropTarget from "react-dnd/lib/cjs/DropTarget";
 
 const Field = styled.div`
@@ -54,6 +53,7 @@ const FieldTarget = {
 
     drop(props, monitor){
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
+        console.log("dragging object: "+monitor.getItem());
         props.updateFigure(
             monitor.getItem(),
             props.field_x_coordinate,
@@ -89,4 +89,4 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     );
 }
 
-export default DropTarget('figure', FieldTarget, collect)(BoardField)
+export default DropTarget(['figure', 'building'], FieldTarget, collect)(BoardField)

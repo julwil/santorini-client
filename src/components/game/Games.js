@@ -6,7 +6,7 @@ import { handleError } from "../../helpers/handleError";
 import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
 import GameHeader from "../../views/GameHeader";
-import {COLOR_5} from "../../helpers/layout";
+import {COLOR_4, COLOR_5} from "../../helpers/layout";
 import BoardField from "./BoardField";
 import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
@@ -32,6 +32,13 @@ const GameBoard = styled.div`
 
 const BoardRow = styled.div`
   overflow: hidden;
+`;
+
+const PlayerSidebarWrapper = styled.div`
+  flex-grow: 1;
+  background-color: ${COLOR_4};
+  margin-right: 0;
+  margin-left: 20px;
 `;
 
 class Games extends React.Component {
@@ -63,6 +70,7 @@ class Games extends React.Component {
                 {x:4,y:2,level:0},
                 {x:3,y:2,level:0},
             ],
+            newBuilding: {x:null, y:null, level:null},
             possibleBuilds: null,
             error: []
         };
@@ -258,6 +266,7 @@ class Games extends React.Component {
     updateBuilding = (x, y, new_buildingLevel) => {
         //once building build the active flag of the figure as well as figure_moved have to be set to false and currentTurn of game has to be changed to next user
         //clear possible builds
+        //clear newBuilding variable
         if(this.getBuilding(x,y) != null){
             //update existing Building
         }else{
@@ -326,7 +335,7 @@ class Games extends React.Component {
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <PlayerSidebar />
+                    <PlayerSidebar building={this.state.newBuilding}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
