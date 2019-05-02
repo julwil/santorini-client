@@ -10,6 +10,7 @@ import {COLOR_5} from "../../helpers/layout";
 import BoardField from "./BoardField";
 import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
+import PlayerSidebar from "./PlayerSidebar";
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -19,7 +20,7 @@ const MainGame = styled.div`
   display: flex;
   flex-wrap: nowrap;
 `;
-const PlayerSidebar = styled.div`
+export const OpponentSidebar = styled.div`
   flex-grow: 1;
   margin-right: 20px;
   background-color: ${COLOR_5};
@@ -31,11 +32,6 @@ const GameBoard = styled.div`
 
 const BoardRow = styled.div`
   overflow: hidden;
-`;
-
-const OpponentSidebar = styled(PlayerSidebar)`
-  margin-right: 0;
-  margin-left: 20px;
 `;
 
 class Games extends React.Component {
@@ -326,11 +322,11 @@ class Games extends React.Component {
             <GameWrapper>
                 <GameHeader />
                 <MainGame>
-                    <PlayerSidebar/>
+                    <OpponentSidebar />
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <OpponentSidebar/>
+                    <PlayerSidebar />
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
