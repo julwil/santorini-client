@@ -190,7 +190,7 @@ class Games extends React.Component {
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
 
         //helpers:
-        console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
+        /**console.log("figure before: "+this.state.figures[figure_idx].x+", "+this.state.figures[figure_idx].y);
         let newFigure = {...this.state.figures};
         newFigure[figure_idx].x = new_x; newFigure[figure_idx].y = new_y;
         console.log("newFigure: "+newFigure[figure_idx].x +", "+newFigure[figure_idx].y);
@@ -198,23 +198,38 @@ class Games extends React.Component {
         for(let i=0; i<this.state.figures.length; i++){
             console.log("figure ids: "+ this.state.figures[i].id);
             console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
+        }**/
+
+        const figures = this.state.figures.slice();
+        figures[figure_idx] = {x: new_x, y: new_y, level: new_figure_level, active: false}; //find correct index and not anticipate which
+        this.setState({figures: figures});
+        console.log("New figure length: "+figures.length);
+
+        console.log("Figures data: ");
+        for(let i=0; i<this.state.figures.length; i++){
+            console.log("figure ids: "+ this.state.figures[i].id);
+            console.log("X: "+this.state.figures[i].x, "Y: "+this.state.figures[i].y, "Level: "+this.state.figures[i].level);
+            console.log("figure active: "+ this.state.figures[i].active);
+            //console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
         }
+
 
         //updating position of figure
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
-        this.state.figures[figure_idx].x = new_x;
+
+        /**this.state.figures[figure_idx].x = new_x;
         this.state.figures[figure_idx].y = new_y;
         this.state.figures[figure_idx].level = new_figure_level;
         this.state.figures[figure_idx].active = false;
-        this.setState({figures: this.state.figures});
+        this.setState({figures: this.state.figures});**/
 
         //helpers:
-        console.log(this.state.figures.length);
+        /**console.log(this.state.figures.length);
         for(let i=0; i<this.state.figures.length; i++){
             console.log("figure ids: "+ this.state.figures[i].id);
             console.log("figure active: "+ this.state.figures[i].active);
             console.log("figure coordinates: "+this.state.figures[i].x, this.state.figures[i].y);
-        }
+        }**/
         //this.setState({figures: {...this.state.figures, [figure.id]: {x: new_x, y: new_y}}});
 
         fetch(`${getDomain()}/games/` + this.state.gameId + `/figures`, {
