@@ -55,8 +55,10 @@ const FieldTarget = {
         switch(monitor.getItemType()){
             case 'figure':
                 return !!props.targetForMove;
-            case 'building':
-                return !!props.targetForBuild;
+            case 'building': //check if dragged building has same level of possible build of drop target position
+                return !!props.targetForBuild(
+                    props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().level
+                );
         }
 
     },
@@ -66,7 +68,6 @@ const FieldTarget = {
 
         switch(monitor.getItemType()){
             case 'figure':
-                console.log("case figure");
                 props.updateFigure(
                     monitor.getItem(),
                     props.field_x_coordinate,
@@ -75,9 +76,7 @@ const FieldTarget = {
                 );
                 break;
             case 'building':
-                console.log("case building");
-                console.log("Building level: "+monitor.getItem().level);
-                props.updateBuilding(props.field_x_coordinate, props.field_y_coordinate,monitor.getItem().level);
+                props.updateBuilding(props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().level);
                 break;
 
         }
@@ -89,6 +88,7 @@ function collect(connect, monitor){
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
         item: monitor.getItem(),
+        itemLevel: monitor.getItemType() === 'building' ? monitor.getItem().level : '',
         itemType: monitor.getItemType(),
     }
 }
@@ -99,14 +99,15 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     else figure = '';
     if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
     else building = '';
-    const {connectDropTarget, isOver, itemType} = props;
+    const {connectDropTarget, isOver, itemType, itemLevel} = props;
+    let validBuild = props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel);
     return (
         <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {figure}
             {isOver && (itemType === 'figure' ?
                 <HoverFigure targetForMove={props.targetForMove}/> :
-                    <HoverBuilding targetForBuild={props.targetForBuild}/>
+                    <HoverBuilding targetForBuild={props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel)}/>
                 )}
         </Field>
     );
