@@ -6,10 +6,11 @@ import { handleError } from "../../helpers/handleError";
 import Error from "../../helpers/Error";
 import {catchError} from "../../helpers/catchError";
 import GameHeader from "../../views/GameHeader";
-import {COLOR_5} from "../../helpers/layout";
+import {COLOR_4, COLOR_5} from "../../helpers/layout";
 import BoardField from "./BoardField";
 import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
+import PlayerSidebar from "./PlayerSidebar";
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -19,7 +20,7 @@ const MainGame = styled.div`
   display: flex;
   flex-wrap: nowrap;
 `;
-const PlayerSidebar = styled.div`
+export const OpponentSidebar = styled.div`
   flex-grow: 1;
   margin-right: 20px;
   background-color: ${COLOR_5};
@@ -33,7 +34,9 @@ const BoardRow = styled.div`
   overflow: hidden;
 `;
 
-const OpponentSidebar = styled(PlayerSidebar)`
+const PlayerSidebarWrapper = styled.div`
+  flex-grow: 1;
+  background-color: ${COLOR_4};
   margin-right: 0;
   margin-left: 20px;
 `;
@@ -53,20 +56,21 @@ class Games extends React.Component {
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3}, {x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[]},
+                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
             figure_moved: false,
             buildings:[
-                {x:0,y:0,level:0},
-                {x:2,y:1,level:3},
-                {x:2,y:0,level:3},
-                {x:1,y:1,level:3},
-                {x:1,y:2,level:0},
-                {x:4,y:3,level:2},
-                {x:4,y:2,level:0},
-                {x:3,y:2,level:0},
+                {id:1,x:0,y:0,level:0},
+                {id:2,x:2,y:1,level:3},
+                {id:3,x:2,y:0,level:3},
+                {id:4,x:1,y:1,level:3},
+                {id:5,x:1,y:2,level:0},
+                {id:6,x:4,y:3,level:2},
+                {id:7,x:4,y:2,level:0},
+                {id:8,x:3,y:2,level:0},
             ],
+            newBuilding: {x:null, y:null, level:null},
             possibleBuilds: null,
             error: []
         };
@@ -151,7 +155,7 @@ class Games extends React.Component {
 
     };
 
-    getPossibleMoves = () => {//fetch possible moves for only the figure that is active
+    getPossibleMoves = () => {//fetch possible moves for only the figure that is active, activate figure once clicked on by user
         for(let i=0; i < this.state.figures.length; i++){
             if(this.state.figures[i].active){
                 fetch(`${getDomain()}/games/${this.state.gameId}/figures/${this.state.figures[i].id}/possibleMoves`,{
@@ -217,10 +221,12 @@ class Games extends React.Component {
         }
         return false;
     };
-    isTargetForBuild = (x,y) => {
+    isTargetForBuild = (x,y, level) => {//get x, y of position dragging to and level of building to be dragged
+        //this.state.possibleBuilds once using correct data from server
+
         let figure = this.getActiveFigure();
         if(figure != null && figure.hasOwnProperty('possibleBuilds')){
-            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y});
+            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === level});
             return filteredBuilds.length > 0;
         }
         return false;
@@ -230,7 +236,7 @@ class Games extends React.Component {
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const figures = this.state.figures.slice();
-        figures[figure_idx] = {x: new_x, y: new_y, level: new_figure_level, active: false}; //find correct index and not anticipate which
+        figures[figure_idx] = {x: new_x, y: new_y, level: new_figure_level, active: false}; //find correct index and not anticipate it
         this.setState({figures: figures});
 
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
@@ -259,14 +265,26 @@ class Games extends React.Component {
             });
     };
 
-    updateBuilding = (x, y, new_buildingLevel) => {
+    updateBuilding = (new_x, new_y, new_buildingLevel) => {
         //once building build the active flag of the figure as well as figure_moved have to be set to false and currentTurn of game has to be changed to next user
         //clear possible builds
-        if(this.getBuilding(x,y) != null){
-            //update existing Building
+        //clear newBuilding variable
+        console.log("Updating building at: "+new_x, new_y, new_buildingLevel);
+        const newBuildings = this.state.buildings;
+        if(this.getBuilding(new_x, new_y) != null){//update existing Building
+            let building = newBuildings.filter((building) => {if(building.x === new_x && building.y === new_y){return building}});
+            let building_ids = newBuildings.map((building) => {return building.id});
+            console.log(building_ids.indexOf(building[0].id));
+
+            newBuildings[building_ids.indexOf(building[0].id)] = {id:building[0].id, x: new_x, y: new_y, level: new_buildingLevel}
+
+            console.log(newBuildings);
+
         }else{
             //create new building
+            newBuildings.push({x: new_x, y: new_y, level: new_buildingLevel});
         }
+        this.setState({buildings: newBuildings});
         //fetch() POST TO BACKEND /games/id/building
     };
 
@@ -282,7 +300,7 @@ class Games extends React.Component {
                                      building={this.getBuilding(x,y)}
                                      figure={this.getFigure(x,y)}
                                      targetForMove={this.isTargetForMove(x,y)}
-                                     targetForBuild={this.isTargetForBuild(x,y)}
+                                     targetForBuild={this.isTargetForBuild}
                                      updateFigure={this.updateFigure}
                                      updateBuilding={this.updateBuilding}
                 />);
@@ -326,11 +344,11 @@ class Games extends React.Component {
             <GameWrapper>
                 <GameHeader />
                 <MainGame>
-                    <PlayerSidebar/>
+                    <OpponentSidebar />
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <OpponentSidebar/>
+                    <PlayerSidebar building={this.state.newBuilding}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
