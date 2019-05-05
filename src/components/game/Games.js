@@ -59,7 +59,7 @@ class Games extends React.Component {
                 {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}]},
                 {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
-            figure_moved: false,
+            figureMoved: false,
             buildings:[
                 {id:1,x:0,y:0,level:0},
                 {id:2,x:2,y:1,level:3},
@@ -177,7 +177,7 @@ class Games extends React.Component {
     };
 
     getPossibleBuilds = () => { //only fetch for that figure that is active and if figure_moved is true
-        if(this.state.figure_moved){
+        if(this.state.figureMoved){
             fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`,{ //Is possible builds related to a figure?
                 method: "GET",
                 headers: new Headers({
@@ -258,7 +258,7 @@ class Games extends React.Component {
                 this.getGameState(); this.getFigures(); this.getBuildings(); this.getPossibleBuilds();
 
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
-                this.setState({figure_moved: true});
+                this.setState({figureMoved: true});
             })
             .catch(err => {
                 catchError(err, this);
@@ -285,7 +285,8 @@ class Games extends React.Component {
             newBuildings.push({x: new_x, y: new_y, level: new_buildingLevel});
         }
         this.setState({buildings: newBuildings});
-        //fetch() POST TO BACKEND /games/id/building
+
+        //fetch() POST TO BACKEND /games/id/building - update state of figureMoved
     };
 
     createBoard = () => {
@@ -348,7 +349,7 @@ class Games extends React.Component {
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <PlayerSidebar building={this.state.newBuilding}/>
+                    <PlayerSidebar showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
