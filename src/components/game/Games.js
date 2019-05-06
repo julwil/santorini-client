@@ -239,6 +239,7 @@ class Games extends React.Component {
         figures[figure_idx] = {x: new_x, y: new_y, level: new_figure_level, active: false}; //find correct index and not anticipate it
         this.setState({figures: figures});
 
+        let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_figure_level){return possibleValueSet}});
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
             method: "PUT",
             headers: new Headers({
@@ -246,9 +247,9 @@ class Games extends React.Component {
                 'Content-Type': 'application/json'
             }),
             body: JSON.stringify(({
-                x: new_x,
-                y: new_y,
-                z: new_figure_level,
+                x: possibleMoveValueSet.x,
+                y: possibleMoveValueSet.y,
+                z: possibleMoveValueSet.z,
             })),
         })
             .then(handleError)
