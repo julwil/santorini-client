@@ -155,7 +155,8 @@ class Games extends React.Component {
 
     };
 
-    getPossibleMoves = () => {//fetch possible moves for only the figure that is active, activate figure once clicked on by user
+    //fetch possible moves for only the figure that is active, activate figure once clicked on by user
+    getPossibleMoves = () => {
         for(let i=0; i < this.state.figures.length; i++){
             if(this.state.figures[i].active){
                 fetch(`${getDomain()}/games/${this.state.gameId}/figures/${this.state.figures[i].id}/possibleMoves`,{
@@ -267,8 +268,6 @@ class Games extends React.Component {
     };
 
     updateBuilding = (new_x, new_y, new_buildingLevel) => {
-        //currentTurn of game has to be changed to next user --> handled by Backend
-
         //updating current game board indication
         const newBuildings = this.state.buildings;
         if(this.getBuilding(new_x, new_y) != null){//update existing Building
@@ -281,8 +280,7 @@ class Games extends React.Component {
         }
         this.setState({buildings: newBuildings});
 
-        //return value set of possible Builds instead of new values from drag and drop
-        //fetch() POST TO BACKEND /games/id/building - update state of figureMoved
+        //posting request to Backend with new building
         let possibleBuildValueSet = this.state.possibleBuilds.filter((possibleBuildValueSet) => {if(possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_buildingLevel){return possibleBuildValueSet}})
         fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
             method: "POST",
@@ -297,16 +295,13 @@ class Games extends React.Component {
             })),
         })
             .then(handleError)
-            .then(() => { //possibleBuilds & Moves don't have to be cleared as they will be overwritten once newly fetched
-                //figure_moved have to be set to false
+            .then(() => {
                 this.setState({figureMoved: false});
-
                 this.getGameState(); this.getFigures(); this.getBuildings(); this.getPossibleBuilds();
             })
             .catch(err => {
                 catchError(err, this);
             });
-
     };
 
     createBoard = () => {
@@ -354,10 +349,9 @@ class Games extends React.Component {
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
-        /**this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
-        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);**/
-        //this.getPossibleMoves(); //possibleMoves shall only be fetched once figure active, hence clicked on
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
     }
 
     render() {
