@@ -71,7 +71,7 @@ class Games extends React.Component {
                 {id:8,x:3,y:2,level:0},
             ],
             newBuilding: {x:null, y:null, level:null},
-            possibleBuilds: null,
+            possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
             error: []
         };
         this.intervalGameState = 0;
@@ -266,27 +266,46 @@ class Games extends React.Component {
     };
 
     updateBuilding = (new_x, new_y, new_buildingLevel) => {
-        //once building build the active flag of the figure as well as figure_moved have to be set to false and currentTurn of game has to be changed to next user
-        //clear possible builds
-        //clear newBuilding variable
-        console.log("Updating building at: "+new_x, new_y, new_buildingLevel);
+        //currentTurn of game has to be changed to next user --> handled by Backend
+
+        //updating current game board indication
         const newBuildings = this.state.buildings;
         if(this.getBuilding(new_x, new_y) != null){//update existing Building
             let building = newBuildings.filter((building) => {if(building.x === new_x && building.y === new_y){return building}});
             let building_ids = newBuildings.map((building) => {return building.id});
-            console.log(building_ids.indexOf(building[0].id));
-
             newBuildings[building_ids.indexOf(building[0].id)] = {id:building[0].id, x: new_x, y: new_y, level: new_buildingLevel}
-
-            console.log(newBuildings);
-
         }else{
             //create new building
             newBuildings.push({x: new_x, y: new_y, level: new_buildingLevel});
         }
         this.setState({buildings: newBuildings});
 
+        //return value set of possible Builds instead of new values from drag and drop
         //fetch() POST TO BACKEND /games/id/building - update state of figureMoved
+        let possibleBuildValueSet = this.state.possibleBuilds.filter((possibleBuildValueSet) => {if(possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_buildingLevel){return possibleBuildValueSet}})
+        fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': this.state.currentUserToken,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify(({
+                x: possibleBuildValueSet.x,
+                y: possibleBuildValueSet.y,
+                z: possibleBuildValueSet.z,
+            })),
+        })
+            .then(handleError)
+            .then(() => { //possibleBuilds & Moves don't have to be cleared as they will be overwritten once newly fetched
+                //figure_moved have to be set to false
+                this.setState({figureMoved: false});
+
+                this.getGameState(); this.getFigures(); this.getBuildings(); this.getPossibleBuilds();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+
     };
 
     createBoard = () => {
