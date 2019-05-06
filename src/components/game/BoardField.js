@@ -55,9 +55,9 @@ const FieldTarget = {
         switch(monitor.getItemType()){
             case 'figure':
                 return !!props.targetForMove;
-            case 'building': //check if dragged building has same level of possible build of drop target position
+            case 'building': //check if dragged building has same z of possible build of drop target position
                 return !!props.targetForBuild(
-                    props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().level
+                    props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().z
                 );
         }
 
@@ -72,11 +72,11 @@ const FieldTarget = {
                     monitor.getItem(),
                     props.field_x_coordinate,
                     props.field_y_coordinate,
-                    (props.building !== null ? props.building.level+1 : 0)
+                    (props.building !== null ? props.building.z+1 : 0)
                 );
                 break;
             case 'building':
-                props.updateBuilding(props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().level);
+                props.updateBuilding(props.field_x_coordinate, props.field_y_coordinate, monitor.getItem().z);
                 break;
 
         }
@@ -88,7 +88,7 @@ function collect(connect, monitor){
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
         item: monitor.getItem(),
-        itemLevel: monitor.getItemType() === 'building' ? monitor.getItem().level : '',
+        itemLevel: monitor.getItemType() === 'building' ? monitor.getItem().z : '',
         itemType: monitor.getItemType(),
     }
 }
@@ -97,7 +97,7 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     let figure, building;
     if(props.figure != null) figure = (<Figure figure={props.figure}/>);
     else figure = '';
-    if(props.building != null) building = (<BoardBuilding level={props.building.level}/>);
+    if(props.building != null) building = (<BoardBuilding level={props.building.z}/>);
     else building = '';
     const {connectDropTarget, isOver, itemType, itemLevel} = props;
     let validBuild = props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel);
@@ -113,4 +113,4 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
     );
 }
 
-export default DropTarget(['figure', 'building'], FieldTarget, collect)(BoardField)
+export default DropTarget(['figure', 'building', 'initialFigure'], FieldTarget, collect)(BoardField)

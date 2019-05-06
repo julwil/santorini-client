@@ -61,24 +61,33 @@ class Games extends React.Component {
             ],
             figureMoved: false,
             buildings:[
-                {id:1,x:0,y:0,level:0},
-                {id:2,x:2,y:1,level:3},
-                {id:3,x:2,y:0,level:3},
-                {id:4,x:1,y:1,level:3},
-                {id:5,x:1,y:2,level:0},
-                {id:6,x:4,y:3,level:2},
-                {id:7,x:4,y:2,level:0},
-                {id:8,x:3,y:2,level:0},
+                {id:1,x:0,y:0,z:0},
+                {id:2,x:2,y:1,z:3},
+                {id:3,x:2,y:0,z:3},
+                {id:4,x:1,y:1,z:3},
+                {id:5,x:1,y:2,z:0},
+                {id:6,x:4,y:3,z:2},
+                {id:7,x:4,y:2,z:0},
+                {id:8,x:3,y:2,z:0},
             ],
-            newBuilding: {x:null, y:null, level:null},
+            newBuilding: {x:null, y:null, z:null},
+            initialFigure: {x: null, y: null, z: null},
             possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
-            error: []
+            error: [],
+            initialMode: false,
         };
         this.intervalGameState = 0;
         this.intervalFigures = 0;
         this.intervalBuildings = 0;
         this.updateInterval = 2000;
     }
+
+    getInitialGame = () => {
+        console.log("Figures length: "+this.state.figures.length);
+        if(this.state.figures.length < 0 && this.state.buildings.length <= 0){
+            this.setState({initialMode: true})
+        }
+    };
 
     //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
     getGameState = () => {
@@ -222,25 +231,25 @@ class Games extends React.Component {
         }
         return false;
     };
-    isTargetForBuild = (x,y, level) => {//get x, y of position dragging to and level of building to be dragged
+    isTargetForBuild = (x,y,z) => {//get x, y of position dragging to and z of building to be dragged
         //this.state.possibleBuilds once using correct data from server
 
         let figure = this.getActiveFigure();
         if(figure != null && figure.hasOwnProperty('possibleBuilds')){
-            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === level});
+            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
             return filteredBuilds.length > 0;
         }
         return false;
     };
 
-    updateFigure = (figure, new_x, new_y, new_figure_level) => {
+    updateFigure = (figure, new_x, new_y, new_z) => {
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const figures = this.state.figures.slice();
-        figures[figure_idx] = {x: new_x, y: new_y, level: new_figure_level, active: false}; //find correct index and not anticipate it
+        figures[figure_idx] = {x: new_x, y: new_y, z: new_z, active: false}; //find correct index and not anticipate it
         this.setState({figures: figures});
 
-        let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_figure_level){return possibleValueSet}});
+        let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_z){return possibleValueSet}});
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
             method: "PUT",
             headers: new Headers({
@@ -267,21 +276,25 @@ class Games extends React.Component {
             });
     };
 
-    updateBuilding = (new_x, new_y, new_buildingLevel) => {
+    updateBuilding = (new_x, new_y, new_z) => {
         //updating current game board indication
         const newBuildings = this.state.buildings;
         if(this.getBuilding(new_x, new_y) != null){//update existing Building
             let building = newBuildings.filter((building) => {if(building.x === new_x && building.y === new_y){return building}});
             let building_ids = newBuildings.map((building) => {return building.id});
-            newBuildings[building_ids.indexOf(building[0].id)] = {id:building[0].id, x: new_x, y: new_y, level: new_buildingLevel}
+            newBuildings[building_ids.indexOf(building[0].id)] = {id:building[0].id, x: new_x, y: new_y, z: new_z}
         }else{
             //create new building
-            newBuildings.push({x: new_x, y: new_y, level: new_buildingLevel});
+            newBuildings.push({x: new_x, y: new_y, z: new_z});
         }
         this.setState({buildings: newBuildings});
 
         //posting request to Backend with new building
-        let possibleBuildValueSet = this.state.possibleBuilds.filter((possibleBuildValueSet) => {if(possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_buildingLevel){return possibleBuildValueSet}})
+        let possibleBuildValueSet = this.state.possibleBuilds.filter(
+            (possibleBuildValueSet) => {
+                if(possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_z){
+                    return possibleBuildValueSet
+                }});
         fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
             method: "POST",
             headers: new Headers({
@@ -349,9 +362,10 @@ class Games extends React.Component {
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
-        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        /**this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
-        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);**/
+        this.getInitialGame();
     }
 
     render() {
@@ -363,7 +377,7 @@ class Games extends React.Component {
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <PlayerSidebar showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
+                    <PlayerSidebar initialModeActive={this.state.initialMode} figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>

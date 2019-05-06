@@ -21,7 +21,7 @@ const Building_3_Component = styled(BoardItem)`
 
 const BuildingSource = {
     beginDrag(props){
-        props.building.level = 3;
+        props.building.z = 3;
         return props.building;
     }
 };
