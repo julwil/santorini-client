@@ -50,7 +50,7 @@ class Games extends React.Component {
             gameId: null,
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
-            current_Turn: null,
+            currentTurn: null,
             new_figures: null, //to be replaced by figures
             new_buildings: null, //to be replaced by buildings
             figures:[
@@ -231,6 +231,12 @@ class Games extends React.Component {
         }
         return false;
     };
+    updateBoard = () => {
+        this.getGameState();
+        this.getFigures();
+        this.getBuildings();
+        this.getPossibleBuilds();
+    };
 
     updateFigure = (figure, new_x, new_y, new_figure_level) => {
         //update figure position
@@ -255,7 +261,7 @@ class Games extends React.Component {
             //should any interval be reestablished to call get fetches to update game board
             .then(() => {
                 //update game board
-                this.getGameState(); this.getFigures(); this.getBuildings(); this.getPossibleBuilds();
+               this.updateBoard();
 
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
                 this.setState({figureMoved: true});
@@ -300,7 +306,7 @@ class Games extends React.Component {
                 //figure_moved have to be set to false
                 this.setState({figureMoved: false});
 
-                this.getGameState(); this.getFigures(); this.getBuildings(); this.getPossibleBuilds();
+                this.updateBoard();
             })
             .catch(err => {
                 catchError(err, this);
@@ -362,7 +368,7 @@ class Games extends React.Component {
     render() {
         return (
             <GameWrapper>
-                <GameHeader />
+                <GameHeader  currentTurn={this.state.currentTurn}/>
                 <MainGame>
                     <OpponentSidebar />
                         <GameBoard>
