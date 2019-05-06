@@ -53,6 +53,8 @@ class Games extends React.Component {
             current_Turn: null,
             new_figures: null, //to be replaced by figures
             new_buildings: null, //to be replaced by buildings
+            initialMode: false,
+            initialPossibleMoves: [{x:0,y:3,z:0}],
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
@@ -70,11 +72,10 @@ class Games extends React.Component {
                 {id:7,x:4,y:2,z:0},
                 {id:8,x:3,y:2,z:0},
             ],
+            possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
             newBuilding: {x:null, y:null, z:null},
             initialFigure: {x: null, y: null, z: null},
-            possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
             error: [],
-            initialMode: false,
         };
         this.intervalGameState = 0;
         this.intervalFigures = 0;
@@ -82,10 +83,26 @@ class Games extends React.Component {
         this.updateInterval = 2000;
     }
 
-    getInitialGame = () => {
+    getInitialMoves = () => {
         console.log("Figures length: "+this.state.figures.length);
-        if(this.state.figures.length < 0 && this.state.buildings.length <= 0){
-            this.setState({initialMode: true})
+        //check if game has just been setup, respectively no figures or buildings on board
+        //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
+        //player with current turn should start to place his figures
+        if(this.state.figures.length < 4 && this.state.buildings.length === 0){
+            fetch(`${getDomain()}/games/${this.state.gameId}/figures/possiblePosts`, {
+                method: "GET",
+                headers: new Headers({
+                    'Authorization': this.state.currentUserToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                })
+            })
+                .then(handleError)
+                .then(initialPossibleMoves => {
+                    this.setState({initialPossibleMoves: initialPossibleMoves, initialMode: true})
+                })
+                .catch(err => {
+                    catchError(err, this);
+                });
         }
     };
 
@@ -165,25 +182,23 @@ class Games extends React.Component {
     };
 
     //fetch possible moves for only the figure that is active, activate figure once clicked on by user
+    //getPossibleMoves gets called when figure activated/clicked on
     getPossibleMoves = () => {
-        for(let i=0; i < this.state.figures.length; i++){
-            if(this.state.figures[i].active){
-                fetch(`${getDomain()}/games/${this.state.gameId}/figures/${this.state.figures[i].id}/possibleMoves`,{
-                    method: "GET",
-                    headers: new Headers({
-                        'Authorization': this.state.currentUserToken,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }),
-                })
-                    .then(handleError)
-                    .then(possibleMoves => {
-                        this.state.figures[i].push({possibleMoves: possibleMoves})
-                    })
-                    .catch(err => {
-                        catchError(err, this);
-                    });
-            }
-        }
+        let activeFigure = this.getActiveFigure();
+        fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, { //double check where to fetch possibleMoves and where to
+            method: "GET",
+            headers: new Headers({
+                'Authorization': this.state.currentUserToken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+        })
+            .then(handleError)
+            .then(possibleMoves => {
+                this.setState({possibleMoves: possibleMoves});
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     };
 
     getPossibleBuilds = () => { //only fetch for that figure that is active and if figure_moved is true
@@ -224,9 +239,8 @@ class Games extends React.Component {
     };
     isTargetForMove = (x,y) => {
         let figure = this.getActiveFigure();
-        if(figure != null && figure.hasOwnProperty('possibleMoves')){
+        if(figure != null && figure.hasOwnProperty('possibleMoves')){ //update possibleMoves according to new data structure
             let filteredMoves = figure.possibleMoves.filter((move) => {return move.x === x && move.y === y});
-            console.log(filteredMoves,figure);
             return filteredMoves.length > 0;
         }
         return false;
@@ -240,6 +254,20 @@ class Games extends React.Component {
             return filteredBuilds.length > 0;
         }
         return false;
+    };
+    isTargetForInitialMove = (x,y) => {
+        let initialFigures = this.state.initialPossibleMoves;
+        if(initialFigures){
+            let filteredInitialPossibleMoves = initialFigures.filter((move) => {return move.x === x && move.y === y});
+            return filteredInitialPossibleMoves.length > 0;
+        }
+
+    };
+
+    updateInitialFigure = (new_x, new_y, new_z) => {
+        const figures = this.state.figures.slice();
+        figures.push({x: new_x, y: new_y, z:new_z, active:false});
+        this.setState({figures: figures})
     };
 
     updateFigure = (figure, new_x, new_y, new_z) => {
@@ -330,6 +358,8 @@ class Games extends React.Component {
                                      figure={this.getFigure(x,y)}
                                      targetForMove={this.isTargetForMove(x,y)}
                                      targetForBuild={this.isTargetForBuild}
+                                     targetForInitialMove={this.isTargetForInitialMove(x,y)}
+                                     updateInitialFigure={this.updateInitialFigure}
                                      updateFigure={this.updateFigure}
                                      updateBuilding={this.updateBuilding}
                 />);
@@ -365,7 +395,7 @@ class Games extends React.Component {
         /**this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);**/
-        this.getInitialGame();
+        this.getInitialMoves();
     }
 
     render() {

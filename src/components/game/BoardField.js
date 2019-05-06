@@ -34,7 +34,7 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-const HoverFigure = styled.div`
+const Hover = styled.div`
  position: absolute;
  top: 0;
  left: 0;
@@ -43,16 +43,30 @@ const HoverFigure = styled.div`
  z-index: 1;
  opacity: 0.5;
  border: 20px solid;
- border-color: ${props => props.targetForMove ? 'yellow' : 'red'}
+ border-color: ${props => {
+    switch(props.itemType){
+        case 'initialFigure':
+            return props.targetForInitialMove ? 'yellow' : 'red';
+        case 'figure':
+            return props.targetForMove ? 'yellow' : 'red';
+        case 'building':
+            return props.targetForBuild ? 'yellow' : 'red';
+    }}}
 `;
 
-const HoverBuilding = styled(HoverFigure)`
+const HoverBuilding = styled(Hover)`
  border-color: ${props => props.targetForBuild ? 'yellow' : 'red'}
+`;
+
+const HoverInitialMove = styled(Hover)`
+ border-color: ${props => props.targetForInitialMove ? 'yellow' : 'red'}
 `;
 
 const FieldTarget = {
     canDrop(props, monitor){
         switch(monitor.getItemType()){
+            case 'initialFigure':
+                return !!props.targetForInitialMove; //to be implemented still
             case 'figure':
                 return !!props.targetForMove;
             case 'building': //check if dragged building has same z of possible build of drop target position
@@ -67,6 +81,13 @@ const FieldTarget = {
         console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
 
         switch(monitor.getItemType()){
+            case 'initialFigure':
+                props.updateInitialFigure(
+                    props.field_x_coordinate,
+                    props.field_y_coordinate,
+                    0,
+                );
+                break;
             case 'figure':
                 props.updateFigure(
                     monitor.getItem(),
@@ -105,10 +126,13 @@ function BoardField (props) { //use "isOver" to highlight field when hovering ov
         <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
             {building}
             {figure}
-            {isOver && (itemType === 'figure' ?
-                <HoverFigure targetForMove={props.targetForMove}/> :
-                    <HoverBuilding targetForBuild={props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel)}/>
-                )}
+            {isOver && (
+                <Hover
+                    itemType={itemType}
+                    targetForMove={props.targetForMove}
+                    targetForBuild={props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel)}
+                    targetForInitialMove={props.targetForInitialMove}
+                />)}
         </Field>
     );
 }

@@ -20,7 +20,7 @@ const BoardFigure = styled(BoardItem)`
   z-index: 5;
 `;
 
-const BuildingSource = {
+const FigureSource = {
     beginDrag(props){
         return props.figure;
     }
@@ -33,11 +33,11 @@ function collect(connect, monitor){
     }
 }
 
-function Building_0 (props) {
+function Figure_2 (props) {
     const {isDragging, connectDragSource} = props;
     return (
         <BoardFigure show={props.show} ref={instance => connectDragSource(instance)} />
     )
 }
 
-export default DragSource('initialFigure', BuildingSource, collect)(Building_0)
+export default DragSource('initialFigure', FigureSource, collect)(Figure_2)
