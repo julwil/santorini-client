@@ -4,7 +4,6 @@ import { DragSource } from 'react-dnd'
 import {COLOR_3, COLOR_4, COLOR_5} from "../../../helpers/layout";
 
 const BoardItem = styled.div`
-  display: block;
   position: relative;
   left: 50%;
   top: 50%;
@@ -12,6 +11,7 @@ const BoardItem = styled.div`
 `;
 
 const Building_3_Component = styled(BoardItem)`
+  display: ${props => props.show ? 'block' : 'none'};
   width: 50px;
   height: 50px;
   border-radius: 40px;
@@ -36,7 +36,7 @@ function collect(connect, monitor){
 function Building_3 (props) {
     const {isDragging, connectDragSource, building} = props;
     return (
-        <Building_3_Component ref={instance => connectDragSource(instance)} />
+        <Building_3_Component show={props.show} ref={instance => connectDragSource(instance)} />
     )
 }
 

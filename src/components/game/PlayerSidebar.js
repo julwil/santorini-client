@@ -19,10 +19,10 @@ class PlayerSidebar extends React.Component {
     render() {
         return (
             <Container>
-                <Building_0 building={this.props.building}/>
-                <Building_1 building={this.props.building}/>
-                <Building_2 building={this.props.building}/>
-                <Building_3 building={this.props.building}/>
+                <Building_0 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_1 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_2 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_3 show={this.props.showBuildingParts} building={this.props.building}/>
             </Container>
         )
     }
