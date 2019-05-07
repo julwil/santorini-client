@@ -35,14 +35,20 @@ function collect(connect, monitor){
 }
 
 class Figure extends React.Component {
+    constructor(props){
+        super(props);
+    }
     render() {
         const {isDragging, connectDragSource, figure} = this.props;
         return (
             <BoardFigure
-                ref={figure.active ? (instance => connectDragSource(instance)): {}}
+                ref={figure.active ? (instance => connectDragSource(instance)): (instance => {})}
                 id={figure.id}
                 user={figure.user}
                 active={figure.active}
+                onClick={()=>{
+                    this.props.activateFigure(figure.id)
+                }}
             />
         )
     }

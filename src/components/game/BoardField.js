@@ -115,27 +115,36 @@ function collect(connect, monitor){
     }
 }
 
-function BoardField (props) { //use "isOver" to highlight field when hovering over it
-    let figure, building;
-    if(props.figure != null) figure = (<Figure figure={props.figure}/>);
-    else figure = '';
-    if(props.building != null) building = (<BoardBuilding level={props.building.z}/>);
-    else building = '';
-    const {connectDropTarget, isOver, itemType, itemLevel} = props;
-    let validBuild = props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel);
-    return (
-        <Field ref={instance => connectDropTarget(instance)} targetForMove={props.targetForMove} targetForBuild={props.targetForBuild}>
-            {building}
-            {figure}
-            {isOver && (
-                <Hover
-                    itemType={itemType}
-                    targetForMove={props.targetForMove}
-                    targetForBuild={props.targetForBuild(props.field_x_coordinate, props.field_y_coordinate, itemLevel)}
-                    targetForInitialMove={props.targetForInitialMove}
-                />)}
-        </Field>
-    );
+class BoardField extends React.Component{ //use "isOver" to highlight field when hovering over it
+    constructor(props){
+        super(props);
+        this.state = {
+            refreshFigures: this.props.refreshFigures
+        }
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({refreshFigures:nextProps.refreshFigures})
+    }
+
+    render = () => {
+        const {connectDropTarget, isOver, itemType, itemLevel} = this.props;
+        let validBuild = this.props.targetForBuild(this.props.field_x_coordinate, this.props.field_y_coordinate, itemLevel);
+        
+        return (
+            <Field ref={instance => connectDropTarget(instance)} targetForMove={this.props.targetForMove} targetForBuild={this.props.targetForBuild}>
+                {(this.props.building != null)?(<BoardBuilding level={this.props.building.level}/>):''}
+                {(this.props.figure != null)?(<Figure figure={this.props.figure} activateFigure={this.props.activateFigure} refreshFigures={this.state.refreshFigures}/>):''}
+                {isOver && (
+                    <Hover
+                        itemType={itemType}
+                        targetForMove={this.props.targetForMove}
+                        targetForBuild={this.props.targetForBuild(this.props.field_x_coordinate, this.props.field_y_coordinate, itemLevel)}
+                        targetForInitialMove={this.props.targetForInitialMove}
+                    />)}
+            </Field>
+        );
+    };
 }
 
 export default DropTarget(['figure', 'building', 'initialFigure'], FieldTarget, collect)(BoardField)
