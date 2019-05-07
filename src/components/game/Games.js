@@ -50,29 +50,24 @@ class Games extends React.Component {
             gameId: null,
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
-            currentTurn: 4,
-            new_figures: [], //to be replaced by figures
-            new_buildings: [], //to be replaced by buildings
+            currentTurn: null, // 4 ???
+
             initialMode: false,
-            initialPossibleMoves: [{x:0,y:3,z:0}],
+            initialModeComplete: false,
+            initialPossibleMoves: [],
             initialFig1: true,
             initialFig2: true,
-            refreshFigures:false,
-            figures:[],
-            figureMoved: false,
-            buildings:[
-                {id:1,x:0,y:0,z:0},
-                {id:2,x:2,y:1,z:3},
-                {id:3,x:2,y:0,z:3},
-                {id:4,x:1,y:1,z:3},
-                {id:5,x:1,y:2,z:0},
-                {id:6,x:4,y:3,z:2},
-                {id:7,x:4,y:2,z:0},
-                {id:8,x:3,y:2,z:0},
-            ],
-            possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
-            newBuilding: {x:null, y:null, z:null},
             initialFigure: {x: null, y: null, z: null, type: null},
+            refreshFigures:false,
+
+            figures:[],
+            possibleMoves: [],
+            figureMoved: false,
+
+            buildings:[],
+            possibleBuilds: [],
+            newBuilding: {x:null, y:null, z:null},
+
             error: [],
         };
         this.intervalGameState = 0;
@@ -82,13 +77,11 @@ class Games extends React.Component {
     }
 
     getInitialMoves = () => {
-        console.log("Figures length: "+this.state.figures.length);
         //check if game has just been setup, respectively no figures or buildings on board
         //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
         //player with current turn should start to place his figures
-        console.log(this.state.new_figures.length);
-        console.log(this.state.new_buildings.length);
-        if(this.state.new_figures.length < 4 && this.state.new_buildings.length === 0){
+
+        if(this.state.figures.length < 4 && this.state.buildings.length === 0){
             fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
                 method: "GET",
                 headers: new Headers({
@@ -109,7 +102,7 @@ class Games extends React.Component {
 
     //fetch game state: at 2 s interval if not currently user's turn, otherwise fetch only once
     getGameState = () => {
-        fetch(`${getDomain()}/games/${this.state.gameId}`, {
+        fetch(`${getDomain()}/games/${this.props.match.params.gamesId}`, {
             method: "GET",
             headers: new Headers({
                 'Authorization': this.state.currentUserToken,
@@ -119,10 +112,10 @@ class Games extends React.Component {
             .then(handleError)
             .then(game => {
                 if(game !== null){ //should actually be game.length > 0
-                    this.setState({game: game, currentTurn: game.currentTurn});
-                    if (game.currentTurn === this.state.currentUser) {
-                        clearInterval(this.intervalGameState);
-                    }
+                    this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id});
+                }
+                if(game.currentTurn === this.state.currentUser){
+                    clearInterval(this.intervalGameState);
                 }
             })
             .catch(err => {
@@ -144,12 +137,12 @@ class Games extends React.Component {
             .then(figures => {
                 if(figures.length > 0){ //add active flag to all figures on game board
                     for(let i=0; i <figures.length; i ++){
-                        figures[i].push({active: false});
+                        //figures[i].push({active: false}); // how to add active:false to the figure? I have to find correct index of concerned figure
                     }
-                    this.setState({new_figures: figures});
-                    if(Number(this.state.currentTurn) === this.state.currentUser){
-                        clearInterval(this.intervalFigures);
-                    }
+                    this.setState({figures: figures});
+                }
+                if(this.state.currentTurn === this.state.currentUser){
+                    clearInterval(this.intervalFigures);
                 }
             })
             .catch(err => {
@@ -170,10 +163,10 @@ class Games extends React.Component {
             //should any interval be reestablished to call get fetches to update game board
             .then(buildings => {
                 if(buildings.length > 0){
-                    this.setState({new_buildings: buildings});
-                    if(this.state.currentTurn === this.state.currentUser){
-                        clearInterval(this.intervalBuildings);
-                    }
+                    this.setState({buildings: buildings});
+                }
+                if(this.state.currentTurn === this.state.currentUser){
+                    clearInterval(this.intervalBuildings);
                 }
             })
             .catch(err => {
@@ -184,9 +177,10 @@ class Games extends React.Component {
 
     //fetch possible moves for only the figure that is active, activate figure once clicked on by user
     //getPossibleMoves gets called when figure activated/clicked on
+    //initialize fetch when figure clicked on
     getPossibleMoves = () => {
         let activeFigure = this.getActiveFigure();
-        fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, { //double check where to fetch possibleMoves and where to
+        fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, {
             method: "GET",
             headers: new Headers({
                 'Authorization': this.state.currentUserToken,
@@ -204,7 +198,7 @@ class Games extends React.Component {
 
     getPossibleBuilds = () => { //only fetch for that figure that is active and if figure_moved is true
         if(this.state.figureMoved){
-            fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`,{ //Is possible builds related to a figure?
+            fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`,{
                 method: "GET",
                 headers: new Headers({
                     'Authorization': this.state.currentUserToken,
@@ -222,20 +216,35 @@ class Games extends React.Component {
     };
 
     getBuilding = (x,y) => {
-        let filteredBuildings = this.state.buildings.filter((building)=>{return building.x === x && building.y === y});
-        if(filteredBuildings.length > 0) return filteredBuildings[0];
-        return null;
+        if (this.state.buildings.length > 0) {
+            let filteredBuildings = this.state.buildings.filter((building) => {
+                return building.x === x && building.y === y
+            });
+            if (filteredBuildings.length > 0) return filteredBuildings[0];
+            return null;
+        }
     };
+
     getFigure = (x,y) => {
-        let filteredFigures = this.state.figures.filter((figure) => {return figure.x === x && figure.y === y});
-        if(filteredFigures.length > 0) return filteredFigures[0];
-        return null;
+        console.log("Current figures: ");
+        console.log(this.state.figures);
+        console.log("Current figures length: "+this.state.figures.length);
+        console.log(this.state.figures.position);
+        if (this.state.figures.length > 0) {
+            let filteredFigures = this.state.figures.filter((figure) => {
+                return figure.position.x === x && figure.position.y === y
+            });
+            if (filteredFigures.length > 0) return filteredFigures[0];
+            return null;
+        }
     };
+
     getFigureById = (id) => {
         let filteredFigures = this.state.figures.filter((figure) => {return figure.id === id});
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
+
     getActiveFigure = () => {
         let filteredFigures = this.state.figures.filter((figure) => {
             return figure.active;
@@ -243,29 +252,32 @@ class Games extends React.Component {
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
+
     activateFigure = (id) => {
         let figure = this.getFigureById(id);
-        if(this.getActiveFigure() == null && figure != null && figure.userid === this.state.currentTurn){
+        if(this.getActiveFigure() == null && figure != null && Number(figure.userid) === Number(this.state.currentTurn)){
             let newFigures = this.state.figures.slice();
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
             this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures });
         }
     };
+
     isTargetForMove = (x,y) => {
         let figure = this.getActiveFigure();
         if(figure != null && figure.hasOwnProperty('possibleMoves')){ //update possibleMoves according to new data structure
-            let filteredMoves = figure.possibleMoves.filter((move) => {return move.x === x && move.y === y});
+            let filteredMoves = this.state.possibleMoves.filter((move) => {return move.x === x && move.y === y});
             return filteredMoves.length > 0;
         }
         return false;
     };
+
     isTargetForBuild = (x,y,z) => {//get x, y of position dragging to and z of building to be dragged
         //this.state.possibleBuilds once using correct data from server
 
         let figure = this.getActiveFigure();
         if(figure != null && figure.hasOwnProperty('possibleBuilds')){
-            let filteredBuilds = figure.possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
+            let filteredBuilds = this.state.possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
             return filteredBuilds.length > 0;
         }
         return false;
@@ -278,27 +290,46 @@ class Games extends React.Component {
             return filteredInitialPossibleMoves.length > 0;
         }
     };
-      
-    updateBoard = () => {
-        this.getGameState();
-        this.getFigures();
-        this.getBuildings();
-        this.getPossibleBuilds();
-    };
 
     updateInitialFigure = (updating_fig, new_x, new_y, new_z) => {
         const figures = this.state.figures.slice();
-        figures.push({x: new_x, y: new_y, z:new_z, active:false});
+        figures.push({position: {x: new_x, y: new_y, z:new_z}, active:false});
         this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
-        console.log(updating_fig);
         updating_fig.type === 'fig1' ? this.setState({initialFig1: false}) : this.setState({initialFig2: false});
+
+        fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': this.state.currentUserToken,
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify(({
+                x: new_x,
+                y: new_y,
+                z: new_z,
+            })),
+        })
+            .then(handleError)
+            //should any interval be reestablished to call get fetches to update game board
+            .then(() => {
+                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
+                if(updating_fig.type === 'fig2') {
+                    this.setState({figureMoved: true, initialMode: false, initialModeComplete: true});
+                }
+                //update game board
+                this.updateBoard();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
     };
 
     updateFigure = (figure, new_x, new_y, new_z) => {
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const figures = this.state.figures.slice();
-        figures[figure_idx] = {x: new_x, y: new_y, z: new_z, active: false}; //find correct index and not anticipate it
+        //find correct index and not anticipate it
+        figures[figure_idx] = {position: {x: new_x, y: new_y, z: new_z}, active: false};
         this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
 
         let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_z){return possibleValueSet}});
@@ -318,7 +349,7 @@ class Games extends React.Component {
             //should any interval be reestablished to call get fetches to update game board
             .then(() => {
                 //update game board
-               this.updateBoard();
+                this.updateBoard();
 
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
                 this.setState({figureMoved: true});
@@ -328,7 +359,7 @@ class Games extends React.Component {
             });
     };
 
-    updateBuilding = (new_x, new_y, new_z) => {
+    updateBuilding = (new_x, new_y, new_z) => { // update building setting according to new data structure from backend
         //updating current game board indication
         const newBuildings = this.state.buildings;
         if(this.getBuilding(new_x, new_y) != null){//update existing Building
@@ -388,6 +419,7 @@ class Games extends React.Component {
                                      activateFigure={this.activateFigure}
                                      updateBuilding={this.updateBuilding}
                                      refreshFigures={this.state.refreshFigures}
+                                     currentUser={this.state.currentUser}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
@@ -415,21 +447,34 @@ class Games extends React.Component {
             });
     }
 
+    updateBoard = () => {
+        this.getGameState();
+        this.getFigures();
+        this.getBuildings();
+        this.getPossibleBuilds();
+    };
+
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
-        /**this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
-        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);**/
-        console.log("GameId before fetch: "+this.state.gameId);
-        this.getInitialMoves();
-        console.log(this.state.initialFig1);
-        console.log(this.state.initialMode);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        if(this.state.currentTurn === this.state.currentUser){
+            clearInterval(this.intervalGameState);
+            clearInterval(this.intervalFigures);
+            clearInterval(this.intervalBuildings);
+        }
+
+        //if the initialModeComplete is set to true the user has placed his figures in the initial game mode
+        if(!this.state.initialModeComplete){
+            this.getInitialMoves();
+        }
     }
 
     render() {
         return (
             <GameWrapper>
-                <GameHeader currentTurn={this.state.currentTurn}/>
+                <GameHeader currentTurn={Number(this.state.currentTurn)}/>
                 <MainGame>
                     <OpponentSidebar />
                         <GameBoard>
