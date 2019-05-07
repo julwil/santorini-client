@@ -9,17 +9,17 @@ const BoardItem = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const Building_2_Component = styled(BoardItem)`
+const Building_0_Component = styled(BoardItem)`
   display: ${props => props.show ? 'block' : 'none'};
-  width: 60px;
-  height:60px;
-  background-color: #fff;
-  z-index: 3;  
+  width: 110px;
+  height: 110px;
+  background-color: #ddd;
+  z-index: 1;
 `;
 
 const BuildingSource = {
     beginDrag(props){
-        props.building.level = 2;
+        props.building.z = 0;
         return props.building;
     }
 };
@@ -31,11 +31,11 @@ function collect(connect, monitor){
     }
 }
 
-function Building_2 (props) {
+function Building_0 (props) {
     const {isDragging, connectDragSource, building} = props;
     return (
-        <Building_2_Component show={props.show} ref={instance => connectDragSource(instance)} />
+        <Building_0_Component show={props.show} ref={instance => connectDragSource(instance)} />
     )
 }
 
-export default DragSource('building', BuildingSource, collect)(Building_2)
+export default DragSource('building', BuildingSource, collect)(Building_0)

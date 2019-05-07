@@ -10,6 +10,7 @@ const BoardItem = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
 `;
+
 const BoardFigure = styled(BoardItem)`
   width: 30px;
   height: 30px;
