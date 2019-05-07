@@ -51,10 +51,12 @@ class Games extends React.Component {
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
             current_Turn: null,
-            new_figures: null, //to be replaced by figures
-            new_buildings: null, //to be replaced by buildings
+            new_figures: [], //to be replaced by figures
+            new_buildings: [], //to be replaced by buildings
             initialMode: false,
             initialPossibleMoves: [{x:0,y:3,z:0}],
+            initialFig1: true,
+            initialFig2: true,
             figures:[
                 {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
                 {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
@@ -74,7 +76,7 @@ class Games extends React.Component {
             ],
             possibleBuilds: [{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}],
             newBuilding: {x:null, y:null, z:null},
-            initialFigure: {x: null, y: null, z: null},
+            initialFigure: {x: null, y: null, z: null, type: null},
             error: [],
         };
         this.intervalGameState = 0;
@@ -88,8 +90,10 @@ class Games extends React.Component {
         //check if game has just been setup, respectively no figures or buildings on board
         //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
         //player with current turn should start to place his figures
-        if(this.state.figures.length < 4 && this.state.buildings.length === 0){
-            fetch(`${getDomain()}/games/${this.state.gameId}/figures/possiblePosts`, {
+        console.log(this.state.new_figures.length);
+        console.log(this.state.new_buildings.length);
+        if(this.state.new_figures.length < 4 && this.state.new_buildings.length === 0){
+            fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
                 method: "GET",
                 headers: new Headers({
                     'Authorization': this.state.currentUserToken,
@@ -98,6 +102,7 @@ class Games extends React.Component {
             })
                 .then(handleError)
                 .then(initialPossibleMoves => {
+                    console.log("fetched possiblePosts");
                     this.setState({initialPossibleMoves: initialPossibleMoves, initialMode: true})
                 })
                 .catch(err => {
@@ -264,10 +269,12 @@ class Games extends React.Component {
 
     };
 
-    updateInitialFigure = (new_x, new_y, new_z) => {
+    updateInitialFigure = (updating_fig, new_x, new_y, new_z) => {
         const figures = this.state.figures.slice();
         figures.push({x: new_x, y: new_y, z:new_z, active:false});
-        this.setState({figures: figures})
+        this.setState({figures: figures});
+        console.log(updating_fig);
+        updating_fig.type === 'fig1' ? this.setState({initialFig1: false}) : this.setState({initialFig2: false});
     };
 
     updateFigure = (figure, new_x, new_y, new_z) => {
@@ -395,7 +402,10 @@ class Games extends React.Component {
         /**this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);**/
+        console.log("GameId before fetch: "+this.state.gameId);
         this.getInitialMoves();
+        console.log(this.state.initialFig1);
+        console.log(this.state.initialMode);
     }
 
     render() {
@@ -407,7 +417,7 @@ class Games extends React.Component {
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <PlayerSidebar initialModeActive={this.state.initialMode} figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
+                    <PlayerSidebar showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1} showInitialFig2={this.state.initialFig2 ? this.state.initialMode : this.state.initialFig2} figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>

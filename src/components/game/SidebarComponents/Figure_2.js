@@ -11,6 +11,7 @@ const BoardItem = styled.div`
 `;
 
 const BoardFigure = styled(BoardItem)`
+  display: ${props => props.show ? 'block' : 'none'};
   width: 30px;
   height: 30px;
   background-color: ${props => props.user === 1 ? COLOR_4 : COLOR_2};
@@ -34,7 +35,8 @@ function collect(connect, monitor){
 }
 
 function Figure_2 (props) {
-    const {isDragging, connectDragSource} = props;
+    const {isDragging, connectDragSource, figure} = props;
+    figure.type = 'fig2';
     return (
         <BoardFigure show={props.show} ref={instance => connectDragSource(instance)} />
     )

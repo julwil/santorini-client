@@ -83,9 +83,10 @@ const FieldTarget = {
         switch(monitor.getItemType()){
             case 'initialFigure':
                 props.updateInitialFigure(
+                    monitor.getItem(),
                     props.field_x_coordinate,
                     props.field_y_coordinate,
-                    0,
+                    0
                 );
                 break;
             case 'figure':
