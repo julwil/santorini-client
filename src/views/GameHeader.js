@@ -24,12 +24,11 @@ const Turn = styled.div`
 `;
 
 const GameHeader = (props) => {
-    console.log(props);
     return (
         <Container>
             <Link to={'/users'}><Button>Surrender</Button></Link>
             <HeaderImage src={process.env.PUBLIC_URL+"/assets/images/santorini_banner_logo.png"} alt="Logo"/>
-            <Turn>{props.currentTurn === localStorage.getItem('user_id')?'It\'s your turn':'Your opponent is playing..'}</Turn>
+            <Turn>{props.currentTurn === Number(localStorage.getItem('user_id'))?'It\'s your turn':'Your opponent is playing..'}</Turn>
             <ButtonSecondary>Rules</ButtonSecondary>
         </Container>
     );
