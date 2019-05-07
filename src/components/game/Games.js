@@ -50,7 +50,7 @@ class Games extends React.Component {
             gameId: null,
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
-            current_Turn: 4,
+            currentTurn: 4,
             new_figures: [], //to be replaced by figures
             new_buildings: [], //to be replaced by buildings
             initialMode: false,
@@ -58,12 +58,7 @@ class Games extends React.Component {
             initialFig1: true,
             initialFig2: true,
             refreshFigures:false,
-            figures:[
-                {id:1,user:1,userid:4,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:2,user:1,userid:4,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:3,user:2,userid:2,active:false,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}]},
-                {id:4,user:2,userid:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
-            ],
+            figures:[],
             figureMoved: false,
             buildings:[
                 {id:1,x:0,y:0,z:0},
@@ -294,7 +289,7 @@ class Games extends React.Component {
     updateInitialFigure = (updating_fig, new_x, new_y, new_z) => {
         const figures = this.state.figures.slice();
         figures.push({x: new_x, y: new_y, z:new_z, active:false});
-        this.setState({figures: figures});
+        this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
         console.log(updating_fig);
         updating_fig.type === 'fig1' ? this.setState({initialFig1: false}) : this.setState({initialFig2: false});
     };
@@ -304,7 +299,7 @@ class Games extends React.Component {
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const figures = this.state.figures.slice();
         figures[figure_idx] = {x: new_x, y: new_y, z: new_z, active: false}; //find correct index and not anticipate it
-        this.setState({figures: figures});
+        this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
 
         let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_z){return possibleValueSet}});
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
@@ -440,7 +435,13 @@ class Games extends React.Component {
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                    <PlayerSidebar showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1} showInitialFig2={this.state.initialFig2 ? this.state.initialMode : this.state.initialFig2} figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved} building={this.state.newBuilding}/>
+                    <PlayerSidebar
+                        showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1}
+                        showInitialFig2={this.state.initialFig2 ? this.state.initialMode : this.state.initialFig2}
+                        figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved}
+                        building={this.state.newBuilding}
+                        refreshFigures={this.state.refreshFigures}
+                    />
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
