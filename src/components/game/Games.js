@@ -43,21 +43,22 @@ const PlayerSidebarWrapper = styled.div`
 
 class Games extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             game: null,
             gameId: null,
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
-            currentTurn: null,
+            currentTurn: 4,
             new_figures: null, //to be replaced by figures
             new_buildings: null, //to be replaced by buildings
+            refreshFigures:false,
             figures:[
-                {id:1,user:1,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:2,user:1,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
-                {id:3,user:2,active:true,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}]},
-                {id:4,user:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
+                {id:1,user:1,userid:4,active:false,x:0,y:0,possibleMoves:[],possibleBuilds:[]},
+                {id:2,user:1,userid:4,active:false,x:3,y:0,possibleMoves:[],possibleBuilds:[]},
+                {id:3,user:2,userid:2,active:false,x:1,y:3,possibleMoves:[{x:0,y:2},{x:0,y:3},{x:0,y:4},{x:2,y:2},{x:2,y:4},{x:2,y:3},{x:1,y:2},{x:1,y:4}],possibleBuilds:[{x:0,y:2,z:0},{x:0,y:3,z:0},{x:0,y:4,z:0},{x:1,y:2,z:1}]},
+                {id:4,user:2,userid:2,active:false,x:3,y:2,possibleMoves:[],possibleBuilds:[]},
             ],
             figureMoved: false,
             buildings:[
@@ -205,6 +206,11 @@ class Games extends React.Component {
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
+    getFigureById = (id) => {
+        let filteredFigures = this.state.figures.filter((figure) => {return figure.id === id});
+        if(filteredFigures.length > 0) return filteredFigures[0];
+        return null;
+    };
     getActiveFigure = () => {
         let filteredFigures = this.state.figures.filter((figure) => {
             return figure.active;
@@ -212,11 +218,19 @@ class Games extends React.Component {
         if(filteredFigures.length > 0) return filteredFigures[0];
         return null;
     };
+    activateFigure = (id) => {
+        let figure = this.getFigureById(id);
+        if(this.getActiveFigure() == null && figure != null && figure.userid === this.state.currentTurn){
+            let newFigures = this.state.figures.slice();
+            figure.active = true;
+            newFigures[newFigures.indexOf(figure)] = figure;
+            this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures });
+        }
+    };
     isTargetForMove = (x,y) => {
         let figure = this.getActiveFigure();
         if(figure != null && figure.hasOwnProperty('possibleMoves')){
             let filteredMoves = figure.possibleMoves.filter((move) => {return move.x === x && move.y === y});
-            console.log(filteredMoves,figure);
             return filteredMoves.length > 0;
         }
         return false;
@@ -277,7 +291,7 @@ class Games extends React.Component {
         //updating current game board indication
         const newBuildings = this.state.buildings;
         if(this.getBuilding(new_x, new_y) != null){//update existing Building
-            let building = newBuildings.filter((building) => {if(building.x === new_x && building.y === new_y){return building}});
+            let building = newBuildings.filter((building) => {return building.x === new_x && building.y === new_y});
             let building_ids = newBuildings.map((building) => {return building.id});
             newBuildings[building_ids.indexOf(building[0].id)] = {id:building[0].id, x: new_x, y: new_y, level: new_buildingLevel}
         }else{
@@ -288,7 +302,7 @@ class Games extends React.Component {
 
         //return value set of possible Builds instead of new values from drag and drop
         //fetch() POST TO BACKEND /games/id/building - update state of figureMoved
-        let possibleBuildValueSet = this.state.possibleBuilds.filter((possibleBuildValueSet) => {if(possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_buildingLevel){return possibleBuildValueSet}})
+        let possibleBuildValueSet = this.state.possibleBuilds.filter((possibleBuildValueSet) => {return possibleBuildValueSet.x === new_x && possibleBuildValueSet.y === new_y && possibleBuildValueSet === new_buildingLevel});
         fetch(`${getDomain()}/games/${this.state.gameId}/buildings`, {
             method: "POST",
             headers: new Headers({
@@ -328,12 +342,13 @@ class Games extends React.Component {
                                      targetForMove={this.isTargetForMove(x,y)}
                                      targetForBuild={this.isTargetForBuild}
                                      updateFigure={this.updateFigure}
+                                     activateFigure={this.activateFigure}
                                      updateBuilding={this.updateBuilding}
+                                     refreshFigures={this.state.refreshFigures}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
         }
-        console.log("GameId: "+this.state.gameId);
         return board;
     };
 
@@ -368,7 +383,7 @@ class Games extends React.Component {
     render() {
         return (
             <GameWrapper>
-                <GameHeader  currentTurn={this.state.currentTurn}/>
+                <GameHeader currentTurn={this.state.currentTurn}/>
                 <MainGame>
                     <OpponentSidebar />
                         <GameBoard>
