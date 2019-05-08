@@ -52,7 +52,7 @@ class Games extends React.Component {
             currentUserToken: localStorage.getItem("token"),
             currentTurn: null, // 4 ???
 
-            initialMode: false,
+            initialMode: true,
             initialModeComplete: false,
             initialPossibleMoves: [],
             initialFig1: true,
@@ -80,23 +80,27 @@ class Games extends React.Component {
         //check if game has just been setup, respectively no figures or buildings on board
         //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
         //player with current turn should start to place his figures
-
-        if(this.state.figures.length < 4 && this.state.buildings.length === 0){
-            fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
-                method: "GET",
-                headers: new Headers({
-                    'Authorization': this.state.currentUserToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+        console.log("InitialMode in getInitialMoves: "+this.state.initialMode);
+        if (this.state.initialPossibleMoves.length <= 0) {
+            if (this.state.figures.length < 4 && this.state.buildings.length === 0 && !this.state.initialModeComplete) {
+                console.log(this.state.currentTurn);
+                console.log(this.state.currentUser);
+                fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
+                    method: "GET",
+                    headers: new Headers({
+                        'Authorization': this.state.currentUserToken,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    })
                 })
-            })
-                .then(handleError)
-                .then(initialPossibleMoves => {
-                    console.log("fetched possiblePosts");
-                    this.setState({initialPossibleMoves: initialPossibleMoves, initialMode: true})
-                })
-                .catch(err => {
-                    catchError(err, this);
-                });
+                    .then(handleError)
+                    .then(initialPossibleMoves => {
+                        console.log("fetched possiblePosts");
+                        this.setState({initialPossibleMoves: initialPossibleMoves})
+                    })
+                    .catch(err => {
+                        catchError(err, this);
+                    });
+            }
         }
     };
 
@@ -114,8 +118,15 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id});
                 }
+                console.log("Current Turn in Game: "+game.currentTurn);
                 if(game.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalGameState);
+                    if(!this.state.initialModeComplete){
+                        console.log("Fetching initial moves");
+                        this.getInitialMoves();
+                    }
+                }else{
+                    this.setState({initialMode: false});
                 }
             })
             .catch(err => {
@@ -140,10 +151,14 @@ class Games extends React.Component {
                         //figures[i].push({active: false}); // how to add active:false to the figure? I have to find correct index of concerned figure
                     }
                     this.setState({figures: figures});
+                    if(figures.length >= 4){
+                        this.setState({initialMode: false});
+                    }
                 }
                 if(this.state.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalFigures);
                 }
+
             })
             .catch(err => {
                 catchError(err, this);
@@ -315,8 +330,10 @@ class Games extends React.Component {
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
                 if(updating_fig.type === 'fig2') {
                     this.setState({figureMoved: true, initialMode: false, initialModeComplete: true});
+                    console.log("Initial Mode set to false");
                 }
                 //update game board
+                console.log("Update Board");
                 this.updateBoard();
             })
             .catch(err => {
@@ -464,11 +481,7 @@ class Games extends React.Component {
             clearInterval(this.intervalFigures);
             clearInterval(this.intervalBuildings);
         }
-
-        //if the initialModeComplete is set to true the user has placed his figures in the initial game mode
-        if(!this.state.initialModeComplete){
-            this.getInitialMoves();
-        }
+        console.log("Initial Mode: "+this.state.initialMode);
     }
 
     render() {
@@ -483,7 +496,8 @@ class Games extends React.Component {
                     <PlayerSidebar
                         showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1}
                         showInitialFig2={this.state.initialFig2 ? this.state.initialMode : this.state.initialFig2}
-                        figure={this.state.initialFigure} showBuildingParts={this.state.figureMoved}
+                        figure={this.state.initialFigure}
+                        showBuildingParts={!this.state.initialMode}
                         building={this.state.newBuilding}
                         refreshFigures={this.state.refreshFigures}
                     />
