@@ -37,6 +37,17 @@ const Invite_Button = styled(Button)`
   margin-left: 10px;
 `;
 
+const GodCardWrapper = styled.div`
+  margin-top: 10px;
+`;
+
+const GodCard = styled.img`
+  border: 3px solid;
+  width: 30%;
+  margin: 0 .5%;
+  border-color: ${props => props.selected?'yellow':'grey'};
+`;
+
 //only show if games not empty, if not then show first game object of list once accepted update game status and delete remaining games if there still exist any
 //if accepted redirect user to "/games/{id}", if denied update server and delete game
 class InvitationNote extends React.Component{
@@ -72,6 +83,7 @@ class InvitationNote extends React.Component{
     }
 
     render = () => { //indicate data about game in here as well as provide accept and deny button in here
+        console.log(this.props.games);
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
@@ -81,6 +93,22 @@ class InvitationNote extends React.Component{
                     </div>
                     <div>
                     Game mode: {this.props.isGodPower ? "Involving god powers" : "Without god powers"}
+                        {this.props.isGodPower?(
+                            <div>
+                                <b>Choose your god card!</b>
+                            <GodCardWrapper>
+                                {this.props.games.godCards.map((godcard)=>(
+                                    <GodCard
+                                        src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}
+                                        selected={godcard.selected}
+                                        user={godcard.user}
+                                        name={godcard.name}
+                                        onClick={()=>{this.chooseGodCard(godcard.name)}}
+                                    />
+                                ))}
+                            </GodCardWrapper>
+                            </div>
+                        ):('')}
                     </div>
                     <Invite_ButtonContainer>
                         <Invite_Button
