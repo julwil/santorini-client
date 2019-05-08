@@ -8,7 +8,6 @@ import {catchError} from "../../helpers/catchError";
 import {Spinner} from "../../views/design/Spinner";
 import Error from "../../helpers/Error";
 import {withRouter} from "react-router-dom";
-import {godCards} from "../../helpers/godCards";
 
 const PopupContainer = styled.div`
   position: fixed;
