@@ -72,11 +72,12 @@ const FieldTarget = {
                 );
                 break;
             case 'figure':
+                console.log("Current droptarget building: "); console.log(props.building);
                 props.updateFigure(
                     monitor.getItem(),
                     props.field_x_coordinate,
                     props.field_y_coordinate,
-                    (props.building !== null ? props.building.z+1 : 0)
+                    (props.building ? props.building.position.z+1 : 0)
                 );
                 break;
             case 'building':

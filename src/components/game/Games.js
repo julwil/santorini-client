@@ -58,7 +58,7 @@ class Games extends React.Component {
             initialFig1: true,
             initialFig2: true,
             initialFigure: {x: null, y: null, z: null, type: null},
-            refreshFigures:false,
+            refreshFigures: false,
 
             figures:[],
             possibleMoves: [],
@@ -66,7 +66,7 @@ class Games extends React.Component {
 
             buildings:[],
             possibleBuilds: [],
-            newBuilding: {x:null, y:null, z:null},
+            newBuilding: {x: null, y: null, z: null},
 
             error: [],
         };
@@ -83,8 +83,6 @@ class Games extends React.Component {
         console.log("InitialMode in getInitialMoves: "+this.state.initialMode);
         if (this.state.initialPossibleMoves.length <= 0) {
             if (this.state.figures.length < 4 && this.state.buildings.length === 0 && !this.state.initialModeComplete) {
-                console.log(this.state.currentTurn);
-                console.log(this.state.currentUser);
                 fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
                     method: "GET",
                     headers: new Headers({
@@ -118,7 +116,6 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id});
                 }
-                console.log("Current Turn in Game: "+game.currentTurn);
                 if(game.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalGameState);
                     if(!this.state.initialModeComplete){
@@ -147,8 +144,8 @@ class Games extends React.Component {
             //should any interval be reestablished to call get fetches to update game board
             .then(figures => {
                 if(figures.length > 0){ //add active flag to all figures on game board
-                    for(let i=0; i <figures.length; i ++){
-                        //figures[i].push({active: false}); // how to add active:false to the figure? I have to find correct index of concerned figure
+                    for(let i=0; i < figures.length; i ++){
+                        figures[i] = {id: figures[i].id, position: figures[i].position, owner: figures[i].owner, active: false}; // how to add active:false to the figure? I have to find correct index of concerned figure
                     }
                     this.setState({figures: figures});
                     if(figures.length >= 4){
@@ -195,6 +192,8 @@ class Games extends React.Component {
     //initialize fetch when figure clicked on
     getPossibleMoves = () => {
         let activeFigure = this.getActiveFigure();
+        console.log("Current active figure: ");
+        console.log(activeFigure);
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, {
             method: "GET",
             headers: new Headers({
@@ -205,6 +204,7 @@ class Games extends React.Component {
             .then(handleError)
             .then(possibleMoves => {
                 this.setState({possibleMoves: possibleMoves});
+                console.log(possibleMoves);
             })
             .catch(err => {
                 catchError(err, this);
@@ -233,7 +233,7 @@ class Games extends React.Component {
     getBuilding = (x,y) => {
         if (this.state.buildings.length > 0) {
             let filteredBuildings = this.state.buildings.filter((building) => {
-                return building.x === x && building.y === y
+                return building.position.x === x && building.position.y === y
             });
             if (filteredBuildings.length > 0) return filteredBuildings[0];
             return null;
@@ -241,10 +241,6 @@ class Games extends React.Component {
     };
 
     getFigure = (x,y) => {
-        console.log("Current figures: ");
-        console.log(this.state.figures);
-        console.log("Current figures length: "+this.state.figures.length);
-        console.log(this.state.figures.position);
         if (this.state.figures.length > 0) {
             let filteredFigures = this.state.figures.filter((figure) => {
                 return figure.position.x === x && figure.position.y === y
@@ -269,20 +265,43 @@ class Games extends React.Component {
     };
 
     activateFigure = (id) => {
+        console.log("Figure clicked");
         let figure = this.getFigureById(id);
-        if(this.getActiveFigure() == null && figure != null && Number(figure.userid) === Number(this.state.currentTurn)){
+        if(this.getActiveFigure() == null && figure != null && Number(figure.owner) === Number(this.state.currentTurn)){
             let newFigures = this.state.figures.slice();
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
             this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures });
+            console.log(newFigures);
+            this.getPossibleMoves();
         }
     };
 
-    isTargetForMove = (x,y) => {
+    isTargetForInitialMove = (x,y) => {
+        let initialFigures = this.state.initialPossibleMoves;
+        if(initialFigures){
+            let filteredInitialPossibleMoves = initialFigures.filter((move) => {return move.x === x && move.y === y});
+            return filteredInitialPossibleMoves.length > 0;
+        }
+    };
+
+    isTargetForMove = (x,y,z) => {
         let figure = this.getActiveFigure();
-        if(figure != null && figure.hasOwnProperty('possibleMoves')){ //update possibleMoves according to new data structure
-            let filteredMoves = this.state.possibleMoves.filter((move) => {return move.x === x && move.y === y});
-            return filteredMoves.length > 0;
+        let possibleMoves = this.state.possibleMoves;
+        if(z){
+
+        }
+        if(figure != null && possibleMoves.length !== 0){ //update possibleMoves according to new data structure
+            if(z){
+                let possibleMoveValueSet = possibleMoves.filter((possibleValueSet) => {
+                    if(possibleValueSet.x === x && possibleValueSet.y === y && possibleValueSet.z === z){
+                            return possibleValueSet;
+                    }});
+                return possibleMoveValueSet.length > 0;
+            }else{
+                let filteredMoves = possibleMoves.filter((move) => {return move.x === x && move.y === y});
+                return filteredMoves.length > 0;
+            }
         }
         return false;
     };
@@ -298,18 +317,10 @@ class Games extends React.Component {
         return false;
     };
 
-    isTargetForInitialMove = (x,y) => {
-        let initialFigures = this.state.initialPossibleMoves;
-        if(initialFigures){
-            let filteredInitialPossibleMoves = initialFigures.filter((move) => {return move.x === x && move.y === y});
-            return filteredInitialPossibleMoves.length > 0;
-        }
-    };
-
     updateInitialFigure = (updating_fig, new_x, new_y, new_z) => {
         const figures = this.state.figures.slice();
         figures.push({position: {x: new_x, y: new_y, z:new_z}, active:false});
-        this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
+        this.setState({figures: figures}); //refreshFigures: !this.state.refreshFigures
         updating_fig.type === 'fig1' ? this.setState({initialFig1: false}) : this.setState({initialFig2: false});
 
         fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
@@ -333,7 +344,6 @@ class Games extends React.Component {
                     console.log("Initial Mode set to false");
                 }
                 //update game board
-                console.log("Update Board");
                 this.updateBoard();
             })
             .catch(err => {
@@ -342,38 +352,42 @@ class Games extends React.Component {
     };
 
     updateFigure = (figure, new_x, new_y, new_z) => {
+        console.log(figure); console.log(new_x, new_y, new_z);
+
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
-        const figures = this.state.figures.slice();
+        const newFigures = this.state.figures.slice();
         //find correct index and not anticipate it
-        figures[figure_idx] = {position: {x: new_x, y: new_y, z: new_z}, active: false};
-        this.setState({figures: figures, refreshFigures: !this.state.refreshFigures});
+        newFigures[figure_idx] = {id: figure.id, position: {x: new_x, y: new_y, z: new_z}, owner: figure.owner, active: false};
+        this.setState({figures: newFigures, }); //refreshFigures: !this.state.refreshFigures
 
-        let possibleMoveValueSet = this.state.figures.filter((possibleValueSet) => {if(possibleValueSet.x === new_x && possibleValueSet.y === new_y && possibleValueSet.z === new_z){return possibleValueSet}});
-        fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
-            method: "PUT",
-            headers: new Headers({
-                'Authorization': this.state.currentUserToken,
-                'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify(({
-                x: possibleMoveValueSet.x,
-                y: possibleMoveValueSet.y,
-                z: possibleMoveValueSet.z,
-            })),
-        })
-            .then(handleError)
-            //should any interval be reestablished to call get fetches to update game board
-            .then(() => {
-                //update game board
-                this.updateBoard();
-
-                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
-                this.setState({figureMoved: true});
+        if(this.isTargetForMove(new_x, new_y, new_z)){
+            fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
+                method: "PUT",
+                headers: new Headers({
+                    'Authorization': this.state.currentUserToken,
+                    'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify(({
+                    x: new_x,
+                    y: new_y,
+                    z: new_z,
+                })),
             })
-            .catch(err => {
-                catchError(err, this);
-            });
+                .then(handleError)
+                //should any interval be reestablished to call get fetches to update game board
+                .then(() => {
+                    //update game board
+                    this.updateBoard();
+                    this.getPossibleBuilds();
+
+                    //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
+                    this.setState({figureMoved: true});
+                })
+                .catch(err => {
+                    catchError(err, this);
+                });
+        }
     };
 
     updateBuilding = (new_x, new_y, new_z) => { // update building setting according to new data structure from backend
@@ -468,7 +482,6 @@ class Games extends React.Component {
         this.getGameState();
         this.getFigures();
         this.getBuildings();
-        this.getPossibleBuilds();
     };
 
     componentDidMount() {
@@ -481,7 +494,6 @@ class Games extends React.Component {
             clearInterval(this.intervalFigures);
             clearInterval(this.intervalBuildings);
         }
-        console.log("Initial Mode: "+this.state.initialMode);
     }
 
     render() {
