@@ -72,7 +72,6 @@ const FieldTarget = {
                 );
                 break;
             case 'figure':
-                console.log("Current droptarget building: "); console.log(props.building);
                 props.updateFigure(
                     monitor.getItem(),
                     props.field_x_coordinate,
@@ -113,12 +112,15 @@ class BoardField extends React.Component{ //use "isOver" to highlight field when
     render = () => {
         const {connectDropTarget, isOver, itemType, itemLevel} = this.props;
         let validBuild = this.props.targetForBuild(this.props.field_x_coordinate, this.props.field_y_coordinate, itemLevel);
+
+        console.log("Building inside BoardField");
+        console.log(this.props.building);
         
         return (
             <Field ref={instance => connectDropTarget(instance)} targetForMove={this.props.targetForMove} targetForBuild={this.props.targetForBuild}>
                 {(this.props.building != null)?(
                     <BoardBuilding
-                        level={this.props.building.level}
+                        level={this.props.building.position.z}
                     />):''}
                 {(this.props.figure != null)?(
                     <Figure
