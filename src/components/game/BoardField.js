@@ -16,24 +16,6 @@ const Field = styled.div`
   float: left;
 `;
 
-const BoardItem = styled.div`
-  display: block;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-`;
-
-const BoardFigure = styled(BoardItem)`
-  width: 30px;
-  height: 30px;
-  background-color: ${props => props.user === 1 ? COLOR_1 : COLOR_2};
-  border: 3px solid ${props => props.active ? 'yellow':'grey'};
-  box-sizing: border-box;
-  border-radius: 30px;
-  z-index: 5;
-`;
-
 const Hover = styled.div`
  position: absolute;
  top: 0;
@@ -133,8 +115,16 @@ class BoardField extends React.Component{ //use "isOver" to highlight field when
         
         return (
             <Field ref={instance => connectDropTarget(instance)} targetForMove={this.props.targetForMove} targetForBuild={this.props.targetForBuild}>
-                {(this.props.building != null)?(<BoardBuilding level={this.props.building.level}/>):''}
-                {(this.props.figure != null)?(<Figure figure={this.props.figure} activateFigure={this.props.activateFigure} refreshFigures={this.state.refreshFigures}/>):''}
+                {(this.props.building != null)?(
+                    <BoardBuilding
+                        level={this.props.building.level}
+                    />):''}
+                {(this.props.figure != null)?(
+                    <Figure
+                        figure={this.props.figure}
+                        activateFigure={this.props.activateFigure}
+                        refreshFigures={this.state.refreshFigures}
+                        currentUser={this.props.currentUser}/>):''}
                 {isOver && (
                     <Hover
                         itemType={itemType}

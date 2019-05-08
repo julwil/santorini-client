@@ -37,7 +37,6 @@ function collect(connect, monitor){
 function Figure_1 (props) {
     const {isDragging, connectDragSource, figure} = props;
     figure.type = 'fig1';
-    console.log(props.show);
     return (
         <BoardFigure show={props.show} ref={instance => connectDragSource(instance)} />
     )

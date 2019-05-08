@@ -14,7 +14,7 @@ const BoardItem = styled.div`
 const BoardFigure = styled(BoardItem)`
   width: 30px;
   height: 30px;
-  background-color: ${props => props.user === 1 ? COLOR_4 : COLOR_2};
+  background-color: ${props => props.currentUser === props.figureOwner ? COLOR_2 : COLOR_4};
   border: 3px solid ${props => props.active ? 'yellow':'grey'};
   box-sizing: border-box;
   border-radius: 30px;
@@ -39,12 +39,13 @@ class Figure extends React.Component {
         super(props);
     }
     render() {
-        const {isDragging, connectDragSource, figure} = this.props;
+        const {isDragging, connectDragSource, figure, currentUser} = this.props;
         return (
             <BoardFigure
                 ref={figure.active ? (instance => connectDragSource(instance)): (instance => {})}
                 id={figure.id}
-                user={figure.user}
+                figureOwner={figure.owner}
+                currentUser={currentUser}
                 active={figure.active}
                 onClick={()=>{
                     this.props.activateFigure(figure.id)
