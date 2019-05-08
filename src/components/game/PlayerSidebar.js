@@ -23,10 +23,10 @@ class PlayerSidebar extends React.Component {
             <Container>
                 <Figure_1 show={this.props.showInitialFig1} figure={this.props.figure}/>
                 <Figure_2 show={this.props.showInitialFig2} figure={this.props.figure}/>
-                <Building_0 show={this.props.showBuildingParts} building={this.props.building}/>
-                <Building_1 show={this.props.showBuildingParts} building={this.props.building}/>
-                <Building_2 show={this.props.showBuildingParts} building={this.props.building}/>
                 <Building_3 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_2 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_1 show={this.props.showBuildingParts} building={this.props.building}/>
+                <Building_0 show={this.props.showBuildingParts} building={this.props.building}/>
             </Container>
         )
     }

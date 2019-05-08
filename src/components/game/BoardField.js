@@ -76,7 +76,7 @@ const FieldTarget = {
                     monitor.getItem(),
                     props.field_x_coordinate,
                     props.field_y_coordinate,
-                    (props.building !== null ? props.building.z+1 : 0)
+                    (props.building ? props.building.position.z+1 : 0)
                 );
                 break;
             case 'building':
@@ -117,7 +117,7 @@ class BoardField extends React.Component{ //use "isOver" to highlight field when
             <Field ref={instance => connectDropTarget(instance)} targetForMove={this.props.targetForMove} targetForBuild={this.props.targetForBuild}>
                 {(this.props.building != null)?(
                     <BoardBuilding
-                        level={this.props.building.level}
+                        level={this.props.building.position.z}
                     />):''}
                 {(this.props.figure != null)?(
                     <Figure
