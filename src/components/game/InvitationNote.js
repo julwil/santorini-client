@@ -3,11 +3,11 @@ import styled from "styled-components";
 import {BaseContainer, ButtonContainer, COLOR_1, COLOR_3, COLOR_5, DESKTOP_WIDTH} from "../../helpers/layout";
 import {Button} from "../../views/design/Button";
 
-const PopupContainer = styled(BaseContainer)`
+const PopupContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: ${DESKTOP_WIDTH}px;
+  width: 100%;
   height: 100%;
   z-index: 1;
   display: ${props => props.show?'block':'none'};
@@ -20,12 +20,12 @@ const Popup = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
-  width: 400px;
+  width: 500px;
   color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
   z-index: 2;
-  padding: 10px;
+  padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
 `;
 
@@ -75,7 +75,7 @@ class InvitationNote extends React.Component{
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    You have been invited to a game!
+                    <h2>You have been invited to a game!</h2>
                     <div>
                     Inviting user: {this.state.inviting_user}
                     </div>
@@ -84,6 +84,7 @@ class InvitationNote extends React.Component{
                     </div>
                     <Invite_ButtonContainer>
                         <Invite_Button
+                            color={"#37BD5A"}
                             onClick={() => {
                                 this.setState({show:false});
                                 this.props.acceptingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")))) //return id of game to parent component so that Lobby can post correct API endpoint
