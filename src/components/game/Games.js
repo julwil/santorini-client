@@ -267,7 +267,7 @@ class Games extends React.Component {
     activateFigure = (id) => {
         console.log("Figure clicked");
         let figure = this.getFigureById(id);
-        if(this.getActiveFigure() == null && figure != null && Number(figure.owner) === Number(this.state.currentTurn)){
+        if(!this.state.figureMoved && this.getActiveFigure() == null && figure != null && Number(figure.owner) === Number(this.state.currentTurn)){
             let newFigures = this.state.figures.slice();
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
@@ -341,7 +341,6 @@ class Games extends React.Component {
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
                 if(updating_fig.type === 'fig2') {
                     this.setState({figureMoved: true, initialMode: false, initialModeComplete: true});
-                    console.log("Initial Mode set to false");
                 }
                 //update game board
                 this.updateBoard();
@@ -352,8 +351,6 @@ class Games extends React.Component {
     };
 
     updateFigure = (figure, new_x, new_y, new_z) => {
-        console.log(figure); console.log(new_x, new_y, new_z);
-
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const newFigures = this.state.figures.slice();
