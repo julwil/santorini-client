@@ -92,7 +92,6 @@ class Games extends React.Component {
                 })
                     .then(handleError)
                     .then(initialPossibleMoves => {
-                        console.log("fetched possiblePosts");
                         this.setState({initialPossibleMoves: initialPossibleMoves})
                     })
                     .catch(err => {
@@ -119,7 +118,6 @@ class Games extends React.Component {
                 if(game.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalGameState);
                     if(!this.state.initialModeComplete){
-                        console.log("Fetching initial moves");
                         this.getInitialMoves();
                     }else{
                         this.setState({initialMode: false});
@@ -192,8 +190,6 @@ class Games extends React.Component {
     //initialize fetch when figure clicked on
     getPossibleMoves = () => {
         let activeFigure = this.getActiveFigure();
-        //console.log("Current active figure: ");
-        //console.log(activeFigure);
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, {
             method: "GET",
             headers: new Headers({
@@ -204,7 +200,6 @@ class Games extends React.Component {
             .then(handleError)
             .then(possibleMoves => {
                 this.setState({possibleMoves: possibleMoves});
-                //console.log(possibleMoves);
             })
             .catch(err => {
                 catchError(err, this);
@@ -212,7 +207,6 @@ class Games extends React.Component {
     };
 
     getPossibleBuilds = () => { //only fetch for that figure that is active and if figure_moved is true
-        //console.log("get possible builds");
         if(this.state.figureMoved){
             fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`,{
                 method: "GET",
@@ -224,8 +218,6 @@ class Games extends React.Component {
                 .then(handleError)
                 .then(possibleBuilds =>{
                     this.setState({possibleBuilds: possibleBuilds});
-                    console.log("Possible Builds:");
-                    console.log(possibleBuilds);
                 })
                 .catch(err => {
                     catchError(err, this);
@@ -311,8 +303,6 @@ class Games extends React.Component {
         let possibleBuilds = this.state.possibleBuilds;
         if(possibleBuilds.length !== 0){
             let filteredBuilds = possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
-            //console.log("Filtered Builds: ");
-            //console.log(filteredBuilds);
             return filteredBuilds.length > 0;
         }
         return false;
@@ -354,7 +344,7 @@ class Games extends React.Component {
     updateFigure = (figure, new_x, new_y, new_z) => {
         //update figure position
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
-        const newFigures = this.state.figures.slice();
+        const newFigures = this.state.figures;
         newFigures[figure_idx] = {id: figure.id, position: {x: new_x, y: new_y, z: new_z}, owner: figure.owner, active: false};
         this.setState({figures: newFigures}); //refreshFigures: !this.state.refreshFigures
 
@@ -395,7 +385,10 @@ class Games extends React.Component {
 
         //update existing Building
         if(this.getBuilding(new_x, new_y, new_z) != null){
+            let building = this.getBuilding(new_x, new_y, new_z);
+            console.log(building);
             let correctBuildingIdx = building_ids.indexOf(building[0].id);
+            console.log(newBuildings[correctBuildingIdx]);
             newBuildings[correctBuildingIdx] = {id: building[0].id, position: {x: new_x, y: new_y, z: new_z}, owner: building[0].owner}
         }else{//create new building
             console.log("New building created: ");
