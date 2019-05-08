@@ -230,7 +230,6 @@ class Games extends React.Component {
             let filteredBuildings = this.state.buildings.filter((building) => {
                 return (building.position.x === x && building.position.y === y)
             });
-            console.log(filteredBuildings);
             if (filteredBuildings.length > 0){
                 if(filteredBuildings.length > 1){
                     filteredBuildings.sort((building_a, building_b) => building_b.position.z > building_a.position.z ? 1 : -1);
@@ -390,17 +389,12 @@ class Games extends React.Component {
         //update existing Building
         if(this.getBuilding(new_x, new_y, new_z) != null){
             let building = this.getBuilding(new_x, new_y, new_z);
-            console.log(building);
             let correctBuildingIdx = building_ids.indexOf(building.id);
-            console.log(newBuildings[correctBuildingIdx]);
             newBuildings[correctBuildingIdx] = {id: building.id, position: {x: new_x, y: new_y, z: new_z}, owner: building.owner}
         }else{//create new building
-            console.log("New building created: ");
-            console.log(newBuildings);
             newBuildings.push({position: {x: new_x, y: new_y, z: new_z}});
         }
         this.setState({buildings: newBuildings});
-        console.log(newBuildings);
 
         //posting request to Backend with new building
         if(this.isTargetForBuild(new_x, new_y, new_z)){
