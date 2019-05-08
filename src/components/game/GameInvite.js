@@ -39,6 +39,17 @@ const Button_MargRight = styled(Button)`
   margin-right: 10px;
 `;
 
+const GodCardWrapper = styled.div`
+  margin-top: 10px;
+`;
+
+const GodCard = styled.img`
+  border: 3px solid;
+  width: 30%;
+  margin: 0 .5%;
+  border-color: ${props => props.selected?'yellow':'grey'};
+`;
+
 class GameInvite extends React.Component{
     constructor(props){
         super(props);
@@ -49,6 +60,11 @@ class GameInvite extends React.Component{
             invitationStatus: 'OPEN',
             error: [],
             waitingInfo: 'Waiting for player to accept invitation',
+            godCards: [
+                {name: 'apollo', selected:false, user: null},
+                {name: 'artemis', selected:false, user: null},
+                {name: 'pan', selected:false, user: null},
+            ]
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
@@ -80,6 +96,7 @@ class GameInvite extends React.Component{
                 user1: localStorage.getItem('user_id'),
                 user2: this.props.userId,
                 isGodPower: this.state.isGodPower,
+                godCards: this.getSelectedGodCards(),
             })
         })
             .then(handleError)
@@ -155,7 +172,22 @@ class GameInvite extends React.Component{
                     }
                 })
                 .catch((err) => {catchError(err,this)})
-        }
+        };
+
+    getSelectedGodCards = () => {
+        return  this.state.godCards.filter((card) => {return card.selected});
+    };
+
+    handleGodCardSelect = (name) => {
+        let changedCard = this.state.godCards.filter((card) => {return card.name === name})[0];
+        let selectedCards = this.getSelectedGodCards();
+        let newCards = this.state.godCards.slice();
+        let index = newCards.indexOf(changedCard);
+        changedCard.selected = !changedCard.selected && selectedCards.length < 2;
+        newCards[index] = changedCard;
+        console.log(newCards);
+        this.setState({godCards: newCards});
+    };
 
     render = () => {
         return(
@@ -169,15 +201,28 @@ class GameInvite extends React.Component{
                     ):(
                         <div>
                             <h2>Challenge user</h2>
-                            <select onChange={e => {this.setState({"isGodPower": e.target.value});}}>
+                            <select onChange={e => {this.setState({"isGodPower": e.target.value === 'true'});}}>
                             <option value={false}>Without Godcards</option>
                             <option value={true}>With Godcards</option>
                             </select>
+                            {this.state.isGodPower?(
+                                <GodCardWrapper>
+                                    {this.state.godCards.map((godcard)=>(
+                                        <GodCard
+                                            src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}
+                                            selected={godcard.selected}
+                                            user={godcard.user}
+                                            name={godcard.name}
+                                            onClick={()=>{this.handleGodCardSelect(godcard.name)}}
+                                        />
+                                    ))}
+                                </GodCardWrapper>
+                            ):('')}
                         </div>
                     )}
                     <ButtonContainer>
                     {this.state.showSpinner? (""):(
-                        <Button_MargRight color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
+                        <Button_MargRight disabled={this.state.isGodPower && this.getSelectedGodCards().length  !== 2} color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
                     )}
                     <Button disabled={this.state.invitationStatus === 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
                     </ButtonContainer>

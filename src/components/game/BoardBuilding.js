@@ -14,13 +14,15 @@ const Building_3 = styled(BoardItem)`
   width: 50px;
   height: 50px;
   border-radius: 40px;
-  background-color: ${COLOR_3}; 
-  z-index: 4; 
+  background-color: ${COLOR_3};
+  border: 0.2px solid black; 
+  z-index: 4;
 `;
 const Building_2 = styled(BoardItem)`
   width: 60px;
   height:60px;
   background-color: #fff;
+  border: 0.2px solid black; 
   z-index: 3;  
 `;
 const Building_1 = styled(BoardItem)`
@@ -28,12 +30,14 @@ const Building_1 = styled(BoardItem)`
   height: 100px;
   border-radius: 70px;
   background-color: #eee;  
+  border: 0.2px solid black; 
   z-index: 2;
 `;
 const Building_0 = styled(BoardItem)`
   width: 110px;
   height: 110px;
   background-color: #ddd;
+  border: 0.2px solid black; 
   z-index: 1;
 `;
 

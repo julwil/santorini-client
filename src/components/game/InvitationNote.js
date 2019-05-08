@@ -3,11 +3,11 @@ import styled from "styled-components";
 import {BaseContainer, ButtonContainer, COLOR_1, COLOR_3, COLOR_5, DESKTOP_WIDTH} from "../../helpers/layout";
 import {Button} from "../../views/design/Button";
 
-const PopupContainer = styled(BaseContainer)`
+const PopupContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: ${DESKTOP_WIDTH}px;
+  width: 100%;
   height: 100%;
   z-index: 1;
   display: ${props => props.show?'block':'none'};
@@ -20,12 +20,12 @@ const Popup = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
-  width: 400px;
+  width: 500px;
   color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
   z-index: 2;
-  padding: 10px;
+  padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
 `;
 
@@ -35,6 +35,17 @@ const Invite_ButtonContainer = styled(ButtonContainer)`
 
 const Invite_Button = styled(Button)`
   margin-left: 10px;
+`;
+
+const GodCardWrapper = styled.div`
+  margin-top: 10px;
+`;
+
+const GodCard = styled.img`
+  border: 3px solid;
+  width: 30%;
+  margin: 0 .5%;
+  border-color: ${props => props.selected?'yellow':'grey'};
 `;
 
 //only show if games not empty, if not then show first game object of list once accepted update game status and delete remaining games if there still exist any
@@ -72,18 +83,36 @@ class InvitationNote extends React.Component{
     }
 
     render = () => { //indicate data about game in here as well as provide accept and deny button in here
+        console.log(this.props.games);
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
-                    You have been invited to a game!
+                    <h2>You have been invited to a game!</h2>
                     <div>
                     Inviting user: {this.state.inviting_user}
                     </div>
                     <div>
                     Game mode: {this.props.isGodPower ? "Involving god powers" : "Without god powers"}
+                        {this.props.isGodPower?(
+                            <div>
+                                <b>Choose your god card!</b>
+                            <GodCardWrapper>
+                                {this.props.games.godCards.map((godcard)=>(
+                                    <GodCard
+                                        src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}
+                                        selected={godcard.selected}
+                                        user={godcard.user}
+                                        name={godcard.name}
+                                        onClick={()=>{this.chooseGodCard(godcard.name)}}
+                                    />
+                                ))}
+                            </GodCardWrapper>
+                            </div>
+                        ):('')}
                     </div>
                     <Invite_ButtonContainer>
                         <Invite_Button
+                            color={"#37BD5A"}
                             onClick={() => {
                                 this.setState({show:false});
                                 this.props.acceptingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")))) //return id of game to parent component so that Lobby can post correct API endpoint

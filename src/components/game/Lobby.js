@@ -275,6 +275,7 @@ class Lobby extends React.Component {
                   open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
                   users={this.state.users}
+                  isGodPower={true}
                   acceptingInvitation={this.invitationAccepted}
                   denyingInvitation={this.invitationDenied}/>
               <ButtonSecondary
