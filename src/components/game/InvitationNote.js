@@ -97,15 +97,15 @@ class InvitationNote extends React.Component{
                             <div>
                                 <b>Choose your god card!</b>
                             <GodCardWrapper>
-                                {this.props.games.godCards.map((godcard)=>(
-                                    <GodCard
-                                        src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}
-                                        selected={godcard.selected}
-                                        user={godcard.user}
-                                        name={godcard.name}
-                                        onClick={()=>{this.chooseGodCard(godcard.name)}}
-                                    />
-                                ))}
+                                {/*{this.props.games.godCards.map((godcard)=>(*/}
+                                    {/*<GodCard*/}
+                                        {/*src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}*/}
+                                        {/*selected={godcard.selected}*/}
+                                        {/*user={godcard.user}*/}
+                                        {/*name={godcard.name}*/}
+                                        {/*onClick={()=>{this.chooseGodCard(godcard.name)}}*/}
+                                    {/*/>*/}
+                                {/*))}*/}
                             </GodCardWrapper>
                             </div>
                         ):('')}
