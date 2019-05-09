@@ -113,6 +113,35 @@ class GameInvite extends React.Component{
             });
     };
 
+    sendGameDemoInvitation = () => {
+        fetch(`${getDomain()}/games/demoXWins`, {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                user1: localStorage.getItem('user_id'),
+                user2: this.props.userId,
+                isGodPower: false,
+                godCards: this.getSelectedGodCards(),
+            })
+        })
+            .then(handleError)
+            .then( game => {
+                this.setState({
+                    invitationStatus: 'SENT',
+                    showSpinner:true,
+                });
+                localStorage.setItem('gamePath', 'games/'+game.id);
+                this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+
+    };
+
     closePopup = () => {
         if(this.state.invitationStatus === 'SENT'){
             fetch(`${getDomain()}/`+localStorage.getItem('gamePath')+'/reject', {
@@ -156,7 +185,8 @@ class GameInvite extends React.Component{
                         });
                         setTimeout(()=>{
                             clearInterval(this.checkInvitationInterval);
-                            this.props.history.push('/'+localStorage.getItem('gamePath'))
+                            this.props.history.push('/' + localStorage.getItem('gamePath'));
+                            //this.props.history.push('/'+localStorage.getItem('gamePath'))
                         },4000);
                     }
                     if(game.status === 'CANCLED'){
@@ -201,9 +231,13 @@ class GameInvite extends React.Component{
                     ):(
                         <div>
                             <h2>Challenge user</h2>
-                            <select onChange={e => {this.setState({"isGodPower": e.target.value === 'true'});}}>
-                            <option value={false}>Without Godcards</option>
-                            <option value={true}>With Godcards</option>
+                            <select onChange={e => {
+                                this.setState({demoMode: e.target.value === 'gameDemo'});
+                                this.setState({isGodPower: e.target.value === true});
+                            }}>
+                                <option value={false}>Without Godcards</option>
+                                <option value={true}>With Godcards</option>
+                                <option value={'gameDemo'}>Game Demo - fast forward</option>
                             </select>
                             {this.state.isGodPower?(
                                 <GodCardWrapper>
@@ -222,7 +256,11 @@ class GameInvite extends React.Component{
                     )}
                     <ButtonContainer>
                     {this.state.showSpinner? (""):(
-                        <Button_MargRight disabled={this.state.isGodPower && this.getSelectedGodCards().length  !== 2} color={"#37BD5A"} onClick={()=>{this.sendInvitation()}}>Challenge</Button_MargRight>
+                        <Button_MargRight
+                            disabled={this.state.isGodPower && this.getSelectedGodCards().length  !== 2}
+                            color={"#37BD5A"}
+                            onClick={()=>{this.state.demoMode ? this.sendGameDemoInvitation() : this.sendInvitation()}}
+                        >Challenge</Button_MargRight>
                     )}
                     <Button disabled={this.state.invitationStatus === 'ACCEPTED'} onClick={()=>{this.closePopup()}}>Close</Button>
                     </ButtonContainer>
