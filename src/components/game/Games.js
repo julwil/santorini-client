@@ -39,7 +39,7 @@ class Games extends React.Component {
             gameId: null,
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
-            currentTurn: null, // 4 ???
+            currentTurn: null,
 
             initialMode: true,
             initialModeComplete: false,
@@ -48,7 +48,9 @@ class Games extends React.Component {
             initialFig2: true,
             initialFigure: {x: null, y: null, z: null, type: null},
             refreshFigures: false,
+            isGodPower: null,
 
+            players: [],
             figures:[],
             possibleMoves: [],
             figureMoved: false,
@@ -102,7 +104,7 @@ class Games extends React.Component {
             .then(handleError)
             .then(game => {
                 if(game !== null){ //should actually be game.length > 0
-                    this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id});
+                    this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id, isGodPower: game.isGodPower});
                 }
                 if(game.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalGameState);
@@ -111,6 +113,48 @@ class Games extends React.Component {
                     }else{
                         this.setState({initialMode: false});
                     }
+                }
+                if(this.state.players.length === 0){
+                    let opponentUserId = game.user1;
+                    if(opponentUserId == this.state.currentUser) opponentUserId = game.user2;
+                    fetch(`${getDomain()}/users/`+this.state.currentUser, {
+                        method: "GET",
+                        headers: new Headers({
+                            'Authorization': localStorage.getItem("token"),
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }),
+                    })
+                        .then(handleError)
+                        .then((player) => {
+                            let players = this.state.players.slice();
+                            player.role = 'me';
+                            player.isChallenger = Number(player.id) === Number(game.user1);
+                            players.push(player);
+                            this.setState({players:players});
+                        })
+                        .then(()=>{
+                            fetch(`${getDomain()}/users/`+opponentUserId, {
+                                method: "GET",
+                                headers: new Headers({
+                                    'Authorization': localStorage.getItem("token"),
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }),
+                            })
+                                .then(handleError)
+                                .then((player) => {
+                                    let players = this.state.players.slice();
+                                    player.role = 'opponent';
+                                    player.isChallenger = Number(player.id) === Number(game.user1);
+                                    players.push(player);
+                                    this.setState({players:players});
+                                })
+                                .catch(err => {
+                                    catchError(err, this);
+                                });
+                        })
+                        .catch(err => {
+                            catchError(err, this);
+                        });
                 }
             })
             .catch(err => {
@@ -411,6 +455,21 @@ class Games extends React.Component {
         }
     };
 
+    getPlayerName = (role) => {
+        let filtered = this.state.players.filter((player) => { return player.role === role});
+        return filtered.length > 0? filtered[0].username:'';
+    };
+    
+    isPlayerChallenger = (role) => {
+        let filtered = this.state.players.filter((player) => { return player.role === role});
+        return filtered.length > 0? filtered[0].isChallenger:false;
+    };
+
+    getPlayerId = (role) => {
+        let filtered = this.state.players.filter((player) => { return player.role === role});
+        return filtered.length > 0? filtered[0].id:'';
+    };
+
     createBoard = () => {
         let board = [];
 
@@ -476,10 +535,35 @@ class Games extends React.Component {
         }
     }
 
+    surrenderGame = () => {
+        fetch(`${getDomain()}/games/`+this.state.gameId, {
+            method: "PUT",
+            headers: new Headers({
+                'Authorization': localStorage.getItem("token"),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+            body:JSON.stringify({
+                winner: this.getPlayerId('opponent'),
+                status: 'FINISHED'
+            })
+
+        })
+            .then(handleError)
+            .then(() => {
+                clearInterval(this.intervalUsers);
+                clearInterval(this.intervalNotficaton);
+                localStorage.clear();
+                this.props.history.push("/users")
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+    };
+
     render() {
         return (
             <GameWrapper>
-                <GameHeader currentTurn={Number(this.state.currentTurn)}/>
+                <GameHeader currentTurn={Number(this.state.currentTurn)} surrenderGame={this.surrenderGame}/>
                 <MainGame>
                     <PlayerSidebar
                         showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1}
@@ -488,13 +572,13 @@ class Games extends React.Component {
                         showBuildingParts={!this.state.initialMode}
                         building={this.state.newBuilding}
                         refreshFigures={this.state.refreshFigures}
-                        name={'Tobi'}
-                        godcard={'apollo'}
+                        name={this.getPlayerName('me')}
+                        godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
                     />
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                <OpponentSidebar name={'Areg'} godcard={'pan'}/>
+                <OpponentSidebar name={this.getPlayerName('opponent')} godcard={this.state.isGodPower?'pan':(this.isPlayerChallenger('opponent')?'god1':'god2')}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
