@@ -62,6 +62,7 @@ class Lobby extends React.Component {
       error: [],
       GameInviteUserId: null,
       invited_games: null,
+      isGodPower:false,
       openInvitationNotification: false
     };
     this.intervalUsers = 0;
@@ -138,7 +139,7 @@ class Lobby extends React.Component {
           if(games.length > 0){ //if games has at least one element the following shall be performed
             clearInterval(this.intervalNotficaton);
             clearInterval(this.intervalUsers);
-            this.setState({invited_games: games, openInvitationNotification: true});
+            this.setState({invited_games: games, openInvitationNotification: true, isGodPower: games[0].isGodPower});
           } //Git change
         })
         .catch(err => {
@@ -275,7 +276,7 @@ class Lobby extends React.Component {
                   open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
                   users={this.state.users}
-                  isGodPower={true}
+                  isGodPower={this.state.isGodPower}
                   acceptingInvitation={this.invitationAccepted}
                   denyingInvitation={this.invitationDenied}/>
               <ButtonSecondary
