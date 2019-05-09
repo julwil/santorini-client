@@ -4,16 +4,13 @@ import { DragSource } from 'react-dnd'
 import {COLOR_3, COLOR_4, COLOR_5} from "../../../helpers/layout";
 
 const BoardItem = styled.div`
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  float: left;
 `;
 
 const Building_3_Component = styled(BoardItem)`
   display: ${props => props.show ? 'block' : 'none'};
-  width: 50px;
-  height: 50px;
+  width: 25px;
+  height: 25px;
   border-radius: 40px;
   background-color: ${COLOR_3}; 
   z-index: 4; 

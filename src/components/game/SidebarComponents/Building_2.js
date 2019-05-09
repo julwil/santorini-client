@@ -3,18 +3,16 @@ import styled from "styled-components";
 import { DragSource } from 'react-dnd'
 
 const BoardItem = styled.div`
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  float: left;
 `;
 
 const Building_2_Component = styled(BoardItem)`
   display: ${props => props.show ? 'block' : 'none'};
-  width: 60px;
-  height:60px;
+  width: 30px;
+  height:30px;
   background-color: #fff;
-  z-index: 3;  
+  z-index: 3;
+  margin-right: 10px;
 `;
 
 const BuildingSource = {

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import {Button, ButtonSecondary} from "./design/Button";
-import {Link} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {COLOR_1, COLOR_5} from "../helpers/layout";
 
 const Container = styled.div`
@@ -26,7 +26,7 @@ const Turn = styled.div`
 const GameHeader = (props) => {
     return (
         <Container>
-            <Link to={'/users'}><Button>Surrender</Button></Link>
+            <Button onClick={()=>{props.surrenderGame();}}>Surrender</Button>
             <HeaderImage src={process.env.PUBLIC_URL+"/assets/images/santorini_banner_logo.png"} alt="Logo"/>
             <Turn>{props.currentTurn === Number(localStorage.getItem('user_id'))?'It\'s your turn':'Your opponent is playing..'}</Turn>
             <ButtonSecondary>Rules</ButtonSecondary>
@@ -34,4 +34,4 @@ const GameHeader = (props) => {
     );
 };
 
-export default GameHeader;
+export default withRouter(GameHeader);
