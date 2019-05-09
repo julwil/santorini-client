@@ -10,7 +10,7 @@ import Figure_1 from "./SidebarComponents/Figure_1";
 import Figure_2 from "./SidebarComponents/Figure_2";
 
 const Sidebar = styled.div`
-  width: 260px;
+  width: 270px;
   margin-right: 20px;
   background-color: ${COLOR_5};
 `;
@@ -48,7 +48,7 @@ class PlayerSidebar extends React.Component {
                     <GodCard src={process.env.PUBLIC_URL+"/assets/godcards/"+this.props.godcard+".png"}/>
                 </SidebarHeader>
                 <Hint>
-                    {this.props.showBuildingParts?'Please select a figure and place a building:':
+                    {this.props.showBuildingParts?'Please select a figure, move it and then place a building:':
                         (this.props.showInitalFig1 || this.props.showInitialFig2)?'Please place your figures:':'Please wait...'}
                 </Hint>
                 <Container>

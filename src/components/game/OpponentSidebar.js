@@ -4,7 +4,7 @@ import {COLOR_5} from "../../helpers/layout";
 import {GodCard, SidebarHeader} from "./PlayerSidebar";
 
 const Sidebar = styled.div`
-  width: 260px;
+  width: 270px;
   margin-left: 20px;
   background-color: ${COLOR_5};
 `;
