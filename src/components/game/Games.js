@@ -254,7 +254,8 @@ class Games extends React.Component {
 
     activateFigure = (id) => {
         let figure = this.getFigureById(id);
-        if(!this.state.figureMoved && this.getActiveFigure() == null && figure != null && Number(figure.owner) === Number(this.state.currentTurn)){
+        if(!this.state.figureMoved && this.getActiveFigure() == null && figure != null
+            && Number(figure.owner) === Number(this.state.currentTurn) && Number(figure.owner) === Number(this.state.currentUser)){
             let newFigures = this.state.figures.slice();
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
