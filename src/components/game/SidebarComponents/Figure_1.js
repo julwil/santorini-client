@@ -4,10 +4,8 @@ import { DragSource } from 'react-dnd'
 import {COLOR_2, COLOR_4} from "../../../helpers/layout";
 
 const BoardItem = styled.div`
-  position: relative;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-right: 10px;
+  float: left;
 `;
 
 const BoardFigure = styled(BoardItem)`

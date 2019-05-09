@@ -60,7 +60,6 @@ const FieldTarget = {
     },
 
     drop(props, monitor){
-        console.log("X: "+props.field_x_coordinate, "Y: "+props.field_y_coordinate); //remove
 
         switch(monitor.getItemType()){
             case 'initialFigure':
