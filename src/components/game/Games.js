@@ -336,11 +336,8 @@ class Games extends React.Component {
 
     isTargetForBuild = (x,y,z) => {//get x, y of position dragging to and z of building to be dragged
         let possibleBuilds = this.state.possibleBuilds;
-        if(possibleBuilds.length !== 0){
+        if(possibleBuilds.length !== 0 && this.state.currentTurn !== this.state.currentUser){
             let filteredBuilds = possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
-            if(this.state.currentTurn !== this.state.currentUser){
-                return false;
-            }
             return filteredBuilds.length > 0;
         }
         return false;
@@ -384,7 +381,7 @@ class Games extends React.Component {
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const newFigures = this.state.figures;
         newFigures[figure_idx] = {id: figure.id, position: {x: new_x, y: new_y, z: new_z}, owner: figure.owner, active: false};
-        this.setState({figures: newFigures, refreshFigures: !this.state.refreshFigures}); //refreshFigures: !this.state.refreshFigures
+        this.setState({figures: newFigures, refreshFigures: !this.state.refreshFigures});
 
         if(this.isTargetForMove(new_x, new_y, new_z)){
             fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
