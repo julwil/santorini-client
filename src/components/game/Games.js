@@ -11,6 +11,7 @@ import BoardField from "./BoardField";
 import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
 import PlayerSidebar from "./PlayerSidebar";
+import {OpponentSidebar} from "./OpponentSidebar";
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -20,11 +21,6 @@ const MainGame = styled.div`
   display: flex;
   flex-wrap: nowrap;
 `;
-export const OpponentSidebar = styled.div`
-  flex-grow: 1;
-  margin-right: 20px;
-  background-color: ${COLOR_5};
-`;
 const GameBoard = styled.div`
   background-color: ${COLOR_5};
   height: calc(130px * 5);
@@ -32,13 +28,6 @@ const GameBoard = styled.div`
 
 const BoardRow = styled.div`
   overflow: hidden;
-`;
-
-const PlayerSidebarWrapper = styled.div`
-  flex-grow: 1;
-  background-color: ${COLOR_4};
-  margin-right: 0;
-  margin-left: 20px;
 `;
 
 class Games extends React.Component {
@@ -491,10 +480,6 @@ class Games extends React.Component {
             <GameWrapper>
                 <GameHeader currentTurn={Number(this.state.currentTurn)}/>
                 <MainGame>
-                    <OpponentSidebar />
-                        <GameBoard>
-                            {this.createBoard()}
-                        </GameBoard>
                     <PlayerSidebar
                         showInitialFig1={this.state.initialFig1 ? this.state.initialMode : this.state.initialFig1}
                         showInitialFig2={this.state.initialFig2 ? this.state.initialMode : this.state.initialFig2}
@@ -502,7 +487,13 @@ class Games extends React.Component {
                         showBuildingParts={!this.state.initialMode}
                         building={this.state.newBuilding}
                         refreshFigures={this.state.refreshFigures}
+                        name={'Tobi'}
+                        godcard={'apollo'}
                     />
+                        <GameBoard>
+                            {this.createBoard()}
+                        </GameBoard>
+                <OpponentSidebar name={'Areg'} godcard={'pan'}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
