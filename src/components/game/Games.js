@@ -531,15 +531,11 @@ class Games extends React.Component {
     }
 
     surrenderGame = () => {
-        fetch(`${getDomain()}/games/`+this.state.gameId, {
-            method: "PUT",
+        fetch(`${getDomain()}/games/`+this.state.gameId+'/reject', {
+            method: "POST",
             headers: new Headers({
                 'Authorization': localStorage.getItem("token"),
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-            body:JSON.stringify({
-                winner: this.getPlayerId('opponent'),
-                status: 'FINISHED'
             })
 
         })
@@ -547,7 +543,6 @@ class Games extends React.Component {
             .then(() => {
                 clearInterval(this.intervalUsers);
                 clearInterval(this.intervalNotficaton);
-                localStorage.clear();
                 this.props.history.push("/users")
             })
             .catch(err => {
