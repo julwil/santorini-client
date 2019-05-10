@@ -83,7 +83,6 @@ class InvitationNote extends React.Component{
     }
 
     render = () => { //indicate data about game in here as well as provide accept and deny button in here
-        console.log(this.props.games);
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
