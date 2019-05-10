@@ -64,8 +64,7 @@ class GameInvite extends React.Component{
                 {name: 'apollo', selected:false, user: null},
                 {name: 'artemis', selected:false, user: null},
                 {name: 'pan', selected:false, user: null},
-            ],
-            demoMode: null,
+            ]
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
@@ -232,10 +231,7 @@ class GameInvite extends React.Component{
                     ):(
                         <div>
                             <h2>Challenge user</h2>
-                            <select onChange={e => {
-                                this.setState({demoMode: e.target.value === 'gameDemo'});
-                                this.setState({isGodPower: e.target.value === true});
-                            }}>
+                            <select onChange={e => {this.setState({"isGodPower": e.target.value === 'true', demoMode: e.target.value === 'gameDemo'});}}>
                                 <option value={false}>Without Godcards</option>
                                 <option value={true}>With Godcards</option>
                                 <option value={'gameDemo'}>Game Demo - fast forward</option>
