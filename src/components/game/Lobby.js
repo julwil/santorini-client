@@ -140,7 +140,7 @@ class Lobby extends React.Component {
           if(games.length > 0){ //if games has at least one element the following shall be performed
             clearInterval(this.intervalNotficaton);
             clearInterval(this.intervalUsers);
-            this.setState({invited_games: games, openInvitationNotification: true, isGodPower: games[0].isGodPower});
+            this.setState({invited_games: games, openInvitationNotification: true, isGodPower: games[0].isGodPower, demoMode: games[0].demoMode === 1});
           } //Git change
         })
         .catch(err => {
@@ -262,10 +262,6 @@ class Lobby extends React.Component {
 
   };
 
-  setGameDemo = () => {
-      this.setState({gameDemo: true});
-  };
-
   render() {
     return (
       <MainContainer>
@@ -299,7 +295,7 @@ class Lobby extends React.Component {
                   );
                 })}
               </Users>
-              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite} demoMode={this.setGameDemo}/>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite}/>
               <InvitationNote
                   open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
