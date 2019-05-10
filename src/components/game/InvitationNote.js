@@ -91,7 +91,7 @@ class InvitationNote extends React.Component{
                     Inviting user: {this.state.inviting_user}
                     </div>
                     <div>
-                    Game mode: {this.props.isGodPower ? "Involving god powers" : "Without god powers"}
+                    Game mode: {!this.props.isGodPower && this.props.demoMode ? "Demo Mode" : (this.props.isGodPower ? "Involving god powers" : "Without god powers")}
                         {this.props.isGodPower?(
                             <div>
                                 <b>Choose your god card!</b>
