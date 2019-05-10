@@ -12,6 +12,8 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
 import PlayerSidebar from "./PlayerSidebar";
 import {OpponentSidebar} from "./OpponentSidebar";
+import WinNotification from "./WinNotification";
+import LoseNotification from "./LoseNotification";
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -40,6 +42,9 @@ class Games extends React.Component {
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
             currentTurn: null,
+            opponentUser: null,
+            winner: null,
+            loser: null,
 
             initialModeComplete: false,
             initialPossibleMoves: [],
@@ -103,17 +108,23 @@ class Games extends React.Component {
             .then(handleError)
             .then(game => {
                 if(game !== null){ //should actually be game.length > 0
-                    this.setState({game: game, currentTurn: game.currentTurn, gameId: game.id, isGodPower: game.isGodPower});
+                    this.setState({game: game, currentTurn: Number(game.currentTurn), gameId: game.id, isGodPower: game.isGodPower});
                 }
-                if(game.currentTurn === this.state.currentUser){
-                    clearInterval(this.intervalGameState);
+                clearInterval(this.intervalFigures);
+                clearInterval(this.intervalBuildings);
+                if(Number(game.currentTurn) === this.state.currentUser){
                     if(!this.state.initialModeComplete){
                         this.getInitialMoves();
                     }
+                }else{
+                    this.updateBoard();
+                }
+                if(game.winner){ //if winner provided?
+                    this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
                 }
                 if(this.state.players.length === 0){
                     let opponentUserId = game.user1;
-                    if(opponentUserId === this.state.currentUser) opponentUserId = game.user2;
+                    if(opponentUserId === this.state.currentUser) opponentUserId = game.user2; this.setState({opponentUser: opponentUserId});
                     fetch(`${getDomain()}/users/`+this.state.currentUser, {
                         method: "GET",
                         headers: new Headers({
@@ -183,7 +194,6 @@ class Games extends React.Component {
                 if(this.state.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalFigures);
                 }
-
             })
             .catch(err => {
                 catchError(err, this);
@@ -316,9 +326,6 @@ class Games extends React.Component {
     isTargetForMove = (x,y,z) => {
         let figure = this.getActiveFigure();
         let possibleMoves = this.state.possibleMoves;
-        if(z){
-
-        }
         if(figure != null && possibleMoves.length !== 0){ //update possibleMoves according to new data structure
             if(z){
                 let possibleMoveValueSet = possibleMoves.filter((possibleValueSet) => {
@@ -336,7 +343,7 @@ class Games extends React.Component {
 
     isTargetForBuild = (x,y,z) => {//get x, y of position dragging to and z of building to be dragged
         let possibleBuilds = this.state.possibleBuilds;
-        if(possibleBuilds.length !== 0 && this.state.currentTurn !== this.state.currentUser){
+        if(possibleBuilds.length !== 0){
             let filteredBuilds = possibleBuilds.filter((build) => {return build.x === x && build.y === y && build.z === z});
             return filteredBuilds.length > 0;
         }
@@ -366,7 +373,7 @@ class Games extends React.Component {
             .then(() => {
                 //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
                 if(this.state.secondInitialFigPlaced) {
-                    this.setState({figureMoved: true, initialModeComplete: true});
+                    this.setState({ initialModeComplete: true});
                 }
                 //update game board
                 this.updateBoard();
@@ -456,7 +463,7 @@ class Games extends React.Component {
         let filtered = this.state.players.filter((player) => { return player.role === role});
         return filtered.length > 0? filtered[0].username:'';
     };
-    
+
     isPlayerChallenger = (role) => {
         let filtered = this.state.players.filter((player) => { return player.role === role});
         return filtered.length > 0? filtered[0].isChallenger:false;
@@ -515,14 +522,16 @@ class Games extends React.Component {
     }
 
     updateBoard = () => {
-        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
-        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
-        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+        this.getGameState();
+        this.getFigures();
+        this.getBuildings();
     };
 
     componentDidMount() {
         this.setState({gameId: this.props.match.params.gamesId});
-        this.updateBoard();
+        this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
+        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
+        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
         if(this.state.currentTurn === this.state.currentUser){
             clearInterval(this.intervalGameState);
             clearInterval(this.intervalFigures);
@@ -530,16 +539,19 @@ class Games extends React.Component {
         }
     }
 
+
+    componentWillUnmount() {
+        clearInterval(this.intervalGameState);
+        clearInterval(this.intervalFigures);
+        clearInterval(this.intervalBuildings);
+    }
+
     surrenderGame = () => {
-        fetch(`${getDomain()}/games/`+this.state.gameId, {
-            method: "PUT",
+        fetch(`${getDomain()}/games/`+this.state.gameId+'/reject', {
+            method: "POST",
             headers: new Headers({
                 'Authorization': localStorage.getItem("token"),
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-            body:JSON.stringify({
-                winner: this.getPlayerId('opponent'),
-                status: 'FINISHED'
             })
 
         })
@@ -547,8 +559,7 @@ class Games extends React.Component {
             .then(() => {
                 clearInterval(this.intervalUsers);
                 clearInterval(this.intervalNotficaton);
-                localStorage.clear();
-                this.props.history.push("/users")
+                this.setState({loser: this.state.currentUser, winner: this.state.opponentUser});
             })
             .catch(err => {
                 catchError(err, this);
@@ -574,6 +585,8 @@ class Games extends React.Component {
                             {this.createBoard()}
                         </GameBoard>
                 <OpponentSidebar name={this.getPlayerName('opponent')} godcard={this.state.isGodPower?'pan':(this.isPlayerChallenger('opponent')?'god1':'god2')}/>
+                <WinNotification open={this.state.winner !== null} winner={this.state.winner}/>
+                <LoseNotification open={this.state.loser !== null} loser={this.state.loser}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
