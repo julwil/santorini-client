@@ -548,7 +548,6 @@ class Games extends React.Component {
                 clearInterval(this.intervalUsers);
                 clearInterval(this.intervalNotficaton);
                 this.setState({loser: this.state.currentUser, winner: this.state.opponentUser});
-                this.props.history.push("/users")
             })
             .catch(err => {
                 catchError(err, this);
