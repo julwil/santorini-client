@@ -63,7 +63,8 @@ class Lobby extends React.Component {
       GameInviteUserId: null,
       invited_games: null,
       isGodPower:false,
-      openInvitationNotification: false
+      openInvitationNotification: false,
+        gameDemo: false,
     };
     this.intervalUsers = 0;
     this.intervalNotficaton = 0;
@@ -148,26 +149,49 @@ class Lobby extends React.Component {
   };
 
   invitationAccepted = (accepted_game) => {
-      fetch(`${getDomain()}/games/` + accepted_game.id + `/accept`, {
-          method: "POST",
-          headers: new Headers({
-              'Authorization': this.state.current_user_token,
-              'Content-Type': 'application/x-www-form-urlencoded'
-          }),
-      })
-          .then(handleError)
-          .then(game => {
-              clearInterval(this.intervalUsers);
-              clearInterval(this.intervalNotficaton);
-              this.setState({openInvitationNotification: false});
-              this.props.history.push({
-                  pathname: '/games/' + accepted_game.id,
-                  state: game,
-              })
+      if(this.state.gameDemo){
+          fetch(`${getDomain()}/games/demo` + accepted_game.id + `/accept`, {
+              method: "POST",
+              headers: new Headers({
+                  'Authorization': this.state.current_user_token,
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              }),
           })
-          .catch(err => {
-              catchError(err, this);
-          });
+              .then(handleError)
+              .then(game => {
+                  clearInterval(this.intervalUsers);
+                  clearInterval(this.intervalNotficaton);
+                  this.setState({openInvitationNotification: false});
+                  this.props.history.push({
+                      pathname: '/games/' + accepted_game.id,
+                      state: game,
+                  })
+              })
+              .catch(err => {
+                  catchError(err, this);
+              });
+      }else{
+          fetch(`${getDomain()}/games/` + accepted_game.id + `/accept`, {
+              method: "POST",
+              headers: new Headers({
+                  'Authorization': this.state.current_user_token,
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              }),
+          })
+              .then(handleError)
+              .then(game => {
+                  clearInterval(this.intervalUsers);
+                  clearInterval(this.intervalNotficaton);
+                  this.setState({openInvitationNotification: false});
+                  this.props.history.push({
+                      pathname: '/games/' + accepted_game.id,
+                      state: game,
+                  })
+              })
+              .catch(err => {
+                  catchError(err, this);
+              });
+      }
   };
 
   //only needed if user denies invitation, then close notification of invitation & restart fetch-loops of getting users and notifications, send denial request to backend
@@ -238,6 +262,10 @@ class Lobby extends React.Component {
 
   };
 
+  setGameDemo = () => {
+      this.setState({gameDemo: true});
+  };
+
   render() {
     return (
       <MainContainer>
@@ -271,14 +299,15 @@ class Lobby extends React.Component {
                   );
                 })}
               </Users>
-              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite}/>
+              <GameInvite userId={this.state.GameInviteUserId} closePopup={this.closeInvite} saveInvite={this.saveInvite} demoMode={this.setGameDemo}/>
               <InvitationNote
                   open={this.state.openInvitationNotification}
                   games={this.state.invited_games}
                   users={this.state.users}
                   isGodPower={this.state.isGodPower}
                   acceptingInvitation={this.invitationAccepted}
-                  denyingInvitation={this.invitationDenied}/>
+                  denyingInvitation={this.invitationDenied}
+              />
               <ButtonSecondary
                 width="50%"
                 onClick={() => {

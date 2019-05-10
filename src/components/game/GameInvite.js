@@ -64,7 +64,8 @@ class GameInvite extends React.Component{
                 {name: 'apollo', selected:false, user: null},
                 {name: 'artemis', selected:false, user: null},
                 {name: 'pan', selected:false, user: null},
-            ]
+            ],
+            demoMode: null,
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
@@ -129,11 +130,13 @@ class GameInvite extends React.Component{
         })
             .then(handleError)
             .then( game => {
+                this.props.demoMode();
                 this.setState({
                     invitationStatus: 'SENT',
                     showSpinner:true,
                 });
                 localStorage.setItem('gamePath', 'games/'+game.id);
+                localStorage.setItem('demoMode', this.state.demoMode);
                 this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
             })
             .catch(err => {
