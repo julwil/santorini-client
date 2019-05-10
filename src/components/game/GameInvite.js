@@ -64,7 +64,8 @@ class GameInvite extends React.Component{
                 {name: 'apollo', selected:false, user: null},
                 {name: 'artemis', selected:false, user: null},
                 {name: 'pan', selected:false, user: null},
-            ]
+            ],
+            demoMode: null,
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;

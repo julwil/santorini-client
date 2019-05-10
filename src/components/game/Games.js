@@ -12,6 +12,8 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import {DragDropContext, DragDropContextProvider} from 'react-dnd'
 import PlayerSidebar from "./PlayerSidebar";
 import {OpponentSidebar} from "./OpponentSidebar";
+import WinNotification from "./WinNotification";
+import LoseNotification from "./LoseNotification";
 
 const GameWrapper = styled.div`
   overflow: hidden;
@@ -40,6 +42,9 @@ class Games extends React.Component {
             currentUser: Number(localStorage.getItem("user_id")),
             currentUserToken: localStorage.getItem("token"),
             currentTurn: null,
+            opponentUser: null,
+            winner: null,
+            loser: null,
 
             initialModeComplete: false,
             initialPossibleMoves: [],
@@ -114,9 +119,12 @@ class Games extends React.Component {
                 }else{
                     this.updateBoard();
                 }
+                if(game.winner){ //if winner provided?
+                    this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
+                }
                 if(this.state.players.length === 0){
                     let opponentUserId = game.user1;
-                    if(opponentUserId === this.state.currentUser) opponentUserId = game.user2;
+                    if(opponentUserId === this.state.currentUser) opponentUserId = game.user2; this.setState({opponentUser: opponentUserId});
                     fetch(`${getDomain()}/users/`+this.state.currentUser, {
                         method: "GET",
                         headers: new Headers({
@@ -186,7 +194,6 @@ class Games extends React.Component {
                 if(this.state.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalFigures);
                 }
-
             })
             .catch(err => {
                 catchError(err, this);
@@ -319,9 +326,6 @@ class Games extends React.Component {
     isTargetForMove = (x,y,z) => {
         let figure = this.getActiveFigure();
         let possibleMoves = this.state.possibleMoves;
-        if(z){
-
-        }
         if(figure != null && possibleMoves.length !== 0){ //update possibleMoves according to new data structure
             if(z){
                 let possibleMoveValueSet = possibleMoves.filter((possibleValueSet) => {
@@ -459,7 +463,7 @@ class Games extends React.Component {
         let filtered = this.state.players.filter((player) => { return player.role === role});
         return filtered.length > 0? filtered[0].username:'';
     };
-    
+
     isPlayerChallenger = (role) => {
         let filtered = this.state.players.filter((player) => { return player.role === role});
         return filtered.length > 0? filtered[0].isChallenger:false;
@@ -555,7 +559,7 @@ class Games extends React.Component {
             .then(() => {
                 clearInterval(this.intervalUsers);
                 clearInterval(this.intervalNotficaton);
-                this.props.history.push("/users")
+                this.setState({loser: this.state.currentUser, winner: this.state.opponentUser});
             })
             .catch(err => {
                 catchError(err, this);
@@ -581,6 +585,8 @@ class Games extends React.Component {
                             {this.createBoard()}
                         </GameBoard>
                 <OpponentSidebar name={this.getPlayerName('opponent')} godcard={this.state.isGodPower?'pan':(this.isPlayerChallenger('opponent')?'god1':'god2')}/>
+                <WinNotification open={this.state.winner !== null} winner={this.state.winner}/>
+                <LoseNotification open={this.state.loser !== null} loser={this.state.loser}/>
                 </MainGame>
                 <Error error={this.state.error}/>
             </GameWrapper>
