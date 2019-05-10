@@ -10,7 +10,7 @@ const PopupContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 100;
   display: ${props => props.show?'block':'none'};
   background-color: rgba(50,50,50,0.5);
 `;
