@@ -150,8 +150,8 @@ class Lobby extends React.Component {
   };
 
   invitationAccepted = (accepted_game) => {
-      if(this.state.gameDemo){
-          fetch(`${getDomain()}/games/demo` + accepted_game.id + `/accept`, {
+      if(this.state.demoMode){
+          fetch(`${getDomain()}/games/demo/` + accepted_game.id + `/accept`, {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
