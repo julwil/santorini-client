@@ -30,6 +30,10 @@ const Popup = styled.div`
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
 `;
 
+const Back_Button = styled(Button)`
+  margin-left: 10px;
+`;
+
 class LoseNotification extends React.Component{
     constructor(){
         super();
@@ -37,7 +41,6 @@ class LoseNotification extends React.Component{
             show: false,
         };
         this._isMounted = false;
-        this.updateInterval = 10000;
     }
 
     componentDidMount() {
@@ -47,7 +50,7 @@ class LoseNotification extends React.Component{
     componentWillReceiveProps(nextProps) {
         if(this._isMounted && nextProps.open && nextProps.loser === Number(localStorage.getItem("user_id"))) {
             this.setState({show: true});
-            setTimeout (() => {this.props.history.push('/users')}, 10000)
+            setTimeout (() => {this.props.history.push('/users')}, 20000)
         }else{
             this.setState({show: false});
         }
@@ -59,6 +62,13 @@ class LoseNotification extends React.Component{
                 <Popup>
                     <h2>Sorry, it seems you lost this round.</h2>
                     <p>Go on and try a new game.</p>
+                    <ButtonContainer>
+                        <Back_Button
+                            onClick={() => {
+                                this.props.history.push('/users')
+                            }}
+                        >Back To Lobby</Back_Button>
+                    </ButtonContainer>
                 </Popup>
             </PopupContainer>
         )
