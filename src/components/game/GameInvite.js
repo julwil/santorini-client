@@ -26,7 +26,7 @@ const Popup = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
   min-height: 40px;
-  width: 400px;
+  width: 600px;
   color: ${COLOR_1};
   border-radius: 4px;
   background-color: ${COLOR_5};
@@ -45,7 +45,7 @@ const GodCardWrapper = styled.div`
 
 const GodCard = styled.img`
   border: 3px solid;
-  width: 30%;
+  width: 19%;
   margin: 0 .5%;
   border-color: ${props => props.selected?'yellow':'grey'};
 `;
@@ -63,7 +63,14 @@ class GameInvite extends React.Component{
             godCards: [
                 {name: 'apollo', selected:false, user: null},
                 {name: 'artemis', selected:false, user: null},
+                {name: 'athena', selected:false, user: null},
+                {name: 'atlas', selected:false, user: null},
+                {name: 'demeter', selected:false, user: null},
+                {name: 'hephaestus', selected:false, user: null},
+                {name: 'hermes', selected:false, user: null},
+                {name: 'minotaur', selected:false, user: null},
                 {name: 'pan', selected:false, user: null},
+                {name: 'prometheus', selected:false, user: null},
             ]
         };
         this._isMounted = false;
@@ -177,7 +184,6 @@ class GameInvite extends React.Component{
         })
                 .then(handleError)
                 .then(game => {
-                    console.log(game);
                     if(game.status === 'STARTED'){
                         this.setState({
                             waitingInfo:'The User accepted your Invitation. Enjoy Santorini!',
@@ -215,7 +221,6 @@ class GameInvite extends React.Component{
         let index = newCards.indexOf(changedCard);
         changedCard.selected = !changedCard.selected && selectedCards.length < 2;
         newCards[index] = changedCard;
-        console.log(newCards);
         this.setState({godCards: newCards});
     };
 
@@ -244,6 +249,7 @@ class GameInvite extends React.Component{
                                             selected={godcard.selected}
                                             user={godcard.user}
                                             name={godcard.name}
+                                            key={godcard.name}
                                             onClick={()=>{this.handleGodCardSelect(godcard.name)}}
                                         />
                                     ))}
