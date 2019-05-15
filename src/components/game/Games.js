@@ -228,6 +228,7 @@ class Games extends React.Component {
     //fetch possible moves for only the figure that is active, activate figure once clicked on by user
     //getPossibleMoves gets called when figure activated/clicked on
     //initialize fetch when figure clicked on
+    //checking if figureMoved not necessary as backend only returns values when figure has not yet been moved
     getPossibleMoves = () => {
         let activeFigure = this.getActiveFigure();
         fetch(`${getDomain()}/games/${this.state.gameId}/figures/${activeFigure.id}/possibleMoves`, {
@@ -240,7 +241,6 @@ class Games extends React.Component {
             .then(handleError)
             .then(possibleMoves => {
                 this.setState({possibleMoves: possibleMoves});
-                console.log(possibleMoves);
             })
             .catch(err => {
                 catchError(err, this);
@@ -304,7 +304,7 @@ class Games extends React.Component {
         return null;
     };
 
-    activateFigure = (id) => {
+    activateFigure = (id) => { //figure needs to be activated so that getPossibleMoves knows for which figure to fetch the possible moves
         let figure = this.getFigureById(id);
         if(!this.state.figureMoved && this.getActiveFigure() == null && figure != null
             && Number(figure.owner) === Number(this.state.currentTurn) && Number(figure.owner) === Number(this.state.currentUser)){
@@ -312,7 +312,6 @@ class Games extends React.Component {
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
             this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures }); //remove refreshFigures
-            //this.getPossibleMoves();
         }
     };
 
@@ -496,6 +495,7 @@ class Games extends React.Component {
                                      refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                                      currentUser={this.state.currentUser}
                                      getPossibleMoves={this.getPossibleMoves}
+                                     figureMoved={this.state.figureMoved}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);

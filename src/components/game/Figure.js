@@ -23,7 +23,7 @@ const BoardFigure = styled(BoardItem)`
 
 const FigureSource = {
     canDrag(props){
-        return props.currentUser === props.figure.owner
+        return props.currentUser === props.figure.owner && !props.figureMoved //does this really make sense?
     },
 
     beginDrag(props) { //returning only figure as to only item to be dropped
@@ -46,8 +46,7 @@ class Figure extends React.Component {
         }
     }
     render() {
-        const {isDragging, connectDragSource, figure, currentUser} = this.props;
-        let active = false;
+        const {isDragging, connectDragSource, figure, currentUser, figureMoved} = this.props;
         return (
             <BoardFigure
                 //use local variable as state variable asynchronous and not quick enough to indicate change in time
@@ -61,7 +60,8 @@ class Figure extends React.Component {
                     //highlighting figure yellow once dragging visually indicating figure is active -> Done
                     //+ activating drag & drop -> drag and drop only if figure belongs to currentUser
                     //there shall only be one figure active at the same time
-                    if(currentUser === figure.owner){
+                    //only allow figure to be moved
+                    if(currentUser === figure.owner && !figureMoved){
                         this.setState({active: true});
                         //activating figure in games required for check
                         this.props.activateFigure(figure.id);
