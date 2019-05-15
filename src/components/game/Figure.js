@@ -22,6 +22,13 @@ const BoardFigure = styled(BoardItem)`
 `;
 
 const FigureSource = {
+    canDrag(props){
+        //making figure only draggable if belonging to owner and figure has not yet been moved
+        //don't block dragging if figure already moved as Aphrodite god card allows multiple move
+        return props.currentUser === props.currentTurn &&
+            props.currentUser === props.figure.owner
+    },
+
     beginDrag(props) { //returning only figure as to only item to be dropped
         return props.figure;
     }
@@ -37,18 +44,35 @@ function collect(connect, monitor){
 class Figure extends React.Component {
     constructor(props){
         super(props);
+        this.state = {
+            active: false,
+        }
     }
     render() {
-        const {isDragging, connectDragSource, figure, currentUser} = this.props;
+        const {isDragging, connectDragSource, figure, currentUser, currentTurn} = this.props;
         return (
             <BoardFigure
-                ref={figure.active ? (instance => connectDragSource(instance)): (instance => {})}
+                ref={(instance => connectDragSource(instance))}
                 id={figure.id}
                 figureOwner={figure.owner}
                 currentUser={currentUser}
-                active={figure.active}
-                onClick={()=>{
-                    this.props.activateFigure(figure.id)
+                active={this.state.active}
+                onDragStart={() => {
+                    //highlighting figure yellow once dragging visually indicating figure is active
+                    //activating figure only if figure belongs to currentUser & figure is not active yet
+                    //check if a figure has been moved yet not necessary as there exist god cards that allow multiple moves, and drop only possible if move valid through possibleMoves
+                    //only get possibleMoves when above applies
+                    if(currentUser === figure.owner
+                        && currentUser === currentTurn
+                        && !this.state.active){
+                        this.setState({active: true});
+                        this.props.activateFigure(figure.id);
+                        this.props.getPossibleMoves();
+                    }
+                }}
+                onDragEnd={() => {
+                    //deactivating figure once figure released
+                    this.setState({active: false});
                 }}
             />
         )
