@@ -22,6 +22,10 @@ const BoardFigure = styled(BoardItem)`
 `;
 
 const FigureSource = {
+    canDrag(props){
+        return props.currentUser === props.figure.owner
+    },
+
     beginDrag(props) { //returning only figure as to only item to be dropped
         return props.figure;
     }
@@ -43,22 +47,32 @@ class Figure extends React.Component {
     }
     render() {
         const {isDragging, connectDragSource, figure, currentUser} = this.props;
+        let active = false;
         return (
             <BoardFigure
-                ref={this.state.active ? (instance => connectDragSource(instance)): (instance => {})}
+                //use local variable as state variable asynchronous and not quick enough to indicate change in time
+                //making figure only draggable if belonging to owner through canDrag() above
+                ref={(instance => connectDragSource(instance))}
                 id={figure.id}
                 figureOwner={figure.owner}
                 currentUser={currentUser}
                 active={this.state.active}
-                onDrag={() => { //TODO: use onDragEnter()
-                    this.props.activateFigure(figure.id); //activating figure in games required for check
-
-                    //highlighting figure yellow once dragging visually indicating figure is active
-                    //+ activating drag & drop
+                onDragStart={() => { //TODO: use onDragEnter()
+                    //highlighting figure yellow once dragging visually indicating figure is active -> Done
+                    //+ activating drag & drop -> drag and drop only if figure belongs to currentUser
                     //there shall only be one figure active at the same time
-                    this.setState({active: true});
+                    if(currentUser === figure.owner){
+                        this.setState({active: true});
+                        //activating figure in games required for check
+                        this.props.activateFigure(figure.id);
+                        this.props.getPossibleMoves();
+                    }
 
-                    console.log("Dragging figure")
+                    console.log("Drag start")
+                }}
+                onDragEnd={() => {
+                    console.log("Drag end");
+                    this.setState({active: false});
                 }}
                 /*onClick={()=>{
                     this.setState({active: true});

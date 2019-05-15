@@ -240,6 +240,7 @@ class Games extends React.Component {
             .then(handleError)
             .then(possibleMoves => {
                 this.setState({possibleMoves: possibleMoves});
+                console.log(possibleMoves);
             })
             .catch(err => {
                 catchError(err, this);
@@ -310,8 +311,8 @@ class Games extends React.Component {
             let newFigures = this.state.figures.slice();
             figure.active = true;
             newFigures[newFigures.indexOf(figure)] = figure;
-            this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures });
-            this.getPossibleMoves();
+            this.setState({ figures: newFigures, refreshFigures: !this.state.refreshFigures }); //remove refreshFigures
+            //this.getPossibleMoves();
         }
     };
 
@@ -353,7 +354,7 @@ class Games extends React.Component {
     updateInitialFigure = (updating_fig, new_x, new_y, new_z) => {
         const figures = this.state.figures.slice();
         figures.push({position: {x: new_x, y: new_y, z:new_z}, active:false});
-        this.setState({figures: figures}); //refreshFigures: !this.state.refreshFigures
+        this.setState({figures: figures});
         this.state.firstInitialFigPlaced ? this.setState({secondInitialFigPlaced: true}) : this.setState({firstInitialFigPlaced: true});
 
         fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
@@ -388,7 +389,7 @@ class Games extends React.Component {
         let figure_idx = figure.id-1; //figure.id has to be minimized by 1 as otherwise incorrect indexing within figures
         const newFigures = this.state.figures;
         newFigures[figure_idx] = {id: figure.id, position: {x: new_x, y: new_y, z: new_z}, owner: figure.owner, active: false};
-        this.setState({figures: newFigures, refreshFigures: !this.state.refreshFigures});
+        this.setState({figures: newFigures, refreshFigures: !this.state.refreshFigures}); //remove refreshFigures
 
         if(this.isTargetForMove(new_x, new_y, new_z)){
             fetch(`${getDomain()}/games/${this.state.gameId}/figures/${figure.id}`, {
@@ -492,8 +493,9 @@ class Games extends React.Component {
                                      updateFigure={this.updateFigure}
                                      activateFigure={this.activateFigure}
                                      updateBuilding={this.updateBuilding}
-                                     refreshFigures={this.state.refreshFigures}
+                                     refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                                      currentUser={this.state.currentUser}
+                                     getPossibleMoves={this.getPossibleMoves}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
@@ -577,7 +579,7 @@ class Games extends React.Component {
                         figure={this.state.initialFigure}
                         showBuildingParts={this.state.firstInitialFigPlaced && this.state.secondInitialFigPlaced}
                         building={this.state.newBuilding}
-                        refreshFigures={this.state.refreshFigures}
+                        refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                         name={this.getPlayerName('me')}
                         godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
                     />
