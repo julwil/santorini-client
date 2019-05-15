@@ -35,7 +35,7 @@ function collect(connect, monitor){
 }
 
 function Building_0 (props) {
-    const {isDragging, connectDragSource, building} = props;
+    const {isDragging, connectDragSource, building, currentUser, currentTurn} = props;
     let active = false;
     return (
         <Building_0_Component
@@ -43,15 +43,11 @@ function Building_0 (props) {
             ref={instance => connectDragSource(instance)}
             active={active}
             onDragStart={() =>{
-                //visually activate building part when dragging: active = true;
                 //fetch possibleBuilds only when dragging building part started
+                if(currentUser === currentTurn){
+                    props.getPossibleBuilds();
+                }
 
-            }}
-            onClick={() => {
-                console.log("Building 0 has been clicked on")
-            }}
-            click={() => {
-                console.log("Building received click()")
             }}
         />
     )

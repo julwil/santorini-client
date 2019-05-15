@@ -577,6 +577,7 @@ class Games extends React.Component {
                         figure={this.state.initialFigure}
                         showBuildingParts={this.state.firstInitialFigPlaced && this.state.secondInitialFigPlaced}
                         building={this.state.newBuilding}
+                        getPossibleBuilds={this.getPossibleBuilds}
                         refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                         currentUser={this.state.currentUser}
                         currentTurn={this.state.currentTurn}
