@@ -11,7 +11,7 @@ const Building_0_Component = styled(BoardItem)`
   width: 55px;
   height: 55px;
   background-color: #ddd;
-  border: solid ${props => props.active ? '3px yellow' : '0.5px black'};
+  border: 0.5px black solid;
   z-index: 1;
   margin-right: 10px;
 `;
@@ -36,12 +36,10 @@ function collect(connect, monitor){
 
 function Building_0 (props) {
     const {isDragging, connectDragSource, building, currentUser, currentTurn} = props;
-    let active = false;
     return (
         <Building_0_Component
             show={props.show}
             ref={instance => connectDragSource(instance)}
-            active={active}
             onDragStart={() =>{
                 //fetch possibleBuilds only when dragging building part started
                 if(currentUser === currentTurn){

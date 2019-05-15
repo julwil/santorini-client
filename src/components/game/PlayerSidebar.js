@@ -61,9 +61,27 @@ class PlayerSidebar extends React.Component {
                         currentTurn={this.props.currentTurn}
                         getPossibleBuilds={this.props.getPossibleBuilds}
                     />
-                    <Building_1 show={this.props.showBuildingParts} building={this.props.building}/>
-                    <Building_2 show={this.props.showBuildingParts} building={this.props.building}/>
-                    <Building_3 show={this.props.showBuildingParts} building={this.props.building}/>
+                    <Building_1
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
+                    <Building_2
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
+                    <Building_3
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
                 </Container>
             </Sidebar>
         )

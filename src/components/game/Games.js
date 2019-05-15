@@ -409,8 +409,6 @@ class Games extends React.Component {
                 .then(() => {
                     //update game board
                     this.updateBoard();
-
-                    this.getPossibleBuilds();
                 })
                 .catch(err => {
                     catchError(err, this);
