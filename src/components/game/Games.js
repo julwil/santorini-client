@@ -498,7 +498,11 @@ class Games extends React.Component {
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
         }
-        return board;
+        console.log("Correct board: ");
+        console.log(board);
+        //console.log("Reversed board: ");
+        //console.log(board.reverse());
+        return board.reverse();
     };
 
     logout() { //remove
