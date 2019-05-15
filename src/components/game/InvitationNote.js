@@ -57,6 +57,7 @@ class InvitationNote extends React.Component{
             show: false,
             inviting_user: null,
             invited_game: null,
+            godCards: []
         };
         this._isMounted = false;
     }
@@ -73,7 +74,8 @@ class InvitationNote extends React.Component{
                 if (Number(invited_game.user2) === Number(localStorage.getItem("user_id"))) {
                     this.setState({show: true});
                     this.setState({inviting_user: this.props.users.map((user) => {return user.username})
-                            [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))]
+                            [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))],
+                        godCards: [{name:'artemis',selected:false},{name:'atlas',selected:false}]
                     });
                 }
             }
@@ -81,6 +83,21 @@ class InvitationNote extends React.Component{
             this.setState({show: false});
         }
     }
+
+    chooseGodCard = (name) => {
+        let changedCard = this.state.godCards.filter((card) => {return card.name === name})[0];
+        let selectedCards = this.getSelectedGodCards();
+        let newCards = this.state.godCards.slice();
+        let index = newCards.indexOf(changedCard);
+        changedCard.selected = !changedCard.selected && selectedCards.length < 1;
+        newCards[index] = changedCard;
+        console.log(newCards);
+        this.setState({godCards: newCards});
+    };
+
+    getSelectedGodCards = () => {
+        return this.state.godCards.filter((card) => {return card.selected})
+    };
 
     render = () => { //indicate data about game in here as well as provide accept and deny button in here
         return(
@@ -96,15 +113,15 @@ class InvitationNote extends React.Component{
                             <div>
                                 <b>Choose your god card!</b>
                             <GodCardWrapper>
-                                {/*{this.props.games.godCards.map((godcard)=>(*/}
-                                    {/*<GodCard*/}
-                                        {/*src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}*/}
-                                        {/*selected={godcard.selected}*/}
-                                        {/*user={godcard.user}*/}
-                                        {/*name={godcard.name}*/}
-                                        {/*onClick={()=>{this.chooseGodCard(godcard.name)}}*/}
-                                    {/*/>*/}
-                                {/*))}*/}
+                                {this.state.godCards.map((godcard)=>(
+                                    <GodCard
+                                        src={process.env.PUBLIC_URL+"/assets/godcards/"+godcard.name+".png"}
+                                        selected={godcard.selected}
+                                        name={godcard.name}
+                                        key={godcard.name}
+                                        onClick={()=>{this.chooseGodCard(godcard.name)}}
+                                    />
+                                ))}
                             </GodCardWrapper>
                             </div>
                         ):('')}
@@ -112,6 +129,7 @@ class InvitationNote extends React.Component{
                     <Invite_ButtonContainer>
                         <Invite_Button
                             color={"#37BD5A"}
+                            disabled={this.props.isGodPower && this.getSelectedGodCards().length !== 1}
                             onClick={() => {
                                 this.setState({show:false});
                                 this.props.acceptingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")))) //return id of game to parent component so that Lobby can post correct API endpoint

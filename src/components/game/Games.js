@@ -119,7 +119,7 @@ class Games extends React.Component {
                 }else{
                     this.updateBoard();
                 }
-                if(game.winner){ //if winner provided?
+                if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
                 }
                 if(this.state.players.length === 0){
@@ -498,7 +498,7 @@ class Games extends React.Component {
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
         }
-        return board;
+        return board.reverse();
     };
 
     logout() { //remove
@@ -559,7 +559,7 @@ class Games extends React.Component {
             .then(() => {
                 clearInterval(this.intervalUsers);
                 clearInterval(this.intervalNotficaton);
-                this.setState({loser: this.state.currentUser, winner: this.state.opponentUser});
+                this.setState({loser: this.state.currentUser});
             })
             .catch(err => {
                 catchError(err, this);

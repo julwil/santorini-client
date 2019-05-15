@@ -10,7 +10,7 @@ const PopupContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 100;
   display: ${props => props.show?'block':'none'};
   background-color: rgba(50,50,50,0.5);
 `;
@@ -30,6 +30,10 @@ const Popup = styled.div`
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
 `;
 
+const Back_Button = styled(Button)`
+  margin-left: 10px;
+`;
+
 class WinNotification extends React.Component{
     constructor(){
         super();
@@ -47,7 +51,7 @@ class WinNotification extends React.Component{
     componentWillReceiveProps(nextProps) {
         if(this._isMounted && nextProps.open && nextProps.winner === Number(localStorage.getItem("user_id"))) {
             this.setState({show: true});
-            setTimeout (() => {this.props.history.push('/users')}, 10000)
+            setTimeout (() => {this.props.history.push('/users')}, 20000)
         }else{
             this.setState({show: false});
         }
@@ -58,6 +62,14 @@ class WinNotification extends React.Component{
             <PopupContainer show={this.state.show}>
                 <Popup>
                     <h2>You won the game - congratulations!</h2>
+                    <p>Go on and try a new game!</p>
+                    <ButtonContainer>
+                        <Back_Button
+                            onClick={() => {
+                                this.props.history.push('/users')
+                            }}
+                        >Back To Lobby</Back_Button>
+                    </ButtonContainer>
                 </Popup>
             </PopupContainer>
         )
