@@ -32,7 +32,16 @@ function collect(connect, monitor){
 function Building_0 (props) {
     const {isDragging, connectDragSource, building} = props;
     return (
-        <Building_0_Component show={props.show} ref={instance => connectDragSource(instance)} />
+        <Building_0_Component
+            show={props.show}
+            ref={instance => connectDragSource(instance)}
+            onClick={() => {
+                console.log("Building 0 has been clicked on")
+            }}
+            click={() => {
+                console.log("Building received click()")
+            }}
+        />
     )
 }
 

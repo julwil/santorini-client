@@ -37,19 +37,34 @@ function collect(connect, monitor){
 class Figure extends React.Component {
     constructor(props){
         super(props);
+        this.state = {
+            active: false,
+        }
     }
     render() {
         const {isDragging, connectDragSource, figure, currentUser} = this.props;
         return (
             <BoardFigure
-                ref={figure.active ? (instance => connectDragSource(instance)): (instance => {})}
+                ref={this.state.active ? (instance => connectDragSource(instance)): (instance => {})}
                 id={figure.id}
                 figureOwner={figure.owner}
                 currentUser={currentUser}
-                active={figure.active}
-                onClick={()=>{
-                    this.props.activateFigure(figure.id)
+                active={this.state.active}
+                onDrag={() => { //TODO: use onDragEnter()
+                    this.props.activateFigure(figure.id); //activating figure in games required for check
+
+                    //highlighting figure yellow once dragging visually indicating figure is active
+                    //+ activating drag & drop
+                    //there shall only be one figure active at the same time
+                    this.setState({active: true});
+
+                    console.log("Dragging figure")
                 }}
+                /*onClick={()=>{
+                    this.setState({active: true});
+                    console.log("Figure has been clicked");
+
+                }}*/
             />
         )
     }
