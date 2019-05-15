@@ -11,7 +11,8 @@ const Building_1_Component = styled(BoardItem)`
   width: 50px;
   height: 50px;
   border-radius: 70px;
-  background-color: #eee;  
+  background-color: #eee;
+  border: 0.5px solid black; 
   z-index: 2;
   margin-right: 10px;
 `;

@@ -13,6 +13,7 @@ const Building_3_Component = styled(BoardItem)`
   height: 25px;
   border-radius: 40px;
   background-color: ${COLOR_3}; 
+  border: 0.5px solid black; 
   z-index: 4; 
 `;
 
