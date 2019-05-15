@@ -57,7 +57,6 @@ class Games extends React.Component {
             players: [],
             figures:[],
             possibleMoves: [],
-            figureMoved: false,
 
             buildings:[],
             possibleBuilds: [],
@@ -247,23 +246,23 @@ class Games extends React.Component {
             });
     };
 
-    getPossibleBuilds = () => { //only fetch for that figure that is active and if figure_moved is true
-        if(this.state.figureMoved){
-            fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`,{
-                method: "GET",
-                headers: new Headers({
-                    'Authorization': this.state.currentUserToken,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }),
+    getPossibleBuilds = () => {
+        //only fetch for that figure that is active
+        //check for figureMoved not necessary as possibleMoves will be empty plus there exist god cards allowing multiple moves
+        fetch(`${getDomain()}/games/${this.state.gameId}/buildings/possibleBuilds`, {
+            method: "GET",
+            headers: new Headers({
+                'Authorization': this.state.currentUserToken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+        })
+            .then(handleError)
+            .then(possibleBuilds => {
+                this.setState({possibleBuilds: possibleBuilds});
             })
-                .then(handleError)
-                .then(possibleBuilds =>{
-                    this.setState({possibleBuilds: possibleBuilds});
-                })
-                .catch(err => {
-                    catchError(err, this);
-                });
-        }
+            .catch(err => {
+                catchError(err, this);
+            });
     };
 
     getBuilding = (x,y) => {
@@ -304,9 +303,11 @@ class Games extends React.Component {
         return null;
     };
 
-    activateFigure = (id) => { //figure needs to be activated so that getPossibleMoves knows for which figure to fetch the possible moves
+    activateFigure = (id) => {
+        //figure needs to be activated so that getPossibleMoves knows for which figure to fetch the possible moves
+        //check if figureMoved not necessary, as figures will only be droppable if valid move through possibleMoves
         let figure = this.getFigureById(id);
-        if(!this.state.figureMoved && this.getActiveFigure() == null && figure != null
+        if(this.getActiveFigure() == null && figure != null
             && Number(figure.owner) === Number(this.state.currentTurn) && Number(figure.owner) === Number(this.state.currentUser)){
             let newFigures = this.state.figures.slice();
             figure.active = true;
@@ -409,8 +410,6 @@ class Games extends React.Component {
                     //update game board
                     this.updateBoard();
 
-                    //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
-                    this.setState({figureMoved: true});
                     this.getPossibleBuilds();
                 })
                 .catch(err => {
@@ -450,7 +449,6 @@ class Games extends React.Component {
             })
                 .then(handleError)
                 .then(() => {
-                    this.setState({figureMoved: false});
                     this.updateBoard();
                 })
                 .catch(err => {
@@ -480,7 +478,7 @@ class Games extends React.Component {
         for (let y = 0; y < 5; y++) {
             let row = [];
             for (let x = 0; x < 5; x++) {
-                row.push(<BoardField key={x}
+                row.push(<BoardField key={x} //can this be made easier, nicer???
                                      field_x_coordinate = {x}
                                      field_y_coordinate = {y}
                                      building={this.getBuilding(x,y)}
@@ -494,8 +492,8 @@ class Games extends React.Component {
                                      updateBuilding={this.updateBuilding}
                                      refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                                      currentUser={this.state.currentUser}
+                                     currentTurn={this.state.currentTurn}
                                      getPossibleMoves={this.getPossibleMoves}
-                                     figureMoved={this.state.figureMoved}
                 />);
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
@@ -580,6 +578,8 @@ class Games extends React.Component {
                         showBuildingParts={this.state.firstInitialFigPlaced && this.state.secondInitialFigPlaced}
                         building={this.state.newBuilding}
                         refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
+                        currentUser={this.state.currentUser}
+                        currentTurn={this.state.currentTurn}
                         name={this.getPlayerName('me')}
                         godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
                     />
