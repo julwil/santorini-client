@@ -119,7 +119,7 @@ class Games extends React.Component {
                 }else{
                     this.updateBoard();
                 }
-                if(game.winner !== 0){ //if winner is not 0 then game has been won / lost, consequently assign winner / loser
+                if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
                 }
                 if(this.state.players.length === 0){
