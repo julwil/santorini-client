@@ -498,7 +498,7 @@ class Games extends React.Component {
             }
             board.push(<BoardRow key={y}>{row}</BoardRow>);
         }
-        return board;
+        return board.reverse();
     };
 
     logout() { //remove
