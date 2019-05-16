@@ -9,6 +9,9 @@ import Building_3 from "./SidebarComponents/Building_3";
 import Figure_1 from "./SidebarComponents/Figure_1";
 import Figure_2 from "./SidebarComponents/Figure_2";
 import {Button} from "../../views/design/Button";
+import {getDomain} from "../../helpers/getDomain";
+import {handleError} from "../../helpers/handleError";
+import {catchError} from "../../helpers/catchError";
 
 const Sidebar = styled.div`
   width: 270px;
@@ -103,7 +106,11 @@ class PlayerSidebar extends React.Component {
                 <EndTurnHigherContainer show={false}>
                     <EndTurnContainer>
                         <Hint>Once you finished moving or building, click below:</Hint>
-                        <FinishTurnButton>
+                        <FinishTurnButton
+                            onClick={() => {
+                                this.props.finishTurn();
+                            }}
+                        >
                             Finish Turn
                         </FinishTurnButton>
                     </EndTurnContainer>

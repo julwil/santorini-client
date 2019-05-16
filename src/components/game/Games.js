@@ -578,6 +578,25 @@ class Games extends React.Component {
             });
     };
 
+    finishTurn = () =>{ //or finishTurn () {} ???
+        fetch(`${getDomain()}/games/`+this.state.gameId+'/finishTurn', {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': localStorage.getItem("token"),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            })
+
+        })
+            .then(handleError)
+            .then(() => {
+                this.updateBoard();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+
+    };
+
     render() {
         return (
             <GameWrapper>
@@ -595,6 +614,7 @@ class Games extends React.Component {
                         currentTurn={this.state.currentTurn}
                         name={this.getPlayerName('me')}
                         godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
+                        finishTurn={this.finishTurn}
                     />
                         <GameBoard>
                             {this.createBoard()}
