@@ -103,7 +103,7 @@ class PlayerSidebar extends React.Component {
                         getPossibleBuilds={this.props.getPossibleBuilds}
                     />
                 </Container>
-                <EndTurnHigherContainer show={false}>
+                <EndTurnHigherContainer show={this.props.showFinishTurnButton}>
                     <EndTurnContainer>
                         <Hint>Once you finished moving or building, click below:</Hint>
                         <FinishTurnButton
