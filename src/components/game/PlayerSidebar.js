@@ -8,6 +8,7 @@ import Building_2 from "./SidebarComponents/Building_2";
 import Building_3 from "./SidebarComponents/Building_3";
 import Figure_1 from "./SidebarComponents/Figure_1";
 import Figure_2 from "./SidebarComponents/Figure_2";
+import {Button} from "../../views/design/Button";
 
 const Sidebar = styled.div`
   width: 270px;
@@ -32,6 +33,22 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const EndTurnHigherContainer = styled.div`
+  display: ${props => props.show ? 'block' : 'none'}
+`;
+
+const EndTurnContainer = styled.div`
+  display: flex;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const FinishTurnButton = styled(Button)`
+  width: auto;
 `;
 
 const Hint = styled.h3`
@@ -83,6 +100,14 @@ class PlayerSidebar extends React.Component {
                         getPossibleBuilds={this.props.getPossibleBuilds}
                     />
                 </Container>
+                <EndTurnHigherContainer show={false}>
+                    <EndTurnContainer>
+                        <Hint>Once you finished moving or building, click below:</Hint>
+                        <FinishTurnButton>
+                            Finish Turn
+                        </FinishTurnButton>
+                    </EndTurnContainer>
+                </EndTurnHigherContainer>
             </Sidebar>
         )
     }
