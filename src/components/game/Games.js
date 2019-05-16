@@ -53,6 +53,7 @@ class Games extends React.Component {
             initialFigure: {x: null, y: null, z: null, type: null},
             refreshFigures: false,
             isGodPower: null,
+            canFinishTurn: false,
 
             players: [],
             figures:[],
@@ -551,7 +552,6 @@ class Games extends React.Component {
         }
     }
 
-
     componentWillUnmount() {
         clearInterval(this.intervalGameState);
         clearInterval(this.intervalFigures);
@@ -578,6 +578,25 @@ class Games extends React.Component {
             });
     };
 
+    finishTurn = () =>{
+        fetch(`${getDomain()}/games/`+this.state.gameId+'/finishTurn', {
+            method: "POST",
+            headers: new Headers({
+                'Authorization': localStorage.getItem("token"),
+                'Content-Type': 'application/x-www-form-urlencoded'
+            })
+
+        })
+            .then(handleError)
+            .then(() => {
+                this.updateBoard();
+            })
+            .catch(err => {
+                catchError(err, this);
+            });
+
+    };
+
     render() {
         return (
             <GameWrapper>
@@ -595,6 +614,8 @@ class Games extends React.Component {
                         currentTurn={this.state.currentTurn}
                         name={this.getPlayerName('me')}
                         godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
+                        showFinishTurnButton={this.state.currentUser === this.state.currentTurn ? this.state.game.canFinishTurn : false}
+                        finishTurn={this.finishTurn}
                     />
                         <GameBoard>
                             {this.createBoard()}
