@@ -316,6 +316,19 @@ class Games extends React.Component {
         }
     };
 
+    deactivateFigure = (id) => {
+        //figure has to be deactivated within figures object as getPossibleMoves always gets the possible moves for the active figure
+        //check that figure to be deactivated (specified by id) is actually active
+        let figure = this.getFigureById(id);
+        if(this.getActiveFigure() === figure && figure !== null
+            && Number(figure.owner) === Number(this.state.currentTurn) && Number(figure.owner) === Number(this.state.currentUser)){
+            let newFigures = this.state.figures.slice();
+            figure.active = false;
+            newFigures[newFigures.indexOf(figure)] = figure;
+            this.setState({figures: newFigures});
+        }
+    };
+
     isTargetForInitialMove = (x,y) => {
         let initialFigures = this.state.initialPossibleMoves;
         if(initialFigures){
@@ -487,6 +500,7 @@ class Games extends React.Component {
                                      updateInitialFigure={this.updateInitialFigure}
                                      updateFigure={this.updateFigure}
                                      activateFigure={this.activateFigure}
+                                     deactivateFigure={this.deactivateFigure}
                                      updateBuilding={this.updateBuilding}
                                      refreshFigures={this.state.refreshFigures} //refreshFigures can be removed
                                      currentUser={this.state.currentUser}

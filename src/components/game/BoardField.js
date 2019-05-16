@@ -122,6 +122,7 @@ class BoardField extends React.Component{ //use "isOver" to highlight field when
                     <Figure
                         figure={this.props.figure}
                         activateFigure={this.props.activateFigure}
+                        deactivateFigure={this.props.deactivateFigure}
                         refreshFigures={this.state.refreshFigures}
                         currentUser={this.props.currentUser}
                         currentTurn={this.props.currentTurn}

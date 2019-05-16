@@ -72,7 +72,9 @@ class Figure extends React.Component {
                 }}
                 onDragEnd={() => {
                     //deactivating figure once figure released
+                    //but figure has to be deactivated within in figures object and visually
                     this.setState({active: false});
+                    this.props.deactivateFigure(figure.id);
                 }}
             />
         )
