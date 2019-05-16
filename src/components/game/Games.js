@@ -614,7 +614,7 @@ class Games extends React.Component {
                         currentTurn={this.state.currentTurn}
                         name={this.getPlayerName('me')}
                         godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
-                        showFinishTurnButton={this.state.currentUser === this.state.currentTurn ? this.state.game.canFinishTurn : false} //true has to be replaced by "this.state.game.canFinishTurn"
+                        showFinishTurnButton={this.state.currentUser === this.state.currentTurn ? this.state.game.canFinishTurn : false}
                         finishTurn={this.finishTurn}
                     />
                         <GameBoard>
