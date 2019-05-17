@@ -28,6 +28,11 @@ const Popup = styled.div`
   z-index: 10000;
   padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
+  text-align: center;
+`;
+
+const WinImage = styled.img`
+  height: 70px;
 `;
 
 const Back_Button = styled(Button)`
@@ -61,6 +66,7 @@ class WinNotification extends React.Component{
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
+                    <WinImage src={process.env.PUBLIC_URL+"/assets/images/cup.png"} />
                     <h2>You won the game - congratulations!</h2>
                     <p>Go on and try a new game!</p>
                     <ButtonContainer>

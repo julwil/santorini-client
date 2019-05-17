@@ -134,7 +134,6 @@ class BoardField extends React.Component{ //use "isOver" to highlight field when
                         targetForBuild={this.props.targetForBuild(this.props.field_x_coordinate, this.props.field_y_coordinate, itemLevel)}
                         targetForInitialMove={this.props.targetForInitialMove}
                     />)}
-                    <p>X: {this.props.field_x_coordinate}, Y:{this.props.field_y_coordinate}</p>
             </Field>
         );
     };

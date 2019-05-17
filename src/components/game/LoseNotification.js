@@ -16,6 +16,7 @@ const PopupContainer = styled.div`
 `;
 
 const Popup = styled.div`
+  text-align: center;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -28,6 +29,11 @@ const Popup = styled.div`
   z-index: 10000;
   padding: 40px;
   box-shadow: 0 0 5px 0 rgba(143,143,143,1);
+`;
+
+
+const LoseImage = styled.img`
+  height: 70px;
 `;
 
 const Back_Button = styled(Button)`
@@ -60,6 +66,7 @@ class LoseNotification extends React.Component{
         return(
             <PopupContainer show={this.state.show}>
                 <Popup>
+                    <LoseImage src={process.env.PUBLIC_URL+"/assets/images/lose_symbol.png"} />
                     <h2>Sorry, it seems you lost this round.</h2>
                     <p>Go on and try a new game.</p>
                     <ButtonContainer>
