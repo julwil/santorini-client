@@ -195,7 +195,7 @@ class GameInvite extends React.Component{
                             //this.props.history.push('/'+localStorage.getItem('gamePath'))
                         },4000);
                     }
-                    if(game.status === 'CANCLED'){
+                    if(game.status === 'CANCELED'){
                         this.setState({
                             waitingInfo:'The User declined your Invitation. Sorry!',
                             invitationStatus: 'OPEN'
