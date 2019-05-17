@@ -69,7 +69,7 @@ class InvitationNote extends React.Component{
     }
 
     componentWillReceiveProps(nextProps) {
-        if(this._isMounted && nextProps.open) { //length cannot be checked for if em
+        if(this._isMounted && nextProps.open) { //length cannot be checked for if empty
             if(nextProps.games.length > 0) {
                 let invited_game = nextProps.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")));
                 console.log(invited_game);
@@ -77,7 +77,8 @@ class InvitationNote extends React.Component{
                     this.setState({show: true});
                     this.setState({inviting_user: this.props.users.map((user) => {return user.username})
                             [(this.props.users.map((user) => {return user.id}).indexOf(invited_game.user1))],
-                        godCards: invited_game.godPowers
+                        godCards: invited_game.godPowers,
+                        gameId: invited_game.id
                     });
                 }
             }
@@ -122,7 +123,7 @@ class InvitationNote extends React.Component{
                             disabled={this.props.isGodPower && this.state.selectedGodCard == null}
                             onClick={() => {
                                 this.setState({show:false});
-                                this.props.acceptingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")))) //return id of game to parent component so that Lobby can post correct API endpoint
+                                this.props.acceptingInvitation(this.state.gameId,this.state.selectedGodCard) //return id of game to parent component so that Lobby can post correct API endpoint
                             }}
                         >Accept</Invite_Button>
                         <Invite_Button

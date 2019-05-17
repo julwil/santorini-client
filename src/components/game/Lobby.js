@@ -149,9 +149,9 @@ class Lobby extends React.Component {
         });
   };
 
-  invitationAccepted = (accepted_game) => {
+  invitationAccepted = (id,selectedGodPower) => {
       if(this.state.demoMode){
-          fetch(`${getDomain()}/games/demo/` + accepted_game.id + `/accept`, {
+          fetch(`${getDomain()}/games/demo/` + id + `/accept`, {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
@@ -164,7 +164,7 @@ class Lobby extends React.Component {
                   clearInterval(this.intervalNotficaton);
                   this.setState({openInvitationNotification: false});
                   this.props.history.push({
-                      pathname: '/games/' + accepted_game.id,
+                      pathname: '/games/' + id,
                       state: game,
                   })
               })
@@ -172,14 +172,15 @@ class Lobby extends React.Component {
                   catchError(err, this);
               });
       }else{
-          fetch(`${getDomain()}/games/` + accepted_game.id + `/accept`, {
+          console.log();
+          fetch(`${getDomain()}/games/` + id + `/accept`, {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
                   'Content-Type': 'application/json'
               }),
               body:JSON.stringify({
-                  selectedGodPower: accepted_game.selectedGodCard
+                  selectedGodPower: selectedGodPower
               })
           })
               .then(handleError)
@@ -188,7 +189,7 @@ class Lobby extends React.Component {
                   clearInterval(this.intervalNotficaton);
                   this.setState({openInvitationNotification: false});
                   this.props.history.push({
-                      pathname: '/games/' + accepted_game.id,
+                      pathname: '/games/' + id,
                       state: game,
                   })
               })
