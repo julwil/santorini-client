@@ -22,6 +22,7 @@ const MainGame = styled.div`
   overflow: hidden;
   display: flex;
   flex-wrap: nowrap;
+  justify-content: space-between;
 `;
 const GameBoard = styled.div`
   background-color: ${COLOR_5};
