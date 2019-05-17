@@ -613,14 +613,14 @@ class Games extends React.Component {
                         currentUser={this.state.currentUser}
                         currentTurn={this.state.currentTurn}
                         name={this.getPlayerName('me')}
-                        godcard={this.state.isGodPower?'apollo':(this.isPlayerChallenger('me')?'god1':'god2')}
+                        godcard={this.state.isGodPower?(this.isPlayerChallenger('me')?this.state.game.god1:this.state.game.god2):(this.isPlayerChallenger('me')?'god1':'god2')}
                         showFinishTurnButton={this.state.currentUser === this.state.currentTurn ? this.state.game.canFinishTurn : false}
                         finishTurn={this.finishTurn}
                     />
                         <GameBoard>
                             {this.createBoard()}
                         </GameBoard>
-                <OpponentSidebar name={this.getPlayerName('opponent')} godcard={this.state.isGodPower?'pan':(this.isPlayerChallenger('opponent')?'god1':'god2')}/>
+                <OpponentSidebar name={this.getPlayerName('opponent')} godcard={this.state.isGodPower?(this.isPlayerChallenger('opponent')?this.state.game.god1:this.state.game.god2):(this.isPlayerChallenger('opponent')?'god1':'god2')}/>
                 <WinNotification open={this.state.winner !== null} winner={this.state.winner}/>
                 <LoseNotification open={this.state.loser !== null} loser={this.state.loser}/>
                 </MainGame>
