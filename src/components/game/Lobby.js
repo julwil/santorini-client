@@ -210,13 +210,17 @@ class Lobby extends React.Component {
       })
           .then(handleError)
           .then( () => { //restarting fetch intervals
-              this.setState({invited_games: null, openInvitationNotification: false});
-              this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
-              this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
+              this.closeInvitationNote()
           })
           .catch(err => {
               catchError(err, this);
           });
+  };
+
+  closeInvitationNote = () => {
+      this.setState({invited_games: null, openInvitationNotification: false});
+      this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+      this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
   invite = (userId) =>{
@@ -308,6 +312,7 @@ class Lobby extends React.Component {
                   isGodPower={this.state.isGodPower}
                   acceptingInvitation={this.invitationAccepted}
                   denyingInvitation={this.invitationDenied}
+                  closeInvitationNote={this.closeInvitationNote}
                   demoMode={this.state.demoMode}
               />
               <ButtonSecondary
