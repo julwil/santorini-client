@@ -176,8 +176,11 @@ class Lobby extends React.Component {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  'Content-Type': 'application/json'
               }),
+              body:JSON.stringify({
+                  selectedGodPower: accepted_game.selectedGodCard
+              })
           })
               .then(handleError)
               .then(game => {
