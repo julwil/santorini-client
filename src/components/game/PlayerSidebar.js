@@ -8,6 +8,10 @@ import Building_2 from "./SidebarComponents/Building_2";
 import Building_3 from "./SidebarComponents/Building_3";
 import Figure_1 from "./SidebarComponents/Figure_1";
 import Figure_2 from "./SidebarComponents/Figure_2";
+import {Button} from "../../views/design/Button";
+import {getDomain} from "../../helpers/getDomain";
+import {handleError} from "../../helpers/handleError";
+import {catchError} from "../../helpers/catchError";
 
 const Sidebar = styled.div`
   width: 270px;
@@ -34,6 +38,22 @@ const Container = styled.div`
   justify-content: center;
 `;
 
+const EndTurnHigherContainer = styled.div`
+  display: ${props => props.show ? 'block' : 'none'}
+`;
+
+const EndTurnContainer = styled.div`
+  display: flex;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const FinishTurnButton = styled(Button)`
+  width: auto;
+`;
+
 const Hint = styled.h3`
   text-align: center;
 `;
@@ -54,11 +74,47 @@ class PlayerSidebar extends React.Component {
                 <Container>
                     <Figure_1 show={this.props.showInitialFig1} figure={this.props.figure}/>
                     <Figure_2 show={this.props.showInitialFig2} figure={this.props.figure}/>
-                    <Building_0 show={this.props.showBuildingParts} building={this.props.building}/>
-                    <Building_1 show={this.props.showBuildingParts} building={this.props.building}/>
-                    <Building_2 show={this.props.showBuildingParts} building={this.props.building}/>
-                    <Building_3 show={this.props.showBuildingParts} building={this.props.building}/>
+                    <Building_0
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
+                    <Building_1
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
+                    <Building_2
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
+                    <Building_3
+                        show={this.props.showBuildingParts}
+                        building={this.props.building}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        getPossibleBuilds={this.props.getPossibleBuilds}
+                    />
                 </Container>
+                <EndTurnHigherContainer show={this.props.showFinishTurnButton}>
+                    <EndTurnContainer>
+                        <Hint>Once you finished moving or building, click below:</Hint>
+                        <FinishTurnButton
+                            onClick={() => {
+                                this.props.finishTurn();
+                            }}
+                        >
+                            Finish Turn
+                        </FinishTurnButton>
+                    </EndTurnContainer>
+                </EndTurnHigherContainer>
             </Sidebar>
         )
     }

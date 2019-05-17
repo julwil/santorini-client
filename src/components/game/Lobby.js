@@ -149,13 +149,13 @@ class Lobby extends React.Component {
         });
   };
 
-  invitationAccepted = (accepted_game) => {
+  invitationAccepted = (id,selectedGodPower) => {
       if(this.state.demoMode){
-          fetch(`${getDomain()}/games/demo/` + accepted_game.id + `/accept`, {
+          fetch(`${getDomain()}/games/demo/` + id + `/accept`, {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  'Content-Type': 'application/json'
               }),
           })
               .then(handleError)
@@ -164,7 +164,7 @@ class Lobby extends React.Component {
                   clearInterval(this.intervalNotficaton);
                   this.setState({openInvitationNotification: false});
                   this.props.history.push({
-                      pathname: '/games/' + accepted_game.id,
+                      pathname: '/games/' + id,
                       state: game,
                   })
               })
@@ -172,12 +172,16 @@ class Lobby extends React.Component {
                   catchError(err, this);
               });
       }else{
-          fetch(`${getDomain()}/games/` + accepted_game.id + `/accept`, {
+          console.log();
+          fetch(`${getDomain()}/games/` + id + `/accept`, {
               method: "POST",
               headers: new Headers({
                   'Authorization': this.state.current_user_token,
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  'Content-Type': 'application/json'
               }),
+              body:JSON.stringify({
+                  selectedGodPower: selectedGodPower
+              })
           })
               .then(handleError)
               .then(game => {
@@ -185,7 +189,7 @@ class Lobby extends React.Component {
                   clearInterval(this.intervalNotficaton);
                   this.setState({openInvitationNotification: false});
                   this.props.history.push({
-                      pathname: '/games/' + accepted_game.id,
+                      pathname: '/games/' + id,
                       state: game,
                   })
               })
@@ -206,13 +210,17 @@ class Lobby extends React.Component {
       })
           .then(handleError)
           .then( () => { //restarting fetch intervals
-              this.setState({invited_games: null, openInvitationNotification: false});
-              this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
-              this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
+              this.closeInvitationNote()
           })
           .catch(err => {
               catchError(err, this);
           });
+  };
+
+  closeInvitationNote = () => {
+      this.setState({invited_games: null, openInvitationNotification: false});
+      this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
+      this.intervalNotficaton = setInterval(this.getNotification, this.updateInterval);
   };
 
   invite = (userId) =>{
@@ -304,6 +312,7 @@ class Lobby extends React.Component {
                   isGodPower={this.state.isGodPower}
                   acceptingInvitation={this.invitationAccepted}
                   denyingInvitation={this.invitationDenied}
+                  closeInvitationNote={this.closeInvitationNote}
                   demoMode={this.state.demoMode}
               />
               <ButtonSecondary
