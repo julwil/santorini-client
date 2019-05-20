@@ -72,8 +72,20 @@ class PlayerSidebar extends React.Component {
                         (this.props.showInitalFig1 || this.props.showInitialFig2)?'Please place your figures:':'Please wait...'}
                 </Hint>
                 <Container>
-                    <Figure_1 show={this.props.showInitialFig1} figure={this.props.figure}/>
-                    <Figure_2 show={this.props.showInitialFig2} figure={this.props.figure}/>
+                    <Figure_1
+                        show={this.props.showInitialFig1}
+                        figure={this.props.figure}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        possibleMoves={this.props.possibleMoves}
+                    />
+                    <Figure_2
+                        show={this.props.showInitialFig2}
+                        figure={this.props.figure}
+                        currentUser={this.props.currentUser}
+                        currentTurn={this.props.currentTurn}
+                        possibleMoves={this.props.possibleMoves}
+                    />
                     <Building_0
                         show={this.props.showBuildingParts}
                         building={this.props.building}

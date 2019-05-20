@@ -20,6 +20,10 @@ const BoardFigure = styled(BoardItem)`
 `;
 
 const FigureSource = {
+    canDrag(props){ //allow dragging of initial figures only if user has current turn
+        return props.currentUser === props.currentTurn;
+    },
+
     beginDrag(props){
         return props.figure;
     },
@@ -36,7 +40,13 @@ function Figure_1 (props) {
     const {isDragging, connectDragSource, figure} = props;
     figure.type = 'fig1';
     return (
-        <BoardFigure show={props.show} ref={instance => connectDragSource(instance)} />
+        <BoardFigure
+            show={props.show}
+            ref={instance => connectDragSource(instance)}
+            onDragStart={() => {
+                //fetch possibleMoves only when initial figure dragged by user who has current turn
+            }}
+        />
     )
 }
 
