@@ -47,7 +47,6 @@ class Games extends React.Component {
             winner: null,
             loser: null,
 
-            initialModeComplete: false,
             initialPossibleMoves: [],
             firstInitialFigPlaced: false,
             secondInitialFigPlaced: false,
@@ -112,11 +111,7 @@ class Games extends React.Component {
                 }
                 clearInterval(this.intervalFigures);
                 clearInterval(this.intervalBuildings);
-                if(Number(game.currentTurn) === this.state.currentUser){
-                    if(!this.state.initialModeComplete){
-                        this.getInitialMoves();
-                    }
-                }else{
+                if(Number(game.currentTurn) !== this.state.currentUser){
                     this.updateBoard();
                 }
                 if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
@@ -369,6 +364,7 @@ class Games extends React.Component {
         const figures = this.state.figures.slice();
         figures.push({position: {x: new_x, y: new_y, z:new_z}, active:false});
         this.setState({figures: figures});
+        //these flags shall activate the tower parts, they shall only be selectable from sidebar if all initial figures have been placed
         this.state.firstInitialFigPlaced ? this.setState({secondInitialFigPlaced: true}) : this.setState({firstInitialFigPlaced: true});
 
         fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
@@ -386,10 +382,6 @@ class Games extends React.Component {
             .then(handleError)
             //should any interval be reestablished to call get fetches to update game board
             .then(() => {
-                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
-                if(this.state.secondInitialFigPlaced) {
-                    this.setState({ initialModeComplete: true});
-                }
                 //update game board
                 this.updateBoard();
             })
