@@ -65,7 +65,7 @@ class PlayerSidebar extends React.Component {
             <Sidebar>
                 <SidebarHeader>
                     <h2>{this.props.name}</h2>
-                    <GodCard src={process.env.PUBLIC_URL+"/assets/godcards/"+this.props.godcard+".png"}/>
+                    <GodCard src={process.env.PUBLIC_URL+"/assets/godcards/"+this.props.godcard+".png"}  title={this.props.godcardDescription}/>
                 </SidebarHeader>
                 <Hint>
                     {this.props.showBuildingParts?'Please select a figure, move it and then place a building:':
