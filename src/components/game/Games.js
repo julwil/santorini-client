@@ -504,26 +504,6 @@ class Games extends React.Component {
         return board.reverse();
     };
 
-    logout() { //remove
-        fetch(`${getDomain()}/users/logout`, {
-            method: "GET",
-            headers: new Headers({
-                'Authorization': localStorage.getItem("token"),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-        })
-            .then(handleError)
-            .then(() => {
-                clearInterval(this.intervalUsers);
-                clearInterval(this.intervalNotficaton);
-                localStorage.clear();
-                this.props.history.push("/login")
-            })
-            .catch(err => {
-                catchError(err, this);
-            });
-    }
-
     updateBoard = () => {
         this.getGameState();
         this.getFigures();
