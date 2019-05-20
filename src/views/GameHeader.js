@@ -29,7 +29,7 @@ const GameHeader = (props) => {
             <Button onClick={()=>{props.surrenderGame();}}>Surrender</Button>
             <HeaderImage src={process.env.PUBLIC_URL+"/assets/images/santorini_banner_logo.png"} alt="Logo"/>
             <Turn>{props.currentTurn === Number(localStorage.getItem('user_id'))?'It\'s your turn':'Your opponent is playing..'}</Turn>
-            <ButtonSecondary>Rules</ButtonSecondary>
+            <a href={process.env.PUBLIC_URL+"/assets/game_manual.pdf"} target={'_blank'}><ButtonSecondary>Rules</ButtonSecondary></a>
         </Container>
     );
 };
