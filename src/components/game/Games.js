@@ -110,7 +110,7 @@ class Games extends React.Component {
                 }
                 //clearInterval(this.intervalFigures);
                 //clearInterval(this.intervalBuildings);
-                if(Number(game.currentTurn) === this.state.currentUser){
+                if(Number(game.currentTurn) !== this.state.currentUser){
                     //this.updateBoard();
                 }else{
                     clearInterval(this.intervalFigures);
