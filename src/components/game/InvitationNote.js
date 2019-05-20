@@ -81,7 +81,6 @@ class InvitationNote extends React.Component{
         if(this._isMounted && nextProps.open) { //length cannot be checked for if empty
             if(nextProps.games.length > 0) {
                 let invited_game = nextProps.games.find((game) => game.user2 === Number(localStorage.getItem("user_id")));
-                console.log(invited_game);
                 if (Number(invited_game.user2) === Number(localStorage.getItem("user_id"))) {
                     this.setState({show: true});
                     this.setState({inviting_user: this.props.users.map((user) => {return user.username})

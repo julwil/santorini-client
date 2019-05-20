@@ -19,6 +19,10 @@ const BoardFigure = styled(BoardItem)`
 `;
 
 const FigureSource = {
+    canDrag(props){
+        return props.currentUser === props.currentTurn;
+    },
+
     beginDrag(props){
         return props.figure;
     }
@@ -32,10 +36,19 @@ function collect(connect, monitor){
 }
 
 function Figure_2 (props) {
-    const {isDragging, connectDragSource, figure} = props;
+    const {isDragging, connectDragSource, figure, currentUser, currentTurn} = props;
     figure.type = 'fig2';
     return (
-        <BoardFigure show={props.show} ref={instance => connectDragSource(instance)} />
+        <BoardFigure
+            show={props.show}
+            ref={instance => connectDragSource(instance)}
+            onDragStart={() => {
+                //fetch possibleMoves only when initial figure dragged by user who has current turn
+                if(currentUser === currentTurn){
+                    props.getInitialMoves();
+                }
+            }}
+        />
     )
 }
 

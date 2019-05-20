@@ -47,7 +47,6 @@ class Games extends React.Component {
             winner: null,
             loser: null,
 
-            initialModeComplete: false,
             initialPossibleMoves: [],
             firstInitialFigPlaced: false,
             secondInitialFigPlaced: false,
@@ -69,7 +68,7 @@ class Games extends React.Component {
         this.intervalGameState = 0;
         this.intervalFigures = 0;
         this.intervalBuildings = 0;
-        this.updateInterval = 2000;
+        this.updateInterval = 1000;
     }
 
     getInitialMoves = () => {
@@ -77,23 +76,21 @@ class Games extends React.Component {
         //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
         //player with current turn should start to place his figures
 
-        if (this.state.initialPossibleMoves.length <= 0) {
-            if (this.state.figures.length < 4 && this.state.buildings.length === 0) {
-                fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
-                    method: "GET",
-                    headers: new Headers({
-                        'Authorization': this.state.currentUserToken,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    })
+        if (this.state.figures.length < 4 && this.state.buildings.length === 0) {
+            fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
+                method: "GET",
+                headers: new Headers({
+                    'Authorization': this.state.currentUserToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 })
-                    .then(handleError)
-                    .then(initialPossibleMoves => {
-                        this.setState({initialPossibleMoves: initialPossibleMoves})
-                    })
-                    .catch(err => {
-                        catchError(err, this);
-                    });
-            }
+            })
+                .then(handleError)
+                .then(initialPossibleMoves => {
+                    this.setState({initialPossibleMoves: initialPossibleMoves})
+                })
+                .catch(err => {
+                    catchError(err, this);
+                });
         }
     };
 
@@ -111,14 +108,9 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: Number(game.currentTurn), gameId: game.id, isGodPower: game.isGodPower});
                 }
-                clearInterval(this.intervalFigures);
-                clearInterval(this.intervalBuildings);
-                if(Number(game.currentTurn) === this.state.currentUser){
-                    if(!this.state.initialModeComplete){
-                        this.getInitialMoves();
-                    }
-                }else{
-                    this.updateBoard();
+                if(Number(game.currentTurn) === this.state.currentUser){ //if the current user has the current turn no board updating needed
+                    clearInterval(this.intervalFigures);
+                    clearInterval(this.intervalBuildings);
                 }
                 if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
@@ -370,6 +362,7 @@ class Games extends React.Component {
         const figures = this.state.figures.slice();
         figures.push({position: {x: new_x, y: new_y, z:new_z}, active:false});
         this.setState({figures: figures});
+        //these flags shall activate the tower parts, they shall only be selectable from sidebar if all initial figures have been placed
         this.state.firstInitialFigPlaced ? this.setState({secondInitialFigPlaced: true}) : this.setState({firstInitialFigPlaced: true});
 
         fetch(`${getDomain()}/games/${this.state.gameId}/figures`, {
@@ -387,10 +380,6 @@ class Games extends React.Component {
             .then(handleError)
             //should any interval be reestablished to call get fetches to update game board
             .then(() => {
-                //this flag shall activate the building, tower parts shall only be selectable from sidebar if figure has already been moved
-                if(this.state.secondInitialFigPlaced) {
-                    this.setState({ initialModeComplete: true});
-                }
                 //update game board
                 this.updateBoard();
             })
@@ -515,26 +504,6 @@ class Games extends React.Component {
         return board.reverse();
     };
 
-    logout() { //remove
-        fetch(`${getDomain()}/users/logout`, {
-            method: "GET",
-            headers: new Headers({
-                'Authorization': localStorage.getItem("token"),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }),
-        })
-            .then(handleError)
-            .then(() => {
-                clearInterval(this.intervalUsers);
-                clearInterval(this.intervalNotficaton);
-                localStorage.clear();
-                this.props.history.push("/login")
-            })
-            .catch(err => {
-                catchError(err, this);
-            });
-    }
-
     updateBoard = () => {
         this.getGameState();
         this.getFigures();
@@ -546,11 +515,6 @@ class Games extends React.Component {
         this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
-        if(this.state.currentTurn === this.state.currentUser){
-            clearInterval(this.intervalGameState);
-            clearInterval(this.intervalFigures);
-            clearInterval(this.intervalBuildings);
-        }
     }
 
     componentWillUnmount() {
@@ -570,8 +534,6 @@ class Games extends React.Component {
         })
             .then(handleError)
             .then(() => {
-                clearInterval(this.intervalUsers);
-                clearInterval(this.intervalNotficaton);
                 this.setState({loser: this.state.currentUser});
             })
             .catch(err => {
@@ -607,6 +569,7 @@ class Games extends React.Component {
                         showInitialFig1={!this.state.firstInitialFigPlaced} //if complete no longer show initialFigures
                         showInitialFig2={!this.state.secondInitialFigPlaced}
                         figure={this.state.initialFigure}
+                        getInitialMoves={this.getInitialMoves}
                         showBuildingParts={this.state.firstInitialFigPlaced && this.state.secondInitialFigPlaced}
                         building={this.state.newBuilding}
                         getPossibleBuilds={this.getPossibleBuilds}

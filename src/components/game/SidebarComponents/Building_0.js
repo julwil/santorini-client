@@ -45,7 +45,6 @@ function Building_0 (props) {
                 if(currentUser === currentTurn){
                     props.getPossibleBuilds();
                 }
-
             }}
         />
     )
