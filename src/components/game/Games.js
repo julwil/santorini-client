@@ -77,7 +77,6 @@ class Games extends React.Component {
         //player with current turn should start to place his figures
 
         if (this.state.figures.length < 4 && this.state.buildings.length === 0) {
-            console.log("Fetching initialMoves");
             fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
                 method: "GET",
                 headers: new Headers({

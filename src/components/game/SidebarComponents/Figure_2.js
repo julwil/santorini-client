@@ -43,7 +43,6 @@ function Figure_2 (props) {
             show={props.show}
             ref={instance => connectDragSource(instance)}
             onDragStart={() => {
-                console.log("Dragging initial figure 2");
                 //fetch possibleMoves only when initial figure dragged by user who has current turn
                 if(currentUser === currentTurn){
                     props.getInitialMoves();

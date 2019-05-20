@@ -140,7 +140,6 @@ class Lobby extends React.Component {
           if(games.length > 0){ //if games has at least one element the following shall be performed
             clearInterval(this.intervalNotficaton);
             clearInterval(this.intervalUsers);
-            console.log(games[0]);
             this.setState({invited_games: games, openInvitationNotification: true, isGodPower: games[0].isGodPower, demoMode: games[0].demoMode === 1});
           } //Git change
         })
@@ -172,7 +171,6 @@ class Lobby extends React.Component {
                   catchError(err, this);
               });
       }else{
-          console.log();
           fetch(`${getDomain()}/games/` + id + `/accept`, {
               method: "POST",
               headers: new Headers({
