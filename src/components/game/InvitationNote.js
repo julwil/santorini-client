@@ -6,6 +6,7 @@ import {getDomain} from "../../helpers/getDomain";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
+import {godCards} from "../../helpers/godCards";
 
 const PopupContainer = styled.div`
   position: fixed;
@@ -150,6 +151,7 @@ class InvitationNote extends React.Component{
                                     selected={this.state.selectedGodCard === godcard}
                                     key={godcard}
                                     onClick={()=>{this.chooseGodCard(godcard)}}
+                                    title={godCards[godcard]}
                                 />
                             ))}
                             </GodCardWrapper>
