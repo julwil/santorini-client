@@ -108,10 +108,13 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: Number(game.currentTurn), gameId: game.id, isGodPower: game.isGodPower});
                 }
-                clearInterval(this.intervalFigures);
-                clearInterval(this.intervalBuildings);
-                if(Number(game.currentTurn) !== this.state.currentUser){
-                    this.updateBoard();
+                //clearInterval(this.intervalFigures);
+                //clearInterval(this.intervalBuildings);
+                if(Number(game.currentTurn) === this.state.currentUser){
+                    //this.updateBoard();
+                }else{
+                    clearInterval(this.intervalFigures);
+                    clearInterval(this.intervalBuildings);
                 }
                 if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
@@ -537,6 +540,7 @@ class Games extends React.Component {
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
         if(this.state.currentTurn === this.state.currentUser){
+            console.log("clearing intervals");
             clearInterval(this.intervalGameState);
             clearInterval(this.intervalFigures);
             clearInterval(this.intervalBuildings);
@@ -544,9 +548,9 @@ class Games extends React.Component {
     }
 
     componentWillUnmount() {
-        clearInterval(this.intervalGameState);
+        /*clearInterval(this.intervalGameState);
         clearInterval(this.intervalFigures);
-        clearInterval(this.intervalBuildings);
+        clearInterval(this.intervalBuildings);*/
     }
 
     surrenderGame = () => {
