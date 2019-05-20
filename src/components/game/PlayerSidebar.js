@@ -77,14 +77,14 @@ class PlayerSidebar extends React.Component {
                         figure={this.props.figure}
                         currentUser={this.props.currentUser}
                         currentTurn={this.props.currentTurn}
-                        possibleMoves={this.props.possibleMoves}
+                        getInitialMoves={this.props.getInitialMoves}
                     />
                     <Figure_2
                         show={this.props.showInitialFig2}
                         figure={this.props.figure}
                         currentUser={this.props.currentUser}
                         currentTurn={this.props.currentTurn}
-                        possibleMoves={this.props.possibleMoves}
+                        getInitialMoves={this.props.getInitialMoves}
                     />
                     <Building_0
                         show={this.props.showBuildingParts}

@@ -606,8 +606,8 @@ class Games extends React.Component {
                     <PlayerSidebar
                         showInitialFig1={!this.state.firstInitialFigPlaced} //if complete no longer show initialFigures
                         showInitialFig2={!this.state.secondInitialFigPlaced}
-                        possibleMoves={this.getPossibleMoves}
                         figure={this.state.initialFigure}
+                        getInitialMoves={this.getInitialMoves}
                         showBuildingParts={this.state.firstInitialFigPlaced && this.state.secondInitialFigPlaced}
                         building={this.state.newBuilding}
                         getPossibleBuilds={this.getPossibleBuilds}
