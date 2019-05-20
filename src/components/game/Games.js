@@ -77,23 +77,22 @@ class Games extends React.Component {
         //that doesn't work if first player already placed figures because figures no longer is empty, but game hasn't completely started yet
         //player with current turn should start to place his figures
 
-        if (this.state.initialPossibleMoves.length <= 0) {
-            if (this.state.figures.length < 4 && this.state.buildings.length === 0) {
-                fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
-                    method: "GET",
-                    headers: new Headers({
-                        'Authorization': this.state.currentUserToken,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    })
+        if (this.state.figures.length < 4 && this.state.buildings.length === 0) {
+            console.log("Fetching initialMoves");
+            fetch(`${getDomain()}/games/${this.props.match.params.gamesId}/figures/possiblePosts`, {
+                method: "GET",
+                headers: new Headers({
+                    'Authorization': this.state.currentUserToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 })
-                    .then(handleError)
-                    .then(initialPossibleMoves => {
-                        this.setState({initialPossibleMoves: initialPossibleMoves})
-                    })
-                    .catch(err => {
-                        catchError(err, this);
-                    });
-            }
+            })
+                .then(handleError)
+                .then(initialPossibleMoves => {
+                    this.setState({initialPossibleMoves: initialPossibleMoves})
+                })
+                .catch(err => {
+                    catchError(err, this);
+                });
         }
     };
 
