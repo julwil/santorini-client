@@ -518,6 +518,9 @@ class Games extends React.Component {
     }
 
     componentWillUnmount() {
+        clearInterval(this.intervalGameState);
+        clearInterval(this.intervalFigures);
+        clearInterval(this.intervalBuildings);
     }
 
     surrenderGame = () => {
