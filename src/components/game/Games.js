@@ -68,7 +68,7 @@ class Games extends React.Component {
         this.intervalGameState = 0;
         this.intervalFigures = 0;
         this.intervalBuildings = 0;
-        this.updateInterval = 2000;
+        this.updateInterval = 1000;
     }
 
     getInitialMoves = () => {
@@ -108,11 +108,7 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: Number(game.currentTurn), gameId: game.id, isGodPower: game.isGodPower});
                 }
-                //clearInterval(this.intervalFigures);
-                //clearInterval(this.intervalBuildings);
-                if(Number(game.currentTurn) !== this.state.currentUser){
-                    //this.updateBoard();
-                }else{
+                if(Number(game.currentTurn) === this.state.currentUser){ //if the current user has the current turn no board updating needed
                     clearInterval(this.intervalFigures);
                     clearInterval(this.intervalBuildings);
                 }
