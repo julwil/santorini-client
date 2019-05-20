@@ -535,18 +535,9 @@ class Games extends React.Component {
         this.intervalGameState = setInterval(this.getGameState, this.updateInterval);
         this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
-        if(this.state.currentTurn === this.state.currentUser){
-            console.log("clearing intervals");
-            clearInterval(this.intervalGameState);
-            clearInterval(this.intervalFigures);
-            clearInterval(this.intervalBuildings);
-        }
     }
 
     componentWillUnmount() {
-        /*clearInterval(this.intervalGameState);
-        clearInterval(this.intervalFigures);
-        clearInterval(this.intervalBuildings);*/
     }
 
     surrenderGame = () => {
@@ -560,8 +551,6 @@ class Games extends React.Component {
         })
             .then(handleError)
             .then(() => {
-                clearInterval(this.intervalUsers);
-                clearInterval(this.intervalNotficaton);
                 this.setState({loser: this.state.currentUser});
             })
             .catch(err => {
