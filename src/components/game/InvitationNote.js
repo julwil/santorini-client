@@ -75,7 +75,7 @@ class InvitationNote extends React.Component{
     //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
     componentDidMount() {
         this._isMounted = true;
-        setInterval(this.checkInvitation,2000);
+        this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -182,6 +182,7 @@ class InvitationNote extends React.Component{
 
     componentWillUnmount() {
         this._isMounted = false;
+        clearInterval(this.checkInvitationInterval);
     }
 }
 
