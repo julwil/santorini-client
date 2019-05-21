@@ -108,9 +108,11 @@ class Games extends React.Component {
                 if(game !== null){ //should actually be game.length > 0
                     this.setState({game: game, currentTurn: Number(game.currentTurn), gameId: game.id, isGodPower: game.isGodPower});
                 }
-                if(Number(game.currentTurn) === this.state.currentUser){ //if the current user has the current turn no board updating needed
-                    clearInterval(this.intervalFigures);
-                    clearInterval(this.intervalBuildings);
+                if(Number(game.currentTurn) !== this.state.currentUser){ //if the current user has the current turn no board updating needed
+                    if(this.intervalFigures === 0 && this.intervalBuildings === 0) {
+                        this.intervalFigures = setInterval(this.getFigures, this.updateInterval);
+                        this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
+                    }
                 }
                 if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
@@ -186,6 +188,7 @@ class Games extends React.Component {
                 }
                 if(this.state.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalFigures);
+                    this.intervalFigures = 0;
                 }
             })
             .catch(err => {
@@ -210,6 +213,7 @@ class Games extends React.Component {
                 }
                 if(this.state.currentTurn === this.state.currentUser){
                     clearInterval(this.intervalBuildings);
+                    this.intervalBuildings = 0;
                 }
             })
             .catch(err => {
@@ -520,7 +524,9 @@ class Games extends React.Component {
     componentWillUnmount() {
         clearInterval(this.intervalGameState);
         clearInterval(this.intervalFigures);
+        this.intervalFigures = 0;
         clearInterval(this.intervalBuildings);
+        this.intervalBuildings = 0;
     }
 
     surrenderGame = () => {
