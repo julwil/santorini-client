@@ -71,6 +71,13 @@ class Lobby extends React.Component {
     this.updateInterval = 2000;
   }
 
+  setUpdateIntervals = () => {
+      clearInterval(this.intervalUsers);
+      clearInterval(this.intervalNotification);
+      this.intervalUsers = setInterval(this.fetchUsers, this.updateInterval);
+      this.intervalNotification = setInterval(this.getNotification, this.updateInterval);
+  };
+
   logout() {
     fetch(`${getDomain()}/users/logout`, {
       method: "GET",
@@ -92,8 +99,7 @@ class Lobby extends React.Component {
   }
 
   componentDidMount() {
-    this.intervalUsers = setInterval(this.fetchUsers, this.updateInterval);
-    this.intervalNotification = setInterval(this.getNotification, this.updateInterval);
+    this.setUpdateIntervals();
   }
 
   fetchUsers = () => {
@@ -217,8 +223,7 @@ class Lobby extends React.Component {
 
   closeInvitationNote = () => {
       this.setState({invited_games: null, openInvitationNotification: false});
-      this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
-      this.intervalNotification = setInterval(this.getNotification, this.updateInterval);
+      this.setUpdateIntervals();
   };
 
   invite = (userId) =>{
@@ -233,8 +238,7 @@ class Lobby extends React.Component {
     this.setState({
       GameInviteUserId: null,
     });
-    this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
-    this.intervalNotification = setInterval(this.getNotification, this.updateInterval);
+    this.setUpdateIntervals();
   };
 
   saveInvite = (isGodPower) => {//send accepting request to backend
@@ -255,8 +259,7 @@ class Lobby extends React.Component {
           this.setState({
             GameInviteUserId: null,
           });
-          this.intervalUsers = setInterval(this.fetchUsers,this.updateInterval);
-          this.intervalNotification = setInterval(this.getNotification, this.updateInterval);
+          this.setUpdateIntervals();
         })
         .catch(err => {
           catchError(err, this);
@@ -269,7 +272,12 @@ class Lobby extends React.Component {
 
   };
 
-  render() {
+  componentWillUnmount() {
+      clearInterval(this.intervalUsers);
+      clearInterval(this.intervalNotification);
+  }
+
+    render() {
     return (
       <MainContainer>
         <Main>
