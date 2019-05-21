@@ -116,7 +116,7 @@ class Games extends React.Component {
                     }
                 }
                 if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
-                    this.setState({winner: game.winner, loser: game.winner = game.user1 ? game.user1 : game.user2})
+                    this.setState({winner: game.winner, loser: game.winner === game.user1 ? game.user2 : game.user1})
                 }
                 if(this.state.players.length === 0){
                     let opponentUserId = game.user1;
