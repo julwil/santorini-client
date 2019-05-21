@@ -172,6 +172,7 @@ class GameInvite extends React.Component{
             error: [],
             waitingInfo: 'Waiting for player to accept invitation',
         });
+        clearInterval(this.checkInvitationInterval);
         this.props.closePopup();
     };
 
