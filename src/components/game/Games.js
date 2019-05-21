@@ -115,7 +115,7 @@ class Games extends React.Component {
                         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
                     }
                 }
-                if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
+                if(game.winner !== 0){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
                     this.clearingIntervalsAsGameFinished();
                     this.setState({winner: game.winner, loser: game.winner === game.user1 ? game.user2 : game.user1})
                 }
