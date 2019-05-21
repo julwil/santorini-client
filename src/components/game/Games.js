@@ -115,7 +115,8 @@ class Games extends React.Component {
                         this.intervalBuildings = setInterval(this.getBuildings, this.updateInterval);
                     }
                 }
-                if(game.winner){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
+                if(game.winner !== 0){ //if winner attribute exists the game has been won / lost, consequently assign winner / loser
+                    this.clearingIntervalsAsGameFinished();
                     this.setState({winner: game.winner, loser: game.winner === game.user1 ? game.user2 : game.user1})
                 }
                 if(this.state.players.length === 0){
@@ -523,6 +524,10 @@ class Games extends React.Component {
     }
 
     componentWillUnmount() {
+        this.clearingIntervalsAsGameFinished();
+    }
+
+    clearingIntervalsAsGameFinished() {
         clearInterval(this.intervalGameState);
         clearInterval(this.intervalFigures);
         this.intervalFigures = 0;
@@ -541,6 +546,9 @@ class Games extends React.Component {
         })
             .then(handleError)
             .then(() => {
+                this.clearingIntervalsAsGameFinished();
+                clearInterval(this.intervalUsers);
+                clearInterval(this.intervalNotification);
                 this.setState({loser: this.state.currentUser});
             })
             .catch(err => {
