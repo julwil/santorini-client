@@ -68,7 +68,7 @@ const statusDescription = {
 const Player = ({ user, invite, invitationBlocked }) => {
     return(
         <Container status={user.status}>
-            <Username>{user.username}</Username>
+            <Username title={statusDescription[user.status]}>{user.username}</Username>
             <StatusIndicator status={user.status} title={statusDescription[user.status]}/>
             <ButtonContainer>
                 <PlayerButton
