@@ -11,6 +11,24 @@ import { Redirect } from "react-router-dom";
  * @param props
  */
 export const ProfileGuard = props => {
+    // fetch(`${getDomain()}/games/invitations`, {
+    //   method: "GET",
+    //   headers: new Headers({
+    //     'Authorization': this.state.current_user_token,
+    //     'Content-Type': 'application/x-www-form-urlencoded'
+    //   }),
+    // })
+    //     .then(handleError)
+    //     .then(games => {
+    //       if(games.length > 0){ //if games has at least one element the following shall be performed
+    //         clearInterval(this.intervalNotification);
+    //         clearInterval(this.intervalUsers);
+    //         this.setState({invited_games: games, openInvitationNotification: true, isGodPower: games[0].isGodPower, demoMode: games[0].demoMode === 1});
+    //       } //Git change
+    //     })
+    //     .catch(err => {
+    //       catchError(err,this);
+    //     });
   if (localStorage.getItem("token")) {
     return props.children;
   }
