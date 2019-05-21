@@ -75,7 +75,7 @@ class InvitationNote extends React.Component{
     //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
     componentDidMount() {
         this._isMounted = true;
-        setInterval(this.checkInvitation,2000);
+        this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -169,6 +169,7 @@ class InvitationNote extends React.Component{
                             <Invite_Button
                             onClick={() => {
                             this.setState({show:false});
+                            clearInterval(this.checkInvitationInterval);
                             this.props.denyingInvitation(this.props.games.find((game) => game.user2 === Number(localStorage.getItem("user_id"))))
                         }}>Deny</Invite_Button>
                             </Invite_ButtonContainer>
@@ -182,6 +183,8 @@ class InvitationNote extends React.Component{
 
     componentWillUnmount() {
         this._isMounted = false;
+        this.setState({declinedByChallenger:false});
+        clearInterval(this.checkInvitationInterval);
     }
 }
 

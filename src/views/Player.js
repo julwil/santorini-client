@@ -48,6 +48,14 @@ const PlayerButton = styled(Button)`
   width: 70px;
 `;
 
+const statusDescription = {
+    ONLINE:'online and ready to be challenged',
+    CHALLENGED:'already challenged or playing',
+    PLAYING:'already challenged or playing',
+    OFFLINE:'offline',
+
+};
+
 /**
  * This is an example of a Functional and stateless component (View) in React. Functional components are not classes and thus don't handle internal state changes.
  * Conceptually, components are like JavaScript functions. They accept arbitrary inputs (called “props”) and return React elements describing what should appear on the screen.
@@ -60,8 +68,8 @@ const PlayerButton = styled(Button)`
 const Player = ({ user, invite, invitationBlocked }) => {
     return(
         <Container status={user.status}>
-            <Username>{user.username}</Username>
-            <StatusIndicator status={user.status}/>
+            <Username title={statusDescription[user.status]}>{user.username}</Username>
+            <StatusIndicator status={user.status} title={statusDescription[user.status]}/>
             <ButtonContainer>
                 <PlayerButton
                     style={{display: invitationBlocked(user.id)?'none':'block'}}
