@@ -13,7 +13,7 @@ export const OpponentSidebar = (props) => {
         <Sidebar>
             <SidebarHeader>
                 <h2>{props.name}</h2>
-                <GodCard src={process.env.PUBLIC_URL+"/assets/godcards/"+props.godcard+".png"}/>
+                <GodCard src={process.env.PUBLIC_URL+"/assets/godcards/"+props.godcard+".png"} title={props.godcardDescription}/>
             </SidebarHeader>
         </Sidebar>
     );

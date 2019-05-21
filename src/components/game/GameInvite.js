@@ -8,6 +8,7 @@ import {catchError} from "../../helpers/catchError";
 import {Spinner} from "../../views/design/Spinner";
 import Error from "../../helpers/Error";
 import {withRouter} from "react-router-dom";
+import {godCards} from "../../helpers/godCards";
 
 const PopupContainer = styled.div`
   position: fixed;
@@ -251,6 +252,7 @@ class GameInvite extends React.Component{
                                             name={godcard.name}
                                             key={godcard.name}
                                             onClick={()=>{this.handleGodCardSelect(godcard.name)}}
+                                            title={godCards[godcard.name]}
                                         />
                                     ))}
                                 </GodCardWrapper>
