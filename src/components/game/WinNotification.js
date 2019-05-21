@@ -46,7 +46,6 @@ class WinNotification extends React.Component{
             show: false,
         };
         this._isMounted = false;
-        this.updateInterval = 10000;
     }
 
     componentDidMount() {
@@ -56,7 +55,7 @@ class WinNotification extends React.Component{
     componentWillReceiveProps(nextProps) {
         if(this._isMounted && nextProps.open && nextProps.winner === Number(localStorage.getItem("user_id"))) {
             this.setState({show: true});
-            setTimeout (() => {this.props.history.push('/users')}, 20000)
+            setTimeout (() => {this.setState({show: false}); this.props.history.push('/users')}, 20000)
         }else{
             this.setState({show: false});
         }
