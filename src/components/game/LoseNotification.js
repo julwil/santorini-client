@@ -47,6 +47,7 @@ class LoseNotification extends React.Component{
             show: false,
         };
         this._isMounted = false;
+        this.closeTimeout = null;
     }
 
     componentDidMount() {
@@ -56,7 +57,7 @@ class LoseNotification extends React.Component{
     componentWillReceiveProps(nextProps) {
         if(this._isMounted && nextProps.open && nextProps.loser === Number(localStorage.getItem("user_id"))) {
             this.setState({show: true});
-            setTimeout (() => {this.setState({show: false}); this.props.history.push('/users')}, 20000)
+            this.closeTimeout = setTimeout (() => {this.setState({show: false}); this.props.history.push('/users')}, 20000)
         }else{
             this.setState({show: false});
         }
@@ -83,6 +84,7 @@ class LoseNotification extends React.Component{
 
     componentWillUnmount() {
         this._isMounted = false;
+        clearTimeout(this.closeTimeout);
     }
 }
 
