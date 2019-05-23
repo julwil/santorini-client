@@ -247,7 +247,7 @@ class Lobby extends React.Component {
     clearInterval(this.intervalNotification);
     this.setState({
       GameInviteUserId: userId,
-    })
+    });
   };
 
   closeInvite = () => {

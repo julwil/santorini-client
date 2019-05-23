@@ -119,8 +119,8 @@ class InvitationNote extends React.Component{
                             declinedByChallenger:true,
 
                         });
+                        clearInterval(this.checkInvitationInterval);
                         this.closeTimeout = setTimeout(()=>{
-                            clearInterval(this.checkInvitationInterval);
                             this.setState({show: false,
                                 inviting_user: null,
                                 invited_game: null,
