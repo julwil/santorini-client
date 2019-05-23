@@ -99,23 +99,29 @@ class Lobby extends React.Component {
   }
 
   componentDidMount() {
-  fetch(`${getDomain()}/users/${localStorage.getItem('user_id')}/games`, {
-      method: "GET",
-      headers: new Headers({
-          'Authorization': localStorage.getItem("token"),
-          'Content-Type': 'application/x-www-form-urlencoded'
-      }),
-  })
+      this.setUpdateIntervals();
+      fetch(`${getDomain()}/users/${localStorage.getItem('user_id')}/games`, {
+          method: "GET",
+          headers: new Headers({
+              'Authorization': localStorage.getItem("token"),
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }),
+      })
       .then(handleError)
       .then(games => {
-          if(games.length > 0 && games[0].status === 'STARTED'){
-              this.props.history.push("/games/"+games[0].id);
-          }
+        console.log(games);
+            if(games.length > 0){
+                let startedGames = games.filter((game)=>{return game.status === 'STARTED'});
+                if(startedGames.length > 0){
+                    clearInterval(this.intervalUsers);
+                    clearInterval(this.intervalNotification);
+                    this.props.history.push("/games/"+startedGames[0].id);
+                }
+            }
       })
       .catch(err => {
           catchError(err,this);
       });
-    this.setUpdateIntervals();
   }
 
   fetchUsers = () => {
