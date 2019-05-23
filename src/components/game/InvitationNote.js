@@ -75,8 +75,7 @@ class InvitationNote extends React.Component{
     //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
     componentDidMount() {
         this._isMounted = true;
-        this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
-    }
+            }
 
     componentWillReceiveProps(nextProps) {
         if(this._isMounted && nextProps.open) { //length cannot be checked for if empty
@@ -90,9 +89,16 @@ class InvitationNote extends React.Component{
                         gameId: invited_game.id
                     });
                 }
+                this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
             }
         }else{
-            this.setState({show: false});
+            this.setState({show: false,
+                inviting_user: null,
+                invited_game: null,
+                godCards: [],
+                selectedGodCard: null,
+                declinedByChallenger:false,
+                gameId: false,});
         }
     }
 
@@ -114,6 +120,13 @@ class InvitationNote extends React.Component{
                         });
                         setTimeout(()=>{
                             clearInterval(this.checkInvitationInterval);
+                            this.setState({show: false,
+                                inviting_user: null,
+                                invited_game: null,
+                                godCards: [],
+                                selectedGodCard: null,
+                                declinedByChallenger:false,
+                                gameId: false,});
                             this.props.closeInvitationNote();
                         },4000);
                     }
@@ -183,7 +196,13 @@ class InvitationNote extends React.Component{
 
     componentWillUnmount() {
         this._isMounted = false;
-        this.setState({declinedByChallenger:false});
+        this.setState({show: false,
+            inviting_user: null,
+            invited_game: null,
+            godCards: [],
+            selectedGodCard: null,
+            declinedByChallenger:false,
+            gameId: false,});
         clearInterval(this.checkInvitationInterval);
     }
 }

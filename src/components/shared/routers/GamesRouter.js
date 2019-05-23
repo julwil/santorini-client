@@ -8,6 +8,7 @@ import Profile from "../../user/Profile";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "./AppRouter";
 import Games from "../../game/Games";
+import {GameGuard} from "../routeProtectors/GameGuard";
 
 const GameContainer = styled(BaseContainer)`
   padding: 0 20px;
@@ -24,9 +25,9 @@ class GamesRouter extends React.Component {
           exact
           path={`${this.props.base}/:gamesId`}
           render={() =>
-              <ProfileGuard>
+              <GameGuard>
                 <Games />
-              </ProfileGuard>}
+              </GameGuard>}
         />
       </GameContainer>
     );

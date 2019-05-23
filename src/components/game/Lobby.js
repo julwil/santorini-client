@@ -5,7 +5,7 @@ import { getDomain } from "../../helpers/getDomain";
 import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
 import {Button, ButtonSecondary} from "../../views/design/Button";
-import {Link, withRouter} from "react-router-dom";
+import {Link, Redirect, withRouter} from "react-router-dom";
 import {handleError} from "../../helpers/handleError";
 import {catchError} from "../../helpers/catchError";
 import Error from "../../helpers/Error";
@@ -69,6 +69,22 @@ class Lobby extends React.Component {
     this.intervalUsers = 0;
     this.intervalNotification = 0;
     this.updateInterval = 2000;
+    fetch(`${getDomain()}/users/${localStorage.getItem('user_id')}/games`, {
+      method: "GET",
+      headers: new Headers({
+          'Authorization': localStorage.getItem("token"),
+          'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+      .then(handleError)
+      .then(games => {
+          if(games.length > 0 && games[0].status === 'STARTED'){
+             this.props.history.push("/games/"+games[0].id);
+          }
+      })
+      .catch(err => {
+          catchError(err,this);
+      });
   }
 
   setUpdateIntervals = () => {
