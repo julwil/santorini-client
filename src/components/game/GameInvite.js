@@ -76,6 +76,8 @@ class GameInvite extends React.Component{
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
+        this.startedTimeout = null;
+        this.canceledTimeout = null;
 
     }
 
@@ -161,7 +163,7 @@ class GameInvite extends React.Component{
             })
                 .then(handleError)
                 .then(()=>{
-                    clearInterval(this.checkInvitationInterval);
+                    this.cleanup();
                 })
                 .catch(err => {catchError(err,this)})
         }
@@ -172,7 +174,7 @@ class GameInvite extends React.Component{
             error: [],
             waitingInfo: 'Waiting for player to accept invitation',
         });
-        clearInterval(this.checkInvitationInterval);
+        this.cleanup();
         this.props.closePopup();
     };
 
@@ -191,7 +193,7 @@ class GameInvite extends React.Component{
                             waitingInfo:'The User accepted your Invitation. Enjoy Santorini!',
                             invitationStatus: 'ACCEPTED'
                         });
-                        setTimeout(()=>{
+                        this.startedTimeout = setTimeout(()=>{
                             clearInterval(this.checkInvitationInterval);
                             this.props.history.push('/' + localStorage.getItem('gamePath'));
                             //this.props.history.push('/'+localStorage.getItem('gamePath'))
@@ -203,7 +205,7 @@ class GameInvite extends React.Component{
                             invitationStatus: 'OPEN'
 
                         });
-                        setTimeout(()=>{
+                        this.canceledTimeout = setTimeout(()=>{
                             clearInterval(this.checkInvitationInterval);
                             this.closePopup();
                             },4000);
@@ -276,9 +278,15 @@ class GameInvite extends React.Component{
         )
     };
 
+    cleanup = () => {
+        clearInterval(this.checkInvitationInterval);
+        clearTimeout(this.startedTimeout);
+        clearTimeout(this.canceledTimeout);
+    };
+
     componentWillUnmount() {
         this._isMounted = false;
-        clearInterval(this.checkInvitationInterval);
+        this.cleanup();
     }
 }
 
