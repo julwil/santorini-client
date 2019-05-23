@@ -76,6 +76,8 @@ class GameInvite extends React.Component{
         };
         this._isMounted = false;
         this.checkInvitationInterval = null;
+        this.startedTimeout = null;
+        this.canceledTimeout = null;
 
     }
 
@@ -87,8 +89,6 @@ class GameInvite extends React.Component{
         if(this._isMounted){
             if(nextProps.userId !== null && (nextProps.userId !== this.props.userId)){
                 this.setState({show:true});
-            }else{
-                this.setState({show:false});
             }
         }
     }
@@ -114,6 +114,7 @@ class GameInvite extends React.Component{
                     showSpinner:true,
                 });
                 localStorage.setItem('gamePath',game.path);
+                clearInterval(this.checkInvitationInterval);
                 this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
             })
             .catch(err => {
@@ -142,6 +143,7 @@ class GameInvite extends React.Component{
                     showSpinner:true,
                 });
                 localStorage.setItem('gamePath', 'games/'+game.id);
+                clearInterval(this.checkInvitationInterval);
                 this.checkInvitationInterval = setInterval(this.checkInvitation,2000);
             })
             .catch(err => {
@@ -161,7 +163,7 @@ class GameInvite extends React.Component{
             })
                 .then(handleError)
                 .then(()=>{
-                    clearInterval(this.checkInvitationInterval);
+                   this.cleanup();
                 })
                 .catch(err => {catchError(err,this)})
         }
@@ -170,9 +172,11 @@ class GameInvite extends React.Component{
             showSpinner: false,
             invitationStatus: 'OPEN',
             error: [],
+            show:false,
             waitingInfo: 'Waiting for player to accept invitation',
         });
-        clearInterval(this.checkInvitationInterval);
+        localStorage.removeItem('gamePath');
+        this.cleanup();
         this.props.closePopup();
     };
 
@@ -191,8 +195,8 @@ class GameInvite extends React.Component{
                             waitingInfo:'The User accepted your Invitation. Enjoy Santorini!',
                             invitationStatus: 'ACCEPTED'
                         });
-                        setTimeout(()=>{
-                            clearInterval(this.checkInvitationInterval);
+                        clearInterval(this.checkInvitationInterval);
+                        this.startedTimeout = setTimeout(()=>{
                             this.props.history.push('/' + localStorage.getItem('gamePath'));
                             //this.props.history.push('/'+localStorage.getItem('gamePath'))
                         },4000);
@@ -203,8 +207,8 @@ class GameInvite extends React.Component{
                             invitationStatus: 'OPEN'
 
                         });
-                        setTimeout(()=>{
-                            clearInterval(this.checkInvitationInterval);
+                        clearInterval(this.checkInvitationInterval);
+                        this.canceledTimeout = setTimeout(()=>{
                             this.closePopup();
                             },4000);
                     }
@@ -276,9 +280,15 @@ class GameInvite extends React.Component{
         )
     };
 
+    cleanup = () => {
+        clearInterval(this.checkInvitationInterval);
+        clearTimeout(this.startedTimeout);
+        clearTimeout(this.canceledTimeout);
+    };
+
     componentWillUnmount() {
         this._isMounted = false;
-        clearInterval(this.checkInvitationInterval);
+        this.cleanup();
     }
 }
 

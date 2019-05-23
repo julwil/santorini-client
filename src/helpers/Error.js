@@ -47,6 +47,7 @@ class Error extends React.Component{
     };
 
     componentWillUnmount() {
+        clearTimeout(this.timeoutId);
         this._isMounted = false;
     }
 }

@@ -69,22 +69,6 @@ class Lobby extends React.Component {
     this.intervalUsers = 0;
     this.intervalNotification = 0;
     this.updateInterval = 2000;
-    fetch(`${getDomain()}/users/${localStorage.getItem('user_id')}/games`, {
-      method: "GET",
-      headers: new Headers({
-          'Authorization': localStorage.getItem("token"),
-          'Content-Type': 'application/x-www-form-urlencoded'
-      }),
-    })
-      .then(handleError)
-      .then(games => {
-          if(games.length > 0 && games[0].status === 'STARTED'){
-             this.props.history.push("/games/"+games[0].id);
-          }
-      })
-      .catch(err => {
-          catchError(err,this);
-      });
   }
 
   setUpdateIntervals = () => {
@@ -115,7 +99,28 @@ class Lobby extends React.Component {
   }
 
   componentDidMount() {
-    this.setUpdateIntervals();
+      this.setUpdateIntervals();
+      fetch(`${getDomain()}/users/${localStorage.getItem('user_id')}/games`, {
+          method: "GET",
+          headers: new Headers({
+              'Authorization': localStorage.getItem("token"),
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }),
+      })
+      .then(handleError)
+      .then(games => {
+            if(games.length > 0){
+                let startedGames = games.filter((game)=>{return game.status === 'STARTED'});
+                if(startedGames.length > 0){
+                    clearInterval(this.intervalUsers);
+                    clearInterval(this.intervalNotification);
+                    this.props.history.push("/games/"+startedGames[0].id);
+                }
+            }
+      })
+      .catch(err => {
+          catchError(err,this);
+      });
   }
 
   fetchUsers = () => {
@@ -247,7 +252,7 @@ class Lobby extends React.Component {
     clearInterval(this.intervalNotification);
     this.setState({
       GameInviteUserId: userId,
-    })
+    });
   };
 
   closeInvite = () => {

@@ -70,6 +70,7 @@ class InvitationNote extends React.Component{
         };
         this._isMounted = false;
         this.checkInvitationInterval = 0;
+        this.closeTimeout = null;
     }
 
     //only open notification pop-up if user actually invited to game (games is not empty) and the invited participant is the currently logged in user
@@ -118,8 +119,8 @@ class InvitationNote extends React.Component{
                             declinedByChallenger:true,
 
                         });
-                        setTimeout(()=>{
-                            clearInterval(this.checkInvitationInterval);
+                        clearInterval(this.checkInvitationInterval);
+                        this.closeTimeout = setTimeout(()=>{
                             this.setState({show: false,
                                 inviting_user: null,
                                 invited_game: null,
@@ -204,6 +205,7 @@ class InvitationNote extends React.Component{
             declinedByChallenger:false,
             gameId: false,});
         clearInterval(this.checkInvitationInterval);
+        clearTimeout(this.closeTimeout);
     }
 }
 
