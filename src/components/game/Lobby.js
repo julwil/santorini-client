@@ -109,7 +109,6 @@ class Lobby extends React.Component {
       })
       .then(handleError)
       .then(games => {
-        console.log(games);
             if(games.length > 0){
                 let startedGames = games.filter((game)=>{return game.status === 'STARTED'});
                 if(startedGames.length > 0){
